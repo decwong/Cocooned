@@ -72,22 +72,49 @@ function scene:createScene( event )
 			x = event.x - ball.x;
 			y = event.y - ball.y;
 			print (x, y)
+
 			if x < 0 then
-				if y >0 then
-					ball:applyLinearImpulse( 0.05, -0.05 ,ball.x, ball.y)
+				if x > -30 then
+					if y > 0 then
+						ball:applyLinearImpulse(0,-0.05, ball.x, ball.y)
+					elseif y < 0 then
+						ball:applyLinearImpulse(0,0.05, ball.x, ball.y)
+					end
+				elseif y >0 then
+					if y < 30 then
+						ball:applyLinearImpulse(0.05, 0, ball.x, ball.y)
+					else
+						ball:applyLinearImpulse( 0.05, -0.05 ,ball.x, ball.y)
+					end
+				elseif y < 0 then
+					if y > -30 then
+						ball:applyLinearImpulse(0.05, 0, ball.x, ball.y)
+					else
+						ball:applyLinearImpulse( 0.05, 0.05, ball.x, ball.y)
+					end
 				end
-				if y < 0 then
-					ball:applyLinearImpulse( 0.05, 0.05, ball.x, ball.y)
+			elseif x > 0 then
+				if x < 30 then
+					if y > 0 then
+						ball:applyLinearImpulse(0,-0.05, ball.x, ball.y)
+					elseif y < 0 then
+						ball:applyLinearImpulse(0,0.05, ball.x, ball.y)
+					end
+				elseif y < 0 then
+					if y > -30 then
+						ball:applyLinearImpulse(-0.05, 0, ball.x, ball.y)
+					else
+						ball:applyLinearImpulse( -0.05, 0.05, ball.x, ball.y)
+					end
+				elseif y > 0 then
+					if y < 30 then
+						ball:applyLinearImpulse(-0.05, 0, ball.x, ball.y)
+					else
+						ball:applyLinearImpulse( -0.05, -0.05, ball.x, ball.y)
+					end
 				end
 			end
-			if x > 0 then
-				if y < 0 then
-					ball:applyLinearImpulse( -0.05, 0.05, ball.x, ball.y)
-				end
-				if y > 0 then
-					ball:applyLinearImpulse( -0.05, -0.05, ball.x, ball.y)
-				end
-			end
+			
 		end
 	end
 	
