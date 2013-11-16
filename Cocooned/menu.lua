@@ -37,15 +37,15 @@ function scene:createScene( event )
 	local group = self.view
 
 	-- display a background image
-	local background = display.newImageRect( "background.jpg", display.contentWidth, display.contentHeight )
+	local background = display.newImageRect( "logo.png", display.contentWidth, display.contentHeight )
 	background:setReferencePoint( display.TopLeftReferencePoint )
 	background.x, background.y = 0, 0
 	
 	-- create/position logo/title image on upper-half of the screen
-	local titleLogo = display.newImageRect( "logo.png", 264, 125 )
-	titleLogo:setReferencePoint( display.CenterReferencePoint )
-	titleLogo.x = display.contentWidth * 0.5
-	titleLogo.y = 100
+	--local titleLogo = display.newImageRect( "logo.png", 264, 125 )
+	--titleLogo:setReferencePoint( display.CenterReferencePoint )
+	--titleLogo.x = display.contentWidth * 0.5
+	--titleLogo.y = 100
 	
 	-- create a widget button (which will loads level1.lua on release)
 	playBtn = widget.newButton{
@@ -53,16 +53,16 @@ function scene:createScene( event )
 		labelColor = { default={255}, over={128} },
 		defaultFile="button.png",
 		overFile="button-over.png",
-		width=154, height=40,
+		width=154, height=50,
 		onRelease = onPlayBtnRelease	-- event listener function
 	}
 	playBtn:setReferencePoint( display.CenterReferencePoint )
 	playBtn.x = display.contentWidth*0.5
-	playBtn.y = display.contentHeight - 125
+	playBtn.y = display.contentHeight - 70
 	
 	-- all display objects must be inserted into group
 	group:insert( background )
-	group:insert( titleLogo )
+	--group:insert( titleLogo )
 	group:insert( playBtn )
 end
 
