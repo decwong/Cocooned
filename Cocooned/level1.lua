@@ -84,54 +84,73 @@ function scene:createScene( event )
 		local x 
 		local y
 		
+		-- setup distance formula [ball vs mouse pointer]
+		local x1
+		local x2
+		local y1
+		local y2
+		local distance
+			
+		
 		for count = 1, 2, 1 do
-			if event.phase == "ended" then
-				x = event.x - ballTable[count].x;
-				y = event.y - ballTable[count].y;
-				print (x, y)
+		
+			-- more distance formula setup
+			x2 = ballTable[count].x
+			x1 = event.x
+			y2 = ballTable[count].y
+			y1 = event.y
+			distance = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
+			print("Mouse to Ball Distance:", distance)
+		
+			-- if it is taking too many tries to move the ball, increase the distance <= *value*
+			if distance <= 100 then
+				if event.phase == "ended" then
+					x = event.x - ballTable[count].x;
+					y = event.y - ballTable[count].y;
+					print (x, y)
 
-				if x < 0 then
-					if x > -30 then
-						if y > 0 then
-							ballTable[count]:applyLinearImpulse(0,-0.05, ballTable[count].x, ballTable[count].y)
+					if x < 0 then
+						if x > -30 then
+							if y > 0 then
+								ballTable[count]:applyLinearImpulse(0,-0.05, ballTable[count].x, ballTable[count].y)
+							elseif y < 0 then
+								ballTable[count]:applyLinearImpulse(0,0.05, ballTable[count].x, ballTable[count].y)
+							end
+						elseif y >0 then
+							if y < 30 then
+								ballTable[count]:applyLinearImpulse(0.05, 0, ballTable[count].x, ballTable[count].y)
+							else
+								ballTable[count]:applyLinearImpulse( 0.05, -0.05 ,ballTable[count].x, ballTable[count].y)
+							end
 						elseif y < 0 then
-							ballTable[count]:applyLinearImpulse(0,0.05, ballTable[count].x, ballTable[count].y)
+							if y > -30 then
+								ballTable[count]:applyLinearImpulse(0.05, 0, ballTable[count].x, ballTable[count].y)
+							else
+								ballTable[count]:applyLinearImpulse( 0.05, 0.05, ballTable[count].x, ballTable[count].y)
+							end
 						end
-					elseif y >0 then
-						if y < 30 then
-							ballTable[count]:applyLinearImpulse(0.05, 0, ballTable[count].x, ballTable[count].y)
-						else
-							ballTable[count]:applyLinearImpulse( 0.05, -0.05 ,ballTable[count].x, ballTable[count].y)
-						end
-					elseif y < 0 then
-						if y > -30 then
-							ballTable[count]:applyLinearImpulse(0.05, 0, ballTable[count].x, ballTable[count].y)
-						else
-							ballTable[count]:applyLinearImpulse( 0.05, 0.05, ballTable[count].x, ballTable[count].y)
-						end
-					end
-				elseif x > 0 then
-					if x < 30 then
-						if y > 0 then
-							ballTable[count]:applyLinearImpulse(0,-0.05, ballTable[count].x, ballTable[count].y)
+					elseif x > 0 then
+						if x < 30 then
+							if y > 0 then
+								ballTable[count]:applyLinearImpulse(0,-0.05, ballTable[count].x, ballTable[count].y)
+							elseif y < 0 then
+								ballTable[count]:applyLinearImpulse(0,0.05, ballTable[count].x, ballTable[count].y)
+							end
 						elseif y < 0 then
-							ballTable[count]:applyLinearImpulse(0,0.05, ballTable[count].x, ballTable[count].y)
-						end
-					elseif y < 0 then
-						if y > -30 then
-							ballTable[count]:applyLinearImpulse(-0.05, 0, ballTable[count].x, ballTable[count].y)
-						else
-							ballTable[count]:applyLinearImpulse( -0.05, 0.05, ballTable[count].x, ballTable[count].y)
-						end
-					elseif y > 0 then
-						if y < 30 then
-							ballTable[count]:applyLinearImpulse(-0.05, 0, ballTable[count].x, ballTable[count].y)
-						else
-							ballTable[count]:applyLinearImpulse( -0.05, -0.05, ballTable[count].x, ballTable[count].y)
+							if y > -30 then
+								ballTable[count]:applyLinearImpulse(-0.05, 0, ballTable[count].x, ballTable[count].y)
+							else
+								ballTable[count]:applyLinearImpulse( -0.05, 0.05, ballTable[count].x, ballTable[count].y)
+							end
+						elseif y > 0 then
+							if y < 30 then
+								ballTable[count]:applyLinearImpulse(-0.05, 0, ballTable[count].x, ballTable[count].y)
+							else
+								ballTable[count]:applyLinearImpulse( -0.05, -0.05, ballTable[count].x, ballTable[count].y)
+							end
 						end
 					end
 				end
-				
 			end
 		end
 	end
