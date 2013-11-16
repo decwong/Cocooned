@@ -50,24 +50,27 @@ function scene:createScene( event )
 	
 	-- add new walls
 	-- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
-	
 	local walls = {
 		[1] = display.newImage("ground1.png"),
 		[2] = display.newImage("ground1.png"),
 		[3] = display.newImage("ground2.png"),
 		[4] = display.newImage("ground2.png") }
 	
+	-- Left wall
 	walls[1].x = -40
 	walls[1].y = 180
 	walls[1].rotation = 90
 	
+	-- Right wall
 	walls[2].x = 520
 	walls[2].y = 180
 	walls[2].rotation = 90
 	
+	-- Top wall
 	walls[3].x = 250
 	walls[3].y = 5
 	
+	-- Bottom wall
 	walls[4].x = 250
 	walls[4].y = 315
 	
@@ -75,7 +78,7 @@ function scene:createScene( event )
 	for count = 1, 4, 1 do
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
 	end
-		
+			
 	-- ball movement control
 	function moveBall(event)
 		local x 
@@ -132,10 +135,33 @@ function scene:createScene( event )
 			end
 		end
 	end
+		
+	-- Collision Detection for every frame during game time
+	local function frame(event)
+		-- Establish variables
+		local x1, x2
+		local y1, y2
+		local distance
+			
+		-- Assign variables ball values for distance formula
+		x1 = ballTable[1].x
+		x2 = ballTable[2].x
+		y1 = ballTable[1].y
+		y2 = ballTable[2].y
+		
+		-- Distance formula
+		distance = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2))
+		
+		-- When less than distance of 35 pixels, do something
+		-- 			Used print as testing. Works successfully!
+		if distance <= 35 then
+			print("Distance =", distance)
+		end
+	end
 	
+	-- Real time event listeners/activators
 	Runtime:addEventListener("touch", moveBall)
-	
-	
+	Runtime:addEventListener("enterFrame", frame)
 	
 	-- all display objects must be inserted into group
 	group:insert( background )

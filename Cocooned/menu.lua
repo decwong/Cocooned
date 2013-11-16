@@ -38,7 +38,7 @@ function scene:createScene( event )
 
 	-- display a background image
 	local background = display.newImageRect( "background.jpg", display.contentWidth, display.contentHeight )
-	--background:setReferencePoint( display.TopLeftReferencePoint )
+	background:setReferencePoint( display.TopLeftReferencePoint )
 	background.x, background.y = 0, 0
 	
 	-- create/position logo/title image on upper-half of the screen
