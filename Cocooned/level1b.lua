@@ -60,9 +60,7 @@ function scene:createScene( event )
 		[1] = display.newImage("ground1.png"),
 		[2] = display.newImage("ground1.png"),
 		[3] = display.newImage("ground2.png"),
-		[4] = display.newImage("ground2.png") } 
-		--[5] = display.newImage("ground1.png"), 
-		--[6] = display.newImage("ground1.png") 
+		[4] = display.newImage("ground2.png") }
 	
 	-- Left wall
 	walls[1].x = -40
@@ -81,16 +79,6 @@ function scene:createScene( event )
 	-- Bottom wall
 	walls[4].x = 250
 	walls[4].y = 315
-
-	-- Middle wall 1
-	--walls[5].x = 250
-	--walls[5].y = 150
-	--walls[5].rotation = 45
-
-	-- Middle wall 2 
-	--walls[6].x = 150
-	--walls[6].y = 150
-	--walls[6].rotation = 120
 	
 	-- apply physics to wall
 	for count = 1, 4, 1 do
@@ -100,7 +88,6 @@ function scene:createScene( event )
 	-- distance function
 	local dist
 	local function distance(x1, x2, y1, y2, detectString)
-		--print(x2)
 		dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
 		if detectString then
 			--print(detectString, dist)
@@ -197,10 +184,9 @@ function scene:createScene( event )
 			elseif "ended" == phase or "cancelled" == phase then
 				if event.xStart > event.x and swipeLength > 50 then 
 					print("Swiped Left")
-					storyboard.gotoScene( "level1b", "fade", 500 )
 				elseif event.xStart < event.x and swipeLength > 50 then 
 					print( "Swiped Right" )
-					
+					storyboard.gotoScene( "level1", "fade", 500 )
 			end	
 		end
 			
@@ -227,6 +213,7 @@ function scene:createScene( event )
 	-- Real time event listeners/activators
 	Runtime:addEventListener("touch", moveBall)
 	Runtime:addEventListener("enterFrame", frame)
+	
 	
 		
 	-- all display objects must be inserted into group
