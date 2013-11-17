@@ -88,7 +88,6 @@ function scene:createScene( event )
 	-- distance function
 	local dist
 	local function distance(x1, x2, y1, y2, detect)
-		print(x2)
 		dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
 		if detect then
 			--print(detect, dist)
@@ -188,10 +187,9 @@ function scene:createScene( event )
 			elseif "ended" == phase or "cancelled" == phase then
 				if event.xStart > event.x and swipeLength > 50 then 
 					print("Swiped Left")
-					storyboard.gotoScene( "level1b", "fade", 500 )
 				elseif event.xStart < event.x and swipeLength > 50 then 
 					print( "Swiped Right" )
-					
+					storyboard.gotoScene( "level1", "fade", 500 )
 			end	
 		end
 			
@@ -217,7 +215,7 @@ function scene:createScene( event )
 	
 	-- Real time event listeners/activators
 	Runtime:addEventListener("touch", moveBall)
-	--Runtime:addEventListener("enterFrame", frame)
+	Runtime:addEventListener("enterFrame", frame)
 	
 	
 		
