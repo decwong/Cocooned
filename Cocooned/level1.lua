@@ -38,7 +38,7 @@ function scene:createScene( event )
 	--background:setReferencePoint( display.TopLeftReferencePoint )
 	background.anchorX = 0.0
 	background.anchorY = 0.0
-	background.x, background.y = -50, 0
+	background.x, background.y = screenW/2, screenH/2
 	
 	-- make a crate (off-screen), position it, and rotate slightly
 	local ballTable = { 
