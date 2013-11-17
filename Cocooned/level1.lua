@@ -36,8 +36,8 @@ function scene:createScene( event )
 	-- temp wood background from http://wallpaperstock.net/wood-floor-wallpapers_w6855.html
 	local background = display.newImageRect( "background2.jpg", screenW+100, screenH)
 	--background:setReferencePoint( display.TopLeftReferencePoint )
-	background.anchorX = 0.0
-	background.anchorY = 0.0
+	background.anchorX = 0
+	background.anchorY = 0
 	background.x, background.y = -50, 0
 	
 	-- make a crate (off-screen), position it, and rotate slightly
@@ -226,7 +226,7 @@ function scene:createScene( event )
 	
 	-- Real time event listeners/activators
 	Runtime:addEventListener("touch", moveBall)
-	Runtime:addEventListener("enterFrame", frame)
+	--Runtime:addEventListener("enterFrame", frame)
 	
 		
 	-- all display objects must be inserted into group
