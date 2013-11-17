@@ -38,7 +38,7 @@ function scene:createScene( event )
 	--background:setReferencePoint( display.TopLeftReferencePoint )
 	background.anchorX = 0.0
 	background.anchorY = 0.0
-	background.x, background.y = screenW/2, screenH/2
+	background.x, background.y = -50, 0
 	
 	-- make a crate (off-screen), position it, and rotate slightly
 	local ballTable = { 
@@ -87,17 +87,14 @@ function scene:createScene( event )
 	
 	-- distance function
 	local dist
-	local function distance(x1, x2, y1, y2, detect)
+	local function distance(x1, x2, y1, y2, detectString)
 		dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
-		if detect then
-			--print(detect, dist)
+		if detectString then
+			--print(detectString, dist)
 		end
 	end
 			
 	-- ball movement control
-
-	
-	
 	function moveBall(event)
 		local x 
 		local y
