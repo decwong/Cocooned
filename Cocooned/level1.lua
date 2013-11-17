@@ -39,6 +39,9 @@ function scene:createScene( event )
 	background.anchorX = 0.0
 	background.anchorY = 0.0
 	--background.x, background.y = -50, 0
+	background.anchorX = 0
+	background.anchorY = 0
+	background.x, background.y = -50, 0
 	
 	-- make a crate (off-screen), position it, and rotate slightly
 	local ballTable = { 
@@ -226,7 +229,7 @@ function scene:createScene( event )
 	
 	-- Real time event listeners/activators
 	Runtime:addEventListener("touch", moveBall)
-	Runtime:addEventListener("enterFrame", frame)
+	--Runtime:addEventListener("enterFrame", frame)
 	
 		
 	-- all display objects must be inserted into group
