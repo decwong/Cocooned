@@ -54,7 +54,9 @@ function scene:createScene( event )
 		[1] = display.newImage("ground1.png"),
 		[2] = display.newImage("ground1.png"),
 		[3] = display.newImage("ground2.png"),
-		[4] = display.newImage("ground2.png") }
+		[4] = display.newImage("ground2.png") } 
+		--[5] = display.newImage("ground1.png"), 
+		--[6] = display.newImage("ground1.png") 
 	
 	-- Left wall
 	walls[1].x = -40
@@ -73,6 +75,16 @@ function scene:createScene( event )
 	-- Bottom wall
 	walls[4].x = 250
 	walls[4].y = 315
+
+	-- Middle wall 1
+	--walls[5].x = 250
+	--walls[5].y = 150
+	--walls[5].rotation = 45
+
+	-- Middle wall 2 
+	--walls[6].x = 150
+	--walls[6].y = 150
+	--walls[6].rotation = 120
 	
 	-- apply physics to wall
 	for count = 1, 4, 1 do
