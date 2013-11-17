@@ -80,32 +80,28 @@ function scene:createScene( event )
 	for count = 1, 4, 1 do
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
 	end
+	
+	-- distance function
+	local dist
+	local function distance(x1, x2, y1, y2, detect)
+		dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
+		if detect then
+			print(detect, dist)
+		end
+	end
 			
 	-- ball movement control
 	function moveBall(event)
 		local x 
 		local y
 		
-		-- setup distance formula [ball vs mouse pointer]
-		local x1
-		local x2
-		local y1
-		local y2
-		local distance
-			
-		
 		for count = 1, 2, 1 do
 		
-			-- more distance formula setup
-			x2 = ballTable[count].x
-			x1 = event.x
-			y2 = ballTable[count].y
-			y1 = event.y
-			distance = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
-			print("Mouse to Ball Distance:", distance)
+			-- send mouse/ball position values to distance function
+			distance(event.x, ballTable[count].x, event.y, ballTable[count].y, "Mouse to Ball Distance: ")
 		
 			-- if it is taking too many tries to move the ball, increase the distance <= *value*
-			if distance <= 100 then
+			if dist <= 100 then
 				if event.phase == "ended" then
 					x = event.x - ballTable[count].x;
 					y = event.y - ballTable[count].y;
@@ -159,24 +155,14 @@ function scene:createScene( event )
 		
 	-- Collision Detection for every frame during game time
 	local function frame(event)
-		-- Establish variables
-		local x1, x2
-		local y1, y2
-		local distance
-			
-		-- Assign variables ball values for distance formula
-		x1 = ballTable[1].x
-		x2 = ballTable[2].x
-		y1 = ballTable[1].y
-		y2 = ballTable[2].y
-		
-		-- Distance formula
-		distance = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2))
+
+		-- send both ball position values to distance function
+		distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
 		
 		-- When less than distance of 35 pixels, do something
 		-- 			Used print as testing. Works successfully!
-		if distance <= 35 then
-			print("Distance =", distance)
+		if dist <= 35 then
+			print("Distance =", dist)
 		end
 	end
 	
