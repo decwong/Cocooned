@@ -117,6 +117,7 @@ function scene:createScene( event )
 		local dx = event.x - event.xStart
 		local dy = event.y - event.yStart
 		
+
 		--checking if touch was a tap touch and not a swipe
 		if dx < 5 then
 			if dx > -5 then
@@ -210,7 +211,15 @@ function scene:createScene( event )
 		
 		
 	end
-		
+
+	-- accelerometer movement
+	local function urTiltFunc( event )
+      physics.setGravity( 10 * -event.yGravity, -10 * event.xGravity )
+	end
+
+	Runtime:addEventListener( "accelerometer", urTiltFunc )
+
+
 	-- Collision Detection for every frame during game time
 	local function frame(event)
 
