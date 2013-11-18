@@ -37,21 +37,19 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 	
 
 -- make a crate (off-screen), position it, and rotate slightly
-
+	local ballTable = { 
+		[1] = display.newImage("ball.png"), 
+		[2] = display.newImage("ball.png") }
 
 -- distance function
 local dist
 local function distance(x1, x2, y1, y2, detectString)
-	--print("Dist A")
 	dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
 	if detectString then
 		--print(detectString, dist)
 	end
 end
-	-- make a crate (off-screen), position it, and rotate slightly
-	local ballTable = { 
-		[1] = display.newImage("ball.png"), 
-		[2] = display.newImage("ball.png") }
+
 	
 	ballTable[1].x = 260
 	ballTable[1].y = 180
@@ -146,6 +144,8 @@ end
 
 -- ball movement control
 local function moveBall(event)
+	print("ballTable[1] velocity", ballTable[1].angularVelocity)
+
 	--print("LevelA")
 	local x 
 	local y
@@ -421,6 +421,7 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("touch", moveBall)
 	Runtime:removeEventListener("enterFrame", frame)
 
+	print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
 
 	physics.pause()
 	

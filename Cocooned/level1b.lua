@@ -37,7 +37,6 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 	-- distance function
 	local dist
 	local function distance(x1, x2, y1, y2, detectString)
-		--print("Dist A")
 		dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
 		if detectString then
 			--print(detectString, dist)
