@@ -50,6 +50,7 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 	physics.addBody(ballTable[2])
 	
 local function saveBallLocation()
+	print("save", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
 	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
 end
@@ -162,6 +163,8 @@ end
 				end
 			end
 		end
+
+		print("tap", tap)
 		
 		if tap == 1 then
 			if event.phase == "ended" then
@@ -274,7 +277,6 @@ function scene:createScene( event )
 	-- make a crate (off-screen), position it, and rotate slightly
 
 	-- Real time event listeners/activators
-	Runtime:addEventListener("touch", moveBall)
 	--Runtime:addEventListener("enterFrame", frame)
 
 	
@@ -346,24 +348,26 @@ function scene:enterScene( event )
 	Runtime:addEventListener("enterFrame", frame)
 	
 	physics.start()
-	
+
 	physics.setGravity(0, 0)
 	
 end
 
 function scene:willEnterScene( event )
 
+
 	ballTable[1].x = ballVariables.getBall1x()
 	ballTable[1].y = ballVariables.getBall1y()
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
 
-	ballTable[1]:setLinearVelocity(0,0)
-	ballTable[1].angularVelocity = 0
-	ballTable[2]:setLinearVelocity(0,0)
-	ballTable[2].angularVelocity = 0
+	
+	--ballTable[1]:setLinearVelocity(0,0)
+	--ballTable[1].angularVelocity = 0
+	--ballTable[2]:setLinearVelocity(0,0)
+	--ballTable[2].angularVelocity = 0
 
-	print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
+	print( "load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 	print("Entering A")
 end
 

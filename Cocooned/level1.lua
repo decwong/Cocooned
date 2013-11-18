@@ -51,16 +51,10 @@ local function distance(x1, x2, y1, y2, detectString)
 end
 
 	
-	ballTable[1].x = 260
-	ballTable[1].y = 180
-	ballTable[2].x = 160
-	ballTable[2].y = 180
 	
-	-- add physics to the crate
-	physics.addBody(ballTable[1])
-	physics.addBody(ballTable[2])
 	
 local function saveBallLocation()
+	print("save", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
 	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
 end
@@ -327,6 +321,9 @@ function scene:createScene( event )
 	background.anchorY = 0.0
 	background.x, background.y = -50, 0
 	
+	-- add physics to the crate
+	physics.addBody(ballTable[1])
+	physics.addBody(ballTable[2])
 	
 	-- add new walls
 	-- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
@@ -387,9 +384,6 @@ function scene:enterScene( event )
 
 	Runtime:addEventListener("touch", moveBall)
 	Runtime:addEventListener("enterFrame", frame)
-	
-	--ballTable[1]:setLinearVelocity(0,0)
-	--ballTable[2]:setLinearVelocity(0,0)
 
 
 	physics.start()
@@ -405,12 +399,12 @@ function scene:willEnterScene( event )
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
 
-	ballTable[1]:setLinearVelocity(0,0)
-	ballTable[1].angularVelocity = 0
-	ballTable[2]:setLinearVelocity(0,0)
-	ballTable[2].angularVelocity = 0
-
-	print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
+	
+	--ballTable[1]:setLinearVelocity(0,0)
+	--ballTable[1].angularVelocity = 0
+	--ballTable[2]:setLinearVelocity(0,0)
+	--ballTable[2].angularVelocity = 0
+	print("load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 	print("Entering MAIN")
 end
 
