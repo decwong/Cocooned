@@ -29,6 +29,13 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 -- 
 -----------------------------------------------------------------------------------------
 
+
+
+
+
+	
+	-- make a crate (off-screen), position it, and rotate slightly
+
 	local ballTable = { 
 		[1] = display.newImage("ball.png"), 
 		[2] = display.newImage("ball.png") }
@@ -53,6 +60,7 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 		local dx = event.x - event.xStart
 		local dy = event.y - event.yStart
 		
+
 		--checking if touch was a tap touch and not a swipe
 		if dx < 5 then
 			if dx > -5 then
@@ -144,6 +152,15 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 		end
 	end
 
+
+	-- accelerometer movement
+	local function urTiltFunc( event )
+      physics.setGravity( 10 * -event.yGravity, -10 * event.xGravity )
+	end
+
+	Runtime:addEventListener( "accelerometer", urTiltFunc )
+
+
 	-- Collision Detection for every frame during game time
 	local function frame(event)
 
@@ -171,7 +188,13 @@ function scene:createScene( event )
 	background.anchorY = 0.0
 	background.x, background.y = -50, 0
 	
+
 	-- make a crate (off-screen), position it, and rotate slightly
+
+	-- Real time event listeners/activators
+	Runtime:addEventListener("touch", moveBall)
+	--Runtime:addEventListener("enterFrame", frame)
+
 	
 	ballTable[1].x = 260
 	ballTable[1].y = 180
