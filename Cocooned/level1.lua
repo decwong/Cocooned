@@ -244,10 +244,8 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 		velocityX1, velocityY1 = ballTable[1]:getLinearVelocity()
 		velocityX2, velocityY2 = ballTable[2]:getLinearVelocity()
 		--gravity is switch in regards to X and Y due to accelerometer values being in portrait mode
-    	--ballTable[1]:setLinearVelocity( velocityX1+(-100*event.yGravity), velocityY1+(-100 * event.xGravity) )
-    	--ballTable[2]:setLinearVelocity( velocityX2+(-100*event.yGravity), velocityY2+(-100 * event.xGravity) )
-    	ballTable[2].x = ballTable[2].x + (event.yGravity*-15)
-    	ballTable[2].y = ballTable[2].y + (event.xGravity*-15)
+    	ballTable[1]:setLinearVelocity( velocityX1+(-100*event.yGravity), velocityY1+(-100 * event.xGravity) )
+    	ballTable[2]:setLinearVelocity( velocityX2+(-100*event.yGravity), velocityY2+(-100 * event.xGravity) )
 	end
 
 	Runtime:addEventListener( "accelerometer", urTiltFunc )
