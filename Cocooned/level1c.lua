@@ -227,62 +227,24 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 			elseif "moved" == phase then
 			elseif "ended" == phase or "cancelled" == phase then
 				local current = storyboard.getCurrentSceneName()
-				if current == "level1" then
-					if event.xStart > event.x and swipeLength > 50 then 
-						print("Swiped Left")
-						Runtime:removeEventListener("enterFrame", frame)
-						storyboard.gotoScene( "level1d", "fade", 500 )
-					elseif event.xStart < event.x and swipeLength > 50 then 
-						print( "Swiped Right" )
-						Runtime:removeEventListener("enterFrame", frame)
-						storyboard.gotoScene( "level1b", "fade", 500 )
-					elseif event.yStart > event.y and swipeLengthy > 50 then
-						print( "Swiped Down" )
-						Runtime:removeEventListener("enterFrame", frame)
-						storyboard.gotoScene( "level1c", "fade", 500 )
-					elseif event.yStart < event.y and swipeLengthy > 50 then
+				if current == "level1c" then
+					if event.yStart < event.y and swipeLengthy > 50 then
 						print( "Swiped Up" )
 						Runtime:removeEventListener("enterFrame", frame)
-						storyboard.gotoScene( "level1a", "fade", 500 )
+						storyboard.gotoScene( "level1", "fade", 500 )
 					end	
 				end
 			end	
 		end
 	end
 
+
 	-- accelerometer movement
-	local function onAccelerate( event )
-		local xGrav=1
-		local yGrav=1
-		if event.yInstant > 0.1 then
-			xGrav = -1
-		elseif event.yInstant < -0.1 then
-			xGrav = 1
-		elseif event.yGravity > 0.1 then
-			xGrav = -1
-		elseif event.yGravity < -0.1 then
-			xGrav = 1
-			else
-				xGrav = 0
-		end
-		if event.xInstant > 0.1 then
-			yGrav = -1
-		elseif event.xInstant < -0.1 then
-			yGrav = 1
-		elseif event.xGravity > 0.1 then
-			yGrav = -1
-		elseif event.xGravity < -0.1 then
-			yGrav = 1
-			else
-				yGrav = 0
-		end
-		physics.setGravity(12*xGrav, 16*yGrav)
+	local function urTiltFunc( event )
+      physics.setGravity( 10 * -event.yGravity, -10 * event.xGravity )
 	end
 
-	accelerometerON = true
-	if accelerometerON == true then
-		Runtime:addEventListener( "accelerometer", onAccelerate )
-	end
+	Runtime:addEventListener( "accelerometer", urTiltFunc )
 
 
 	-- Collision Detection for every frame during game time
@@ -301,12 +263,12 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
-	print("Create MAIN")
+	print("Create C")
 	local group = self.view
 
 	-- create a grey rectangle as the backdrop
 	-- temp wood background from http://wallpaperstock.net/wood-floor-wallpapers_w6855.html
-	local background = display.newImageRect( "background2.jpg", screenW+100, screenH)
+	local background = display.newImageRect( "background2_c.jpg", screenW+100, screenH)
 	--background:setReferencePoint( display.TopLeftReferencePoint )
 	background.anchorX = 0.0
 	background.anchorY = 0.0
@@ -382,7 +344,7 @@ end
 function scene:enterScene( event )
 	local group = self.view
 
-	print("Enter MAIN")
+	print("Enter C")
 
 	Runtime:addEventListener("touch", moveBall)
 	Runtime:addEventListener("enterFrame", frame)
@@ -402,14 +364,14 @@ function scene:exitScene( event )
 
 	physics.pause()
 	
-	print("Exit MAIN")
+	print("Exit C")
 end
 
 -- If scene's view is removed, scene:destroyScene() will be called just prior to:
 function scene:destroyScene( event )
 	local group = self.view
 	
-	print("destroyed MAIN")
+	print("destroyed C")
 	--package.loaded[physics] = nil
 	--physics = nil
 end

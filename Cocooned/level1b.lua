@@ -131,15 +131,15 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 				return true
 			elseif "moved" == phase then
 			elseif "ended" == phase or "cancelled" == phase then
-				if event.xStart > event.x and swipeLength > 50 then
-					print("Swiped Left")
-					
-					
-				elseif event.xStart < event.x and swipeLength > 50 then 
-					print( "Swiped Right" )
-					Runtime:removeEventListener("enterFrame", frame)
-					storyboard.gotoScene( "level1", "fade", 200 )
-					
+				local current = storyboard.getCurrentSceneName()
+				if current == "level1b" then
+					if event.xStart < event.x and swipeLength > 50 then
+						print("Swiped Left")
+					elseif event.xStart > event.x and swipeLength > 50 then 
+						print( "Swiped Right" )
+						Runtime:removeEventListener("enterFrame", frame)
+						storyboard.gotoScene( "level1", "fade", 200 )
+					end
 				end	
 			end	
 		end
@@ -166,7 +166,7 @@ function scene:createScene( event )
 
 	-- create a grey rectangle as the backdrop
 	-- temp wood background from http://wallpaperstock.net/wood-floor-wallpapers_w6855.html
-	local background = display.newImageRect( "background.jpg", screenW+100, screenH)
+	local background = display.newImageRect( "background2_b.jpg", screenW+100, screenH)
 	--background:setReferencePoint( display.TopLeftReferencePoint )
 	background.anchorX = 0.0
 	background.anchorY = 0.0
