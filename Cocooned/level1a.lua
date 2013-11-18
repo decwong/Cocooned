@@ -243,15 +243,6 @@ end
 		end
 	end
 
-
-	-- accelerometer movement
-	local function urTiltFunc( event )
-      physics.setGravity( 10 * -event.yGravity, -10 * event.xGravity )
-	end
-
-	Runtime:addEventListener( "accelerometer", urTiltFunc )
-
-
 	-- Collision Detection for every frame during game time
 	local function frame(event)
 

@@ -265,13 +265,6 @@ local function moveBall(event)
 end
 
 
-
--- accelerometer movement
-local function urTiltFunc( event )
-    physics.setGravity( 10 * -event.yGravity, -10 * event.xGravity )
-end
-Runtime:addEventListener( "accelerometer", urTiltFunc )
-
 	-- accelerometer movement
 	local function onAccelerate( event )
 		local xGrav=1
