@@ -238,17 +238,39 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 		end
 	end
 
-
 	-- accelerometer movement
-	local function urTiltFunc( event )
-		velocityX1, velocityY1 = ballTable[1]:getLinearVelocity()
-		velocityX2, velocityY2 = ballTable[2]:getLinearVelocity()
-		--gravity is switch in regards to X and Y due to accelerometer values being in portrait mode
-    	ballTable[1]:setLinearVelocity( velocityX1+(-100*event.yGravity), velocityY1+(-100 * event.xGravity) )
-    	ballTable[2]:setLinearVelocity( velocityX2+(-100*event.yGravity), velocityY2+(-100 * event.xGravity) )
+	local function onAccelerate( event )
+		local xGrav=1
+		local yGrav=1
+		if event.yInstant > 0.1 then
+			xGrav = -1
+		elseif event.yInstant < -0.1 then
+			xGrav = 1
+		elseif event.yGravity > 0.1 then
+			xGrav = -1
+		elseif event.yGravity < -0.1 then
+			xGrav = 1
+			else
+				xGrav = 0
+		end
+		if event.xInstant > 0.1 then
+			yGrav = -1
+		elseif event.xInstant < -0.1 then
+			yGrav = 1
+		elseif event.xGravity > 0.1 then
+			yGrav = -1
+		elseif event.xGravity < -0.1 then
+			yGrav = 1
+			else
+				yGrav = 0
+		end
+		physics.setGravity(12*xGrav, 16*yGrav)
 	end
 
-	Runtime:addEventListener( "accelerometer", urTiltFunc )
+	accelerometerON = true
+	if accelerometerON == true then
+		Runtime:addEventListener( "accelerometer", onAccelerate )
+	end
 
 
 	-- Collision Detection for every frame during game time
