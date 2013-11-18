@@ -60,10 +60,25 @@ function scene:createScene( event )
 		[1] = display.newImage("ground1.png"),
 		[2] = display.newImage("ground1.png"),
 		[3] = display.newImage("ground2.png"),
-		[4] = display.newImage("ground2.png") } 
-		--[5] = display.newImage("ground1.png"), 
-		--[6] = display.newImage("ground1.png") 
+		[4] = display.newImage("ground2.png") 
+	} 
 	
+	-- 
+	local xWalls = {
+		[1] = display.newImage("floor_side.png"),
+		[2] = display.newImage("floor_side.png"),
+		[3] = display.newImage("floor_small.png"),
+		[4] = display.newImage("floor_side.png"),
+		[5] = display.newImage("floor_side.png"),
+		[6] = display.newImage("floor_small.png"),
+		[7] = display.newImage("floor_side.png"),
+		[8] = display.newImage("floor_side.png"),
+		[9] = display.newImage("floor_side.png"),
+		[10] = display.newImage("floor_side.png"),
+		[11] = display.newImage("floor_side.png"),
+		[12] = display.newImage("floor_side.png")
+	}
+
 	-- Left wall
 	walls[1].x = -40
 	walls[1].y = 180
@@ -82,19 +97,38 @@ function scene:createScene( event )
 	walls[4].x = 250
 	walls[4].y = 315
 
-	-- Middle wall 1
-	--walls[5].x = 250
-	--walls[5].y = 150
-	--walls[5].rotation = 45
+	-- First quadrant 
+	xWalls[1].x = 60
+	xWalls[1].y = 150
+	xWalls[1].rotation = 45
+	xWalls[2].x = 115
+	xWalls[2].y = 90
+	xWalls[2].rotation = 45
+	-- Small piece
+	xWalls[3].x = 20
+	xWalls[3].y = 50
+	xWalls[3].rotation = 135
 
-	-- Middle wall 2 
-	--walls[6].x = 150
-	--walls[6].y = 150
-	--walls[6].rotation = 120
+	-- Second quadrant
+	xWalls[4].x = 425
+	xWalls[4].y = 145
+	xWalls[4].rotation = 135
+	xWalls[5].x = 365
+	xWalls[5].y = 105
+	xWalls[5].rotation = 135
+	-- Small piece 
+	xWalls[6].x = 470
+	xWalls[6].y = 50
+	xWalls[6].rotation = 45
 	
-	-- apply physics to wall
+	-- apply physics to walls
 	for count = 1, 4, 1 do
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
+	end
+
+	-- apply physics to xWalls
+	for count = 1, 12, 1 do 
+		physics.addBody(xWalls[count], "static", { bounce = 0.01 } )
 	end
 	
 	-- distance function
