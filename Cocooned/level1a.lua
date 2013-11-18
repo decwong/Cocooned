@@ -227,23 +227,11 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 			elseif "moved" == phase then
 			elseif "ended" == phase or "cancelled" == phase then
 				local current = storyboard.getCurrentSceneName()
-				if current == "level1" then
-					if event.xStart > event.x and swipeLength > 50 then 
-						print("Swiped Left")
-						Runtime:removeEventListener("enterFrame", frame)
-						storyboard.gotoScene( "level1d", "fade", 500 )
-					elseif event.xStart < event.x and swipeLength > 50 then 
-						print( "Swiped Right" )
-						Runtime:removeEventListener("enterFrame", frame)
-						storyboard.gotoScene( "level1b", "fade", 500 )
-					elseif event.yStart > event.y and swipeLengthy > 50 then
-						print( "Swiped Down" )
-						Runtime:removeEventListener("enterFrame", frame)
-						storyboard.gotoScene( "level1c", "fade", 500 )
-					elseif event.yStart < event.y and swipeLengthy > 50 then
+				if current == "level1a" then
+					if event.yStart > event.y and swipeLengthy > 50 then
 						print( "Swiped Up" )
 						Runtime:removeEventListener("enterFrame", frame)
-						storyboard.gotoScene( "level1a", "fade", 500 )
+						storyboard.gotoScene( "level1", "fade", 500 )
 					end	
 				end
 			end	
@@ -275,12 +263,12 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
-	print("Create MAIN")
+	print("Create C")
 	local group = self.view
 
 	-- create a grey rectangle as the backdrop
 	-- temp wood background from http://wallpaperstock.net/wood-floor-wallpapers_w6855.html
-	local background = display.newImageRect( "background2.jpg", screenW+100, screenH)
+	local background = display.newImageRect( "background2_a.jpg", screenW+100, screenH)
 	--background:setReferencePoint( display.TopLeftReferencePoint )
 	background.anchorX = 0.0
 	background.anchorY = 0.0
@@ -356,7 +344,7 @@ end
 function scene:enterScene( event )
 	local group = self.view
 
-	print("Enter MAIN")
+	print("Enter A")
 
 	Runtime:addEventListener("touch", moveBall)
 	Runtime:addEventListener("enterFrame", frame)
@@ -376,14 +364,14 @@ function scene:exitScene( event )
 
 	physics.pause()
 	
-	print("Exit MAIN")
+	print("Exit A")
 end
 
 -- If scene's view is removed, scene:destroyScene() will be called just prior to:
 function scene:destroyScene( event )
 	local group = self.view
 	
-	print("destroyed MAIN")
+	print("destroyed A")
 	--package.loaded[physics] = nil
 	--physics = nil
 end
