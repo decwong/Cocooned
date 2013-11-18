@@ -7,6 +7,7 @@
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 local widget = require("widget");
+require("ballVariables")
 
 local font = "Helvetica" or system.nativeFont;
 display.setStatusBar(display.HiddenStatusBar )
@@ -64,6 +65,8 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 				end
 			end
 		end
+
+		print("tap", tap)
 		
 		if tap == 1 then
 			if event.phase == "ended" then
@@ -133,11 +136,10 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 			elseif "ended" == phase or "cancelled" == phase then
 				if event.xStart > event.x and swipeLength > 50 then
 					print("Swiped Left")
-					
-					
 				elseif event.xStart < event.x and swipeLength > 50 then 
 					print( "Swiped Right" )
-					Runtime:removeEventListener("enterFrame", frame)
+					ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
+					ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
 					storyboard.gotoScene( "level1", "fade", 200 )
 					
 				end	
@@ -173,14 +175,7 @@ function scene:createScene( event )
 	background.x, background.y = -50, 0
 	
 	-- make a crate (off-screen), position it, and rotate slightly
-	
 
-	
-	
-	ballTable[1].x = 260
-	ballTable[1].y = 180
-	ballTable[2].x = 160
-	ballTable[2].y = 180
 	
 	-- add physics to the crate
 	physics.addBody(ballTable[1])
@@ -239,6 +234,7 @@ end
 function scene:enterScene( event )
 	local group = self.view
 
+
 	print("Enter B")
 
 	Runtime:addEventListener("touch", moveBall)
@@ -250,12 +246,33 @@ function scene:enterScene( event )
 	
 end
 
+function scene:willEnterScene( event )
+
+	ballTable[1].x = ballVariables.getBall1x()
+	ballTable[1].y = ballVariables.getBall1y()
+	ballTable[2].x = ballVariables.getBall2x()
+	ballTable[2].y = ballVariables.getBall2y()
+
+
+
+	ballTable[1]:setLinearVelocity(0,0)
+	ballTable[1].angularVelocity = 0
+	ballTable[2]:setLinearVelocity(0,0)
+	ballTable[2].angularVelocity = 0
+
+	print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
+	print("Entering B")
+end
+
 -- Called when scene is about to move offscreen:
 function scene:exitScene( event )
 	local group = self.view
 	
 	Runtime:removeEventListener("touch", moveBall)
 	Runtime:removeEventListener("enterFrame", frame)
+
+	--ballTable[1]:setLinearVelocity(0,0)
+	--ballTable[2]:setLinearVelocity(0,0)
 
 	physics.pause()
 
@@ -281,6 +298,8 @@ scene:addEventListener( "createScene", scene )
 
 -- "enterScene" event is dispatched whenever scene transition has finished
 scene:addEventListener( "enterScene", scene )
+
+scene:addEventListener( "willEnterScene", scene)
 
 -- "exitScene" event is dispatched whenever before next scene's transition begins
 scene:addEventListener( "exitScene", scene )
