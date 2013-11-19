@@ -45,11 +45,11 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 	ballTable[2].x = 160
 	ballTable[2].y = 180
 	
-	-- add physics to the crate
-	physics.addBody(ballTable[1])
-	physics.addBody(ballTable[2])
+
+local isPaused = false
 	
 local function saveBallLocation()
+	print("save", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
 	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
 end
@@ -95,7 +95,7 @@ end
 	-- Bottom wall
 	walls[4].x = 250
 	walls[4].y = 315
-
+	--[[
 	-- First quadrant 
 	xWalls[1].x = 60
 	xWalls[1].y = 150
@@ -119,16 +119,19 @@ end
 	xWalls[6].x = 470
 	xWalls[6].y = 50
 	xWalls[6].rotation = 45
-	
-	-- apply physics to walls
-	for count = 1, 4, 1 do
-		physics.addBody(walls[count], "static", { bounce = 0.01 } )
-	end
 
 	-- apply physics to xWalls
 	for count = 1, 12, 1 do 
 		physics.addBody(xWalls[count], "static", { bounce = 0.01 } )
 	end
+
+	]]
+	-- apply physics to walls
+	for count = 1, 4, 1 do
+		physics.addBody(walls[count], "static", { bounce = 0.01 } )
+	end
+
+	
 	
 	-- distance function
 	local dist
@@ -141,6 +144,11 @@ end
 	end
 	-- ball movement control
 	local function moveBall(event)
+
+		if isPaused then
+			physics.start()
+			isPaused = false
+		end
 		--print("LevelA")
 		local x 
 		local y
@@ -162,6 +170,8 @@ end
 				end
 			end
 		end
+
+		print("tap", tap)
 		
 		if tap == 1 then
 			if event.phase == "ended" then
@@ -234,9 +244,14 @@ end
 				if current == "level1c" then
 					if event.yStart < event.y and swipeLengthy > 50 then
 						print( "Swiped Up" )
+						ballTable[1]:setLinearVelocity(0,0)
+						ballTable[1].angularVelocity = 0
+						ballTable[2]:setLinearVelocity(0,0)
+						ballTable[2].angularVelocity = 0
 						saveBallLocation()
 						Runtime:removeEventListener("enterFrame", frame)
-						storyboard.gotoScene( "level1", "fade", 500 )
+						storyboard.gotoScene( "level1", "fade", 100 )
+
 					end	
 				end
 			end	
@@ -274,7 +289,6 @@ function scene:createScene( event )
 	-- make a crate (off-screen), position it, and rotate slightly
 
 	-- Real time event listeners/activators
-	Runtime:addEventListener("touch", moveBall)
 	--Runtime:addEventListener("enterFrame", frame)
 
 	
@@ -283,9 +297,6 @@ function scene:createScene( event )
 	ballTable[2].x = 160
 	ballTable[2].y = 180
 	
-	-- add physics to the crate
-	physics.addBody(ballTable[1])
-	physics.addBody(ballTable[2])
 	
 	-- add new walls
 	-- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
@@ -340,31 +351,34 @@ end
 function scene:enterScene( event )
 	local group = self.view
 
-	print("Enter C")
+	print("Enter A")
+
+	
+	
+	physics.start()
+	physics.addBody(ballTable[1])
+	physics.addBody(ballTable[2])
+
+	physics.setGravity(0, 0)
 
 	Runtime:addEventListener("touch", moveBall)
 	Runtime:addEventListener("enterFrame", frame)
 	
-	physics.start()
-	
-	physics.setGravity(0, 0)
-	
 end
 
 function scene:willEnterScene( event )
+
 
 	ballTable[1].x = ballVariables.getBall1x()
 	ballTable[1].y = ballVariables.getBall1y()
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
 
-	ballTable[1]:setLinearVelocity(0,0)
-	ballTable[1].angularVelocity = 0
-	ballTable[2]:setLinearVelocity(0,0)
-	ballTable[2].angularVelocity = 0
+	--print( ballTable[1]:getLinearVelocity())
 
-	print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
-	print("Entering C")
+
+	print( "load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
+	print("Entering A")
 end
 
 -- Called when scene is about to move offscreen:
@@ -374,16 +388,18 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("touch", moveBall)
 	Runtime:removeEventListener("enterFrame", frame)
 
-	physics.pause()
+	physics.removeBody(ballTable[1])
+	physics.removeBody(ballTable[2])
+	--physics.pause()
 	
-	print("Exit C")
+	print("Exit A")
 end
 
 -- If scene's view is removed, scene:destroyScene() will be called just prior to:
 function scene:destroyScene( event )
 	local group = self.view
 	
-	print("destroyed C")
+	print("destroyed A")
 	--package.loaded[physics] = nil
 	--physics = nil
 end

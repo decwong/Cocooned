@@ -67,7 +67,7 @@ end
 		[4] = display.newImage("ground2.png") 
 	} 
 	
-	-- 
+	--[[
 	local xWalls = {
 		[1] = display.newImage("floor_side.png"),
 		[2] = display.newImage("floor_side.png"),
@@ -82,6 +82,7 @@ end
 		[11] = display.newImage("floor_side.png"),
 		[12] = display.newImage("floor_side.png")
 	}
+	]]
 
 	-- Left wall
 	walls[1].x = -40
@@ -100,7 +101,7 @@ end
 	-- Bottom wall
 	walls[4].x = 250
 	walls[4].y = 315
-
+	--[[
 	-- First quadrant 
 	xWalls[1].x = 60
 	xWalls[1].y = 150
@@ -124,17 +125,17 @@ end
 	xWalls[6].x = 470
 	xWalls[6].y = 50
 	xWalls[6].rotation = 45
-	
+	]]
 	-- apply physics to walls
 	for count = 1, 4, 1 do
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
 	end
-
+	--[[
 	-- apply physics to xWalls
 	for count = 1, 12, 1 do 
 		physics.addBody(xWalls[count], "static", { bounce = 0.01 } )
 	end
-	
+	]]
 
 -- ball movement control
 local function moveBall(event)
@@ -249,9 +250,13 @@ local function moveBall(event)
 					storyboard.gotoScene( "level1c", "fade", 500 )
 				elseif event.yStart < event.y and swipeLengthy > 50 then
 					print( "Swiped Up" )
+					ballTable[1]:setLinearVelocity(0,0)
+					ballTable[1].angularVelocity = 0
+					ballTable[2]:setLinearVelocity(0,0)
+					ballTable[2].angularVelocity = 0
 					saveBallLocation()
 					Runtime:removeEventListener("enterFrame", frame)
-					storyboard.gotoScene( "level1a", "fade", 500 )
+					storyboard.gotoScene( "level1a", "fade", 100 )
 				end	
 			end
 		end	
@@ -321,10 +326,6 @@ function scene:createScene( event )
 	background.anchorY = 0.0
 	background.x, background.y = -50, 0
 	
-	-- add physics to the crate
-	physics.addBody(ballTable[1])
-	physics.addBody(ballTable[2])
-	
 	-- add new walls
 	-- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
 	local walls = {
@@ -379,14 +380,18 @@ function scene:enterScene( event )
 	local group = self.view
 
 
+
 	print("Enter MAIN")
 
+	physics.start()
+	physics.addBody(ballTable[1])
+	physics.addBody(ballTable[2])
 
 	Runtime:addEventListener("touch", moveBall)
 	Runtime:addEventListener("enterFrame", frame)
 
 
-	physics.start()
+	
 	
 	physics.setGravity(0, 0)
 	
@@ -400,10 +405,6 @@ function scene:willEnterScene( event )
 	ballTable[2].y = ballVariables.getBall2y()
 
 	
-	--ballTable[1]:setLinearVelocity(0,0)
-	--ballTable[1].angularVelocity = 0
-	--ballTable[2]:setLinearVelocity(0,0)
-	--ballTable[2].angularVelocity = 0
 	print("load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 	print("Entering MAIN")
 end
@@ -415,9 +416,12 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("touch", moveBall)
 	Runtime:removeEventListener("enterFrame", frame)
 
+	physics.removeBody(ballTable[1])
+	physics.removeBody(ballTable[2])
+	--physics.pause()
+
 	print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
 
-	physics.pause()
 	
 	print("Exit MAIN")
 end
