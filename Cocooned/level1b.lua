@@ -7,7 +7,6 @@
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 local widget = require("widget");
-require("ballVariables")
 
 local font = "Helvetica" or system.nativeFont;
 display.setStatusBar(display.HiddenStatusBar )
@@ -31,11 +30,76 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 --		 unless storyboard.removeScene() is called.
 -- 
 -----------------------------------------------------------------------------------------
+	
+	-- make a crate (off-screen), position it, and rotate slightly
 
 	local ballTable = { 
 		[1] = display.newImage("ball.png"), 
 		[2] = display.newImage("ball.png") }
+	
+	ballTable[1].x = 260
+	ballTable[1].y = 180
+	ballTable[2].x = 160
+	ballTable[2].y = 180
+	
 
+local isPaused = false
+	
+local function saveBallLocation()
+	print("save", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
+	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
+	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
+end
+	-- add new walls
+	-- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
+	local walls = {
+		[1] = display.newImage("ground1.png"),
+		[2] = display.newImage("ground1.png"),
+		[3] = display.newImage("ground2.png"),
+		[4] = display.newImage("ground2.png") 
+	} 
+	
+	-- 
+	local xWalls = {
+		[1] = display.newImage("floor_side.png"),
+		[2] = display.newImage("floor_side.png"),
+		[3] = display.newImage("floor_small.png"),
+		[4] = display.newImage("floor_side.png"),
+		[5] = display.newImage("floor_side.png"),
+		[6] = display.newImage("floor_small.png"),
+		[7] = display.newImage("floor_side.png"),
+		[8] = display.newImage("floor_side.png"),
+		[9] = display.newImage("floor_side.png"),
+		[10] = display.newImage("floor_side.png"),
+		[11] = display.newImage("floor_side.png"),
+		[12] = display.newImage("floor_side.png")
+	}
+
+	-- Left wall
+	walls[1].x = -40
+	walls[1].y = 180
+	walls[1].rotation = 90
+	
+	-- Right wall
+	walls[2].x = 520
+	walls[2].y = 180
+	walls[2].rotation = 90
+	
+	-- Top wall
+	walls[3].x = 250
+	walls[3].y = 5
+	
+	-- Bottom wall
+	walls[4].x = 250
+	walls[4].y = 315
+
+	-- apply physics to walls
+	for count = 1, 4, 1 do
+		physics.addBody(walls[count], "static", { bounce = 0.01 } )
+	end
+
+	
+	
 	-- distance function
 	local dist
 	local function distance(x1, x2, y1, y2, detectString)
@@ -45,14 +109,13 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 			--print(detectString, dist)
 		end
 	end
-
-local function saveBallLocation()
-	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
-	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
-end
-
 	-- ball movement control
 	local function moveBall(event)
+
+		if isPaused then
+			physics.start()
+			isPaused = false
+		end
 		--print("LevelA")
 		local x 
 		local y
@@ -62,6 +125,7 @@ end
 		local dx = event.x - event.xStart
 		local dy = event.y - event.yStart
 		
+
 		--checking if touch was a tap touch and not a swipe
 		if dx < 5 then
 			if dx > -5 then
@@ -134,7 +198,8 @@ end
 				end
 			end
 		elseif tap == 0 then
-			local swipeLength = math.abs(event.x - event.xStart) 
+			local swipeLength = math.abs(event.x - event.xStart)
+			local swipeLengthy = math.abs(event.y - event.yStart)
 			--print(event.phase, swipeLength)
 			local t = event.target
 			local phase = event.phase
@@ -144,16 +209,13 @@ end
 			elseif "ended" == phase or "cancelled" == phase then
 				local current = storyboard.getCurrentSceneName()
 				if current == "level1b" then
-					if event.xStart < event.x and swipeLength > 50 then
-						saveBallLocation()
+					if event.xStart > event.x and swipeLength > 50 then 
 						print("Swiped Left")
-					elseif event.xStart > event.x and swipeLength > 50 then 
-						print( "Swiped Right" )
 						saveBallLocation()
 						Runtime:removeEventListener("enterFrame", frame)
-						storyboard.gotoScene( "level1", "fade", 200 )
+						storyboard.gotoScene( "level1", "fade", 500 )
 					end
-				end	
+				end
 			end	
 		end
 	end
@@ -174,7 +236,7 @@ end
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
-	print("Create B")
+	print("Create C")
 	local group = self.view
 
 	-- create a grey rectangle as the backdrop
@@ -185,8 +247,17 @@ function scene:createScene( event )
 	background.anchorY = 0.0
 	background.x, background.y = -50, 0
 	
+
 	-- make a crate (off-screen), position it, and rotate slightly
 
+	-- Real time event listeners/activators
+	--Runtime:addEventListener("enterFrame", frame)
+
+	
+	ballTable[1].x = 260
+	ballTable[1].y = 180
+	ballTable[2].x = 160
+	ballTable[2].y = 180
 	
 	-- add physics to the balls
 	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
@@ -260,32 +331,42 @@ end
 function scene:enterScene( event )
 	local group = self.view
 
+	print("Enter A")
 
-	print("Enter B")
-
-	Runtime:addEventListener("touch", moveBall)
-	Runtime:addEventListener("enterFrame", frame)
+	
 	
 	physics.start()
-	
-	physics.setGravity(0, 0)
-	
-end
-
-function scene:willEnterScene( event )
-
-	ballTable[1].x = ballVariables.getBall1x()
-	ballTable[1].y = ballVariables.getBall1y()
-	ballTable[2].x = ballVariables.getBall2x()
-	ballTable[2].y = ballVariables.getBall2y()
-
+	physics.addBody(ballTable[1])
+	physics.addBody(ballTable[2])
 
 	ballTable[1]:setLinearVelocity(0,0)
 	ballTable[1].angularVelocity = 0
 	ballTable[2]:setLinearVelocity(0,0)
 	ballTable[2].angularVelocity = 0
 
+	physics.setGravity(0, 0)
+
+	Runtime:addEventListener("touch", moveBall)
+	Runtime:addEventListener("enterFrame", frame)
+	
+end
+
+function scene:willEnterScene( event )
+
+
+	ballTable[1].x = ballVariables.getBall1x()
+	ballTable[1].y = ballVariables.getBall1y()
+	ballTable[2].x = ballVariables.getBall2x()
+	ballTable[2].y = ballVariables.getBall2y()
+
+	--print( ballTable[1]:getLinearVelocity())
+
+	
+
 	print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
+
+	print( "load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
+
 	print("Entering B")
 end
 
@@ -296,13 +377,11 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("touch", moveBall)
 	Runtime:removeEventListener("enterFrame", frame)
 
-	--ballTable[1]:setLinearVelocity(0,0)
-	--ballTable[2]:setLinearVelocity(0,0)
-
-	physics.pause()
-
-	print("Exit B")
+	physics.removeBody(ballTable[1])
+	physics.removeBody(ballTable[2])
+	--physics.pause()
 	
+	print("Exit B")
 end
 
 -- If scene's view is removed, scene:destroyScene() will be called just prior to:

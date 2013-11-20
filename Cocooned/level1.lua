@@ -39,21 +39,19 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 	
 
 -- make a crate (off-screen), position it, and rotate slightly
-
+	local ballTable = { 
+		[1] = display.newImage("ball.png"), 
+		[2] = display.newImage("ball.png") }
 
 -- distance function
 local dist
 local function distance(x1, x2, y1, y2, detectString)
-	--print("Dist A")
 	dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
 	if detectString then
 		--print(detectString, dist)
 	end
 end
-	-- make a crate (off-screen), position it, and rotate slightly
-	local ballTable = { 
-		[1] = display.newImage("ball.png"), 
-		[2] = display.newImage("ball.png") }
+
 	
 	
 	
@@ -94,14 +92,11 @@ end
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
 	end
 
-	-- apply physics to xWalls
-	--for count = 1, 12, 1 do 
-	--	physics.addBody(xWalls[count], "static", { bounce = 0.01 } )
-	--end
-	
 
 -- ball movement control
 local function moveBall(event)
+	print("ballTable[1] velocity", ballTable[1].angularVelocity)
+
 	--print("LevelA")
 	local x 
 	local y
@@ -211,9 +206,13 @@ local function moveBall(event)
 					storyboard.gotoScene( "level1c", "fade", 500 )
 				elseif event.yStart < event.y and swipeLengthy > 50 then
 					print( "Swiped Up" )
+					ballTable[1]:setLinearVelocity(0,0)
+					ballTable[1].angularVelocity = 0
+					ballTable[2]:setLinearVelocity(0,0)
+					ballTable[2].angularVelocity = 0
 					saveBallLocation()
 					Runtime:removeEventListener("enterFrame", frame)
-					storyboard.gotoScene( "level1a", "fade", 500 )
+					storyboard.gotoScene( "level1a", "fade", 100 )
 				end	
 			end
 		end	
@@ -373,14 +372,18 @@ function scene:enterScene( event )
 	local group = self.view
 
 
+
 	print("Enter MAIN")
 
+	physics.start()
+	physics.addBody(ballTable[1])
+	physics.addBody(ballTable[2])
 
 	Runtime:addEventListener("touch", moveBall)
 	Runtime:addEventListener("enterFrame", frame)
 
 
-	physics.start()
+	
 	
 	physics.setGravity(0, 0)
 	
@@ -397,10 +400,6 @@ function scene:willEnterScene( event )
 		physics.addBody(lines[count], "static", { bounce = 0.01 } )
 	end
 	
-	--ballTable[1]:setLinearVelocity(0,0)
-	--ballTable[1].angularVelocity = 0
-	--ballTable[2]:setLinearVelocity(0,0)
-	--ballTable[2].angularVelocity = 0
 	print("load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 	print("Entering MAIN")
 end
@@ -412,6 +411,11 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("touch", moveBall)
 	Runtime:removeEventListener("enterFrame", frame)
 
+	physics.removeBody(ballTable[1])
+	physics.removeBody(ballTable[2])
+	--physics.pause()
+
+	print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
 
 	for count = 1, 8, 1 do 
 		physics.removeBody(lines[count])

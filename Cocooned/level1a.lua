@@ -50,6 +50,8 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 	-- add physics to the balls
 	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
 	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+
+local isPaused = false
 	
 local function saveBallLocation()
 	print("save", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
@@ -104,6 +106,10 @@ end
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
 	end
 
+	-- apply physics to walls
+	for count = 1, 4, 1 do
+		physics.addBody(walls[count], "static", { bounce = 0.01 } )
+	end
 	
 	
 	-- distance function
@@ -117,6 +123,11 @@ end
 	end
 	-- ball movement control
 	local function moveBall(event)
+
+		if isPaused then
+			physics.start()
+			isPaused = false
+		end
 		--print("LevelA")
 		local x 
 		local y
@@ -212,9 +223,13 @@ end
 				if current == "level1a" then
 					if event.yStart > event.y and swipeLengthy > 50 then
 						print( "Swiped Up" )
+						ballTable[1]:setLinearVelocity(0,0)
+						ballTable[1].angularVelocity = 0
+						ballTable[2]:setLinearVelocity(0,0)
+						ballTable[2].angularVelocity = 0
 						saveBallLocation()
 						Runtime:removeEventListener("enterFrame", frame)
-						storyboard.gotoScene( "level1", "fade", 500 )
+						storyboard.gotoScene( "level1", "fade", 100 )
 					end	
 				end
 			end	
@@ -260,9 +275,6 @@ function scene:createScene( event )
 	ballTable[2].x = 160
 	ballTable[2].y = 180
 	
-	-- add physics to the crate
-	physics.addBody(ballTable[1])
-	physics.addBody(ballTable[2])
 	
 	-- add new walls
 	-- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
@@ -309,12 +321,16 @@ function scene:enterScene( event )
 
 	print("Enter A")
 
-	Runtime:addEventListener("touch", moveBall)
-	Runtime:addEventListener("enterFrame", frame)
+	
 	
 	physics.start()
+	physics.addBody(ballTable[1])
+	physics.addBody(ballTable[2])
 
 	physics.setGravity(0, 0)
+
+	Runtime:addEventListener("touch", moveBall)
+	Runtime:addEventListener("enterFrame", frame)
 	
 end
 
@@ -326,11 +342,8 @@ function scene:willEnterScene( event )
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
 
-	
-	--ballTable[1]:setLinearVelocity(0,0)
-	--ballTable[1].angularVelocity = 0
-	--ballTable[2]:setLinearVelocity(0,0)
-	--ballTable[2].angularVelocity = 0
+	--print( ballTable[1]:getLinearVelocity())
+
 
 	print( "load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 	print("Entering A")
@@ -343,7 +356,9 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("touch", moveBall)
 	Runtime:removeEventListener("enterFrame", frame)
 
-	physics.pause()
+	physics.removeBody(ballTable[1])
+	physics.removeBody(ballTable[2])
+	--physics.pause()
 	
 	print("Exit A")
 
