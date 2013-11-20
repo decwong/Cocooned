@@ -242,16 +242,12 @@ end
 			elseif "ended" == phase or "cancelled" == phase then
 				local current = storyboard.getCurrentSceneName()
 				if current == "level1b" then
-					if event.yStart > event.y and swipeLengthy > 50 then
-						print( "Swiped Up" )
-						ballTable[1]:setLinearVelocity(0,0)
-						ballTable[1].angularVelocity = 0
-						ballTable[2]:setLinearVelocity(0,0)
-						ballTable[2].angularVelocity = 0
+					if event.xStart > event.x and swipeLength > 50 then 
+						print("Swiped Left")
 						saveBallLocation()
 						Runtime:removeEventListener("enterFrame", frame)
-						storyboard.gotoScene( "level1", "fade", 100 )
-					end	
+						storyboard.gotoScene( "level1", "fade", 500 )
+					end
 				end
 			end	
 		end
@@ -278,7 +274,7 @@ function scene:createScene( event )
 
 	-- create a grey rectangle as the backdrop
 	-- temp wood background from http://wallpaperstock.net/wood-floor-wallpapers_w6855.html
-	local background = display.newImageRect( "background2_a.jpg", screenW+100, screenH)
+	local background = display.newImageRect( "background2_b.jpg", screenW+100, screenH)
 	--background:setReferencePoint( display.TopLeftReferencePoint )
 	background.anchorX = 0.0
 	background.anchorY = 0.0
@@ -377,7 +373,7 @@ function scene:willEnterScene( event )
 
 
 	print( "load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
-	print("Entering A")
+	print("Entering B")
 end
 
 -- Called when scene is about to move offscreen:
@@ -391,14 +387,14 @@ function scene:exitScene( event )
 	physics.removeBody(ballTable[2])
 	--physics.pause()
 	
-	print("Exit A")
+	print("Exit B")
 end
 
 -- If scene's view is removed, scene:destroyScene() will be called just prior to:
 function scene:destroyScene( event )
 	local group = self.view
 	
-	print("destroyed A")
+	print("destroyed B")
 	--package.loaded[physics] = nil
 	--physics = nil
 end
