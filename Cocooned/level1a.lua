@@ -38,23 +38,13 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 	
 	-- make a crate (off-screen), position it, and rotate slightly
 
-	local ballTable = { 
-		[1] = display.newImage("ball.png"), 
-		[2] = display.newImage("ball.png") }
-	
-	ballTable[1].x = 260
-	ballTable[1].y = 180
-	ballTable[2].x = 160
-	ballTable[2].y = 180
-	
-	-- add physics to the balls
-	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
-	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+local ballTable = { 
+	[1] = display.newImage("ball.png"), 
+	[2] = display.newImage("ball.png") }
 
-local isPaused = false
+
 	
 local function saveBallLocation()
-	print("save", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
 	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
 end
@@ -67,21 +57,6 @@ end
 		[4] = display.newImage("ground2.png") 
 	} 
 	
-	-- 
-	local xWalls = {
-		[1] = display.newImage("floor_side.png"),
-		[2] = display.newImage("floor_side.png"),
-		[3] = display.newImage("floor_small.png"),
-		[4] = display.newImage("floor_side.png"),
-		[5] = display.newImage("floor_side.png"),
-		[6] = display.newImage("floor_small.png"),
-		[7] = display.newImage("floor_side.png"),
-		[8] = display.newImage("floor_side.png"),
-		[9] = display.newImage("floor_side.png"),
-		[10] = display.newImage("floor_side.png"),
-		[11] = display.newImage("floor_side.png"),
-		[12] = display.newImage("floor_side.png")
-	}
 
 	-- Left wall
 	walls[1].x = -40
@@ -105,17 +80,11 @@ end
 	for count = 1, 4, 1 do
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
 	end
-
-	-- apply physics to walls
-	for count = 1, 4, 1 do
-		physics.addBody(walls[count], "static", { bounce = 0.01 } )
-	end
 	
 	
 	-- distance function
 	local dist
 	local function distance(x1, x2, y1, y2, detectString)
-		--print("Dist A")
 		dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
 		if detectString then
 			--print(detectString, dist)
@@ -128,7 +97,6 @@ end
 			physics.start()
 			isPaused = false
 		end
-		--print("LevelA")
 		local x 
 		local y
 		local tap = 0
@@ -143,14 +111,11 @@ end
 			if dx > -5 then
 				if dy < 5 then
 					if dy > -5 then
-						print(dx, dy)
 						tap = 1
 					end
 				end
 			end
 		end
-
-		print("tap", tap)
 		
 		if tap == 1 then
 			if event.phase == "ended" then
@@ -264,51 +229,6 @@ function scene:createScene( event )
 	background.x, background.y = -50, 0
 	
 
-	-- make a crate (off-screen), position it, and rotate slightly
-
-	-- Real time event listeners/activators
-	--Runtime:addEventListener("enterFrame", frame)
-
-	
-	ballTable[1].x = 260
-	ballTable[1].y = 180
-	ballTable[2].x = 160
-	ballTable[2].y = 180
-	
-	
-	-- add new walls
-	-- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
-	local walls = {
-		[1] = display.newImage("ground1.png"),
-		[2] = display.newImage("ground1.png"),
-		[3] = display.newImage("ground2.png"),
-		[4] = display.newImage("ground2.png") } 
-		--[5] = display.newImage("ground1.png"), 
-		--[6] = display.newImage("ground1.png") 
-	
-	-- Left wall
-	walls[1].x = -40
-	walls[1].y = 180
-	walls[1].rotation = 90
-	
-	-- Right wall
-	walls[2].x = 520
-	walls[2].y = 180
-	walls[2].rotation = 90
-	
-	-- Top wall
-	walls[3].x = 250
-	walls[3].y = 5
-	
-	-- Bottom wall
-	walls[4].x = 250
-	walls[4].y = 315
-	
-	-- apply physics to wall
-	for count = 1, 4, 1 do
-		physics.addBody(walls[count], "static", { bounce = 0.01 } )
-	end
-
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
@@ -320,8 +240,6 @@ function scene:enterScene( event )
 	local group = self.view
 
 	print("Enter A")
-
-	
 	
 	physics.start()
 	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
@@ -347,8 +265,6 @@ function scene:willEnterScene( event )
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
 
-	--print( ballTable[1]:getLinearVelocity())
-
 
 	print( "load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 	print("Entering A")
@@ -363,7 +279,7 @@ function scene:exitScene( event )
 
 	physics.removeBody(ballTable[1])
 	physics.removeBody(ballTable[2])
-	
+
 	physics.pause()
 	
 	print("Exit A")

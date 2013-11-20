@@ -38,20 +38,12 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 	
 	-- make a crate (off-screen), position it, and rotate slightly
 
-	local ballTable = { 
-		[1] = display.newImage("ball.png"), 
-		[2] = display.newImage("ball.png") }
-	
-	ballTable[1].x = 260
-	ballTable[1].y = 180
-	ballTable[2].x = 160
-	ballTable[2].y = 180
-	
+local ballTable = { 
+	[1] = display.newImage("ball.png"), 
+	[2] = display.newImage("ball.png") }
 
-local isPaused = false
 	
 local function saveBallLocation()
-	print("save", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
 	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
 end
@@ -101,11 +93,7 @@ end
 	-- ball movement control
 	local function moveBall(event)
 
-		if isPaused then
-			physics.start()
-			isPaused = false
-		end
-		--print("LevelA")
+
 		local x 
 		local y
 		local tap = 0
@@ -120,14 +108,12 @@ end
 			if dx > -5 then
 				if dy < 5 then
 					if dy > -5 then
-						print(dx, dy)
 						tap = 1
 					end
 				end
 			end
 		end
 
-		print("tap", tap)
 		
 		if tap == 1 then
 			if event.phase == "ended" then
@@ -299,8 +285,6 @@ function scene:createScene( event )
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
 	end
 
-	
-		
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
@@ -316,8 +300,6 @@ function scene:enterScene( event )
 	local group = self.view
 
 	print("Enter D")
-
-	
 	
 	physics.start()
 	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
@@ -347,11 +329,6 @@ function scene:willEnterScene( event )
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
 
-	
-
-	--print( ballTable[1]:getLinearVelocity())
-
-
 	print( "load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 	print("Entering D")
 end
@@ -362,8 +339,6 @@ function scene:exitScene( event )
 	
 	Runtime:removeEventListener("touch", moveBall)
 	Runtime:removeEventListener("enterFrame", frame)
-
-	
 
 	-- add physics to the balls
 	physics.removeBody(ballTable[1])

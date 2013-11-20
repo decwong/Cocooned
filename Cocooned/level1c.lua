@@ -36,9 +36,9 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 	
 	-- make a crate (off-screen), position it, and rotate slightly
 
-	local ballTable = { 
-		[1] = display.newImage("ball.png"), 
-		[2] = display.newImage("ball.png") }
+local ballTable = { 
+	[1] = display.newImage("ball.png"), 
+	[2] = display.newImage("ball.png") }
 	
 	
 	
@@ -74,17 +74,10 @@ end
 	-- Bottom wall
 	walls[4].x = 250
 	walls[4].y = 315
-
-
-	-- apply physics to walls
-	for count = 1, 4, 1 do
-		physics.addBody(walls[count], "static", { bounce = 0.01 } )
-	end
 	
 	-- distance function
 	local dist
 	local function distance(x1, x2, y1, y2, detectString)
-		--print("Dist A")
 		dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
 		if detectString then
 			--print(detectString, dist)
@@ -107,7 +100,6 @@ end
 			if dx > -5 then
 				if dy < 5 then
 					if dy > -5 then
-						print(dx, dy)
 						tap = 1
 					end
 				end
@@ -220,49 +212,7 @@ function scene:createScene( event )
 	background.anchorX = 0.0
 	background.anchorY = 0.0
 	background.x, background.y = -50, 0
-	
 
-	-- make a crate (off-screen), position it, and rotate slightly
-
-	-- Real time event listeners/activators
-	--Runtime:addEventListener("enterFrame", frame)
-
-	
-	ballTable[1].x = 260
-	ballTable[1].y = 180
-	ballTable[2].x = 160
-	ballTable[2].y = 180
-	
-	
-	-- add new walls
-	-- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
-	local walls = {
-		[1] = display.newImage("ground1.png"),
-		[2] = display.newImage("ground1.png"),
-		[3] = display.newImage("ground2.png"),
-		[4] = display.newImage("ground2.png") } 
-		--[5] = display.newImage("ground1.png"), 
-		--[6] = display.newImage("ground1.png") 
-	
-	-- Left wall
-	walls[1].x = -40
-	walls[1].y = 180
-	walls[1].rotation = 90
-	
-	-- Right wall
-	walls[2].x = 520
-	walls[2].y = 180
-	walls[2].rotation = 90
-	
-	-- Top wall
-	walls[3].x = 250
-	walls[3].y = 5
-	
-	-- Bottom wall
-	walls[4].x = 250
-	walls[4].y = 315
-
-	
 	-- apply physics to wall
 	for count = 1, 4, 1 do
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
@@ -329,8 +279,6 @@ function scene:destroyScene( event )
 	local group = self.view
 	
 	print("destroyed C")
-	--package.loaded[physics] = nil
-	--physics = nil
 end
 
 -----------------------------------------------------------------------------------------

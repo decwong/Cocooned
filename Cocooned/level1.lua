@@ -18,7 +18,6 @@ physics.start(); physics.pause()
 -- Set view mode to show bounding boxes 
 physics.setDrawMode("hybrid")
 
-
 --------------------------------------------
 
 -- forward declarations and other locals
@@ -32,14 +31,8 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 -- 
 -----------------------------------------------------------------------------------------
 
-
-
-
-
-	
-
 -- make a crate (off-screen), position it, and rotate slightly
-	local ballTable = { 
+local ballTable = { 
 		[1] = display.newImage("ball.png"), 
 		[2] = display.newImage("ball.png") }
 
@@ -52,11 +45,7 @@ local function distance(x1, x2, y1, y2, detectString)
 	end
 end
 
-	
-	
-	
 local function saveBallLocation()
-	print("save", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
 	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
 end
@@ -92,12 +81,9 @@ end
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
 	end
 
-
 -- ball movement control
 local function moveBall(event)
-	print("ballTable[1] velocity", ballTable[1].angularVelocity)
-
-	--print("LevelA")
+	
 	local x 
 	local y
 	local tap = 0
@@ -118,8 +104,6 @@ local function moveBall(event)
 			end
 		end
 	end
-
-	print("tap", tap)
 		
 	if tap == 1 then
 		if event.phase == "ended" then
@@ -341,16 +325,10 @@ function scene:createScene( event )
 	walls[4].x = 250
 	walls[4].y = 315
 
-	-- Walls for level
-
-	
-	
 	-- apply physics to wall
 	for count = 1, 4, 1 do
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
 	end
-
-	
 
 	-- all display objects must be inserted into group
 	group:insert( background )
@@ -380,9 +358,6 @@ function scene:enterScene( event )
 
 	Runtime:addEventListener("touch", moveBall)
 	Runtime:addEventListener("enterFrame", frame)
-
-
-	
 	
 	physics.setGravity(0, 0)
 	
@@ -399,7 +374,7 @@ function scene:willEnterScene( event )
 		physics.addBody(lines[count], "static", { bounce = 0.01 } )
 	end
 	
-	print("load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
+	--print("load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 	print("Entering MAIN")
 end
 
@@ -412,9 +387,8 @@ function scene:exitScene( event )
 
 	physics.removeBody(ballTable[1])
 	physics.removeBody(ballTable[2])
-	--physics.pause()
 
-	print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
+	--print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
 
 	for count = 1, 8, 1 do 
 		physics.removeBody(lines[count])
@@ -430,8 +404,6 @@ function scene:destroyScene( event )
 	local group = self.view
 	
 	print("destroyed MAIN")
-	--package.loaded[physics] = nil
-	--physics = nil
 end
 
 -----------------------------------------------------------------------------------------
