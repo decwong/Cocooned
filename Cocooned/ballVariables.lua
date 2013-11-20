@@ -1,9 +1,9 @@
 module("ballVariables", package.seeall)
 
-local ball1x = 260
-local ball1y = 180
-local ball2x = 160
-local ball2y = 180
+local ball1x = 15
+local ball1y = 15
+local ball2x = 475
+local ball2y = 300
 
 function setBall1( x, y )
 	ball1x = x

@@ -15,6 +15,8 @@ display.setStatusBar(display.HiddenStatusBar )
 -- include Corona's "physics" library
 local physics = require "physics"
 physics.start(); physics.pause()
+-- Set view mode to show bounding boxes 
+physics.setDrawMode("hybrid")
 
 
 --------------------------------------------
@@ -68,22 +70,6 @@ end
 		[3] = display.newImage("ground2.png"),
 		[4] = display.newImage("ground2.png") 
 	} 
-	
-	-- 
-	local xWalls = {
-		[1] = display.newImage("floor_side.png"),
-		[2] = display.newImage("floor_side.png"),
-		[3] = display.newImage("floor_small.png"),
-		[4] = display.newImage("floor_side.png"),
-		[5] = display.newImage("floor_side.png"),
-		[6] = display.newImage("floor_small.png"),
-		[7] = display.newImage("floor_side.png"),
-		[8] = display.newImage("floor_side.png"),
-		[9] = display.newImage("floor_side.png"),
-		[10] = display.newImage("floor_side.png"),
-		[11] = display.newImage("floor_side.png"),
-		[12] = display.newImage("floor_side.png")
-	}
 
 	-- Left wall
 	walls[1].x = -40
@@ -101,31 +87,7 @@ end
 	
 	-- Bottom wall
 	walls[4].x = 250
-	walls[4].y = 315
-
-	-- First quadrant 
-	xWalls[1].x = 60
-	xWalls[1].y = 150
-	xWalls[1].rotation = 45
-	xWalls[2].x = 115
-	xWalls[2].y = 90
-	xWalls[2].rotation = 45
-	-- Small piece
-	xWalls[3].x = 20
-	xWalls[3].y = 50
-	xWalls[3].rotation = 135
-
-	-- Second quadrant
-	xWalls[4].x = 425
-	xWalls[4].y = 145
-	xWalls[4].rotation = 135
-	xWalls[5].x = 365
-	xWalls[5].y = 105
-	xWalls[5].rotation = 135
-	-- Small piece 
-	xWalls[6].x = 470
-	xWalls[6].y = 50
-	xWalls[6].rotation = 45
+	walls[4].y = 315	
 	
 	-- apply physics to walls
 	for count = 1, 4, 1 do
@@ -133,9 +95,9 @@ end
 	end
 
 	-- apply physics to xWalls
-	for count = 1, 12, 1 do 
-		physics.addBody(xWalls[count], "static", { bounce = 0.01 } )
-	end
+	--for count = 1, 12, 1 do 
+	--	physics.addBody(xWalls[count], "static", { bounce = 0.01 } )
+	--end
 	
 
 -- ball movement control
@@ -307,6 +269,29 @@ local function frame(event)
 	end
 end
 
+-- Draw lines
+	local lines = {
+		-- newRect(left, top, width, height)
+
+		-- Rectangles for inital pane on 
+		-- left and right side
+		[1] = display.newRect(70, 180, 20, 575) ,
+		[2] = display.newRect(410, 180, 20, 575), 
+
+		-- Rectangles for the walls blocking
+		-- the area on the left and right side
+		[3] = display.newRect(15, 200, 85, 15) ,
+		[4] = display.newRect(465, 100, 85, 15) , 
+
+		-- Rectangles for the center column
+		[5] = display.newRect(130, 180, 20, 400) , 
+		[6] = display.newRect(350, 180, 20, 400) ,
+
+		-- Horizontal rectangles for center column
+		[7] = display.newRect(240, 225, 200, 15) ,
+		[8] = display.newRect(240, 100, 200, 15)
+	}
+
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
@@ -321,9 +306,9 @@ function scene:createScene( event )
 	background.anchorY = 0.0
 	background.x, background.y = -50, 0
 	
-	-- add physics to the crate
-	physics.addBody(ballTable[1])
-	physics.addBody(ballTable[2])
+	-- add physics to the balls
+	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
+	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
 	
 	-- add new walls
 	-- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
@@ -334,6 +319,11 @@ function scene:createScene( event )
 		[4] = display.newImage("ground2.png") } 
 		--[5] = display.newImage("ground1.png"), 
 		--[6] = display.newImage("ground1.png") 
+
+	local gameWalls =  {
+		[1] = display.newImage("ground2.png"), 
+		[2] = display.newImage("ground2.png") 
+	}
 	
 	-- Left wall
 	walls[1].x = -40
@@ -353,25 +343,29 @@ function scene:createScene( event )
 	walls[4].x = 250
 	walls[4].y = 315
 
-	-- Middle wall 1
-	--walls[5].x = 250
-	--walls[5].y = 150
-	--walls[5].rotation = 45
+	-- Walls for level
 
-	-- Middle wall 2 
-	--walls[6].x = 150
-	--walls[6].y = 150
-	--walls[6].rotation = 120
+	
 	
 	-- apply physics to wall
 	for count = 1, 4, 1 do
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
 	end
 
+	
+
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
 	group:insert( ballTable[2] )
+	group:insert( lines[1])
+	group:insert( lines[2])
+	group:insert( lines[3])
+	group:insert( lines[4])
+	group:insert( lines[5])
+	group:insert( lines[6])
+	group:insert( lines[7])
+	group:insert( lines[8])
 end
 
 -- Called immediately after scene has moved onscreen:
@@ -399,6 +393,9 @@ function scene:willEnterScene( event )
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
 
+	for count = 1, 8, 1 do 
+		physics.addBody(lines[count], "static", { bounce = 0.01 } )
+	end
 	
 	--ballTable[1]:setLinearVelocity(0,0)
 	--ballTable[1].angularVelocity = 0
@@ -415,6 +412,14 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("touch", moveBall)
 	Runtime:removeEventListener("enterFrame", frame)
 
+
+	for count = 1, 8, 1 do 
+		physics.removeBody(lines[count])
+	end
+
+	-- add physics to the balls
+	physics.removeBody(ballTable[1], {radius = 15, bounce = .8 })
+	physics.removeBody(ballTable[2], {radius = 15, bounce = .8 })
 
 	physics.pause()
 	

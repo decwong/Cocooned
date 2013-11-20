@@ -14,6 +14,8 @@ display.setStatusBar(display.HiddenStatusBar )
 -- include Corona's "physics" library
 local physics = require "physics"
 physics.start(); physics.pause()
+-- Set view mode to show bounding boxes 
+physics.setDrawMode("hybrid")
 
 
 --------------------------------------------
@@ -45,9 +47,9 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 	ballTable[2].x = 160
 	ballTable[2].y = 180
 	
-	-- add physics to the crate
-	physics.addBody(ballTable[1])
-	physics.addBody(ballTable[2])
+	-- add physics to the balls
+	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
+	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
 	
 local function saveBallLocation()
 	print("save", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
@@ -96,40 +98,13 @@ end
 	-- Bottom wall
 	walls[4].x = 250
 	walls[4].y = 315
-
-	-- First quadrant 
-	xWalls[1].x = 60
-	xWalls[1].y = 150
-	xWalls[1].rotation = 45
-	xWalls[2].x = 115
-	xWalls[2].y = 90
-	xWalls[2].rotation = 45
-	-- Small piece
-	xWalls[3].x = 20
-	xWalls[3].y = 50
-	xWalls[3].rotation = 135
-
-	-- Second quadrant
-	xWalls[4].x = 425
-	xWalls[4].y = 145
-	xWalls[4].rotation = 135
-	xWalls[5].x = 365
-	xWalls[5].y = 105
-	xWalls[5].rotation = 135
-	-- Small piece 
-	xWalls[6].x = 470
-	xWalls[6].y = 50
-	xWalls[6].rotation = 45
 	
 	-- apply physics to walls
 	for count = 1, 4, 1 do
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
 	end
 
-	-- apply physics to xWalls
-	for count = 1, 12, 1 do 
-		physics.addBody(xWalls[count], "static", { bounce = 0.01 } )
-	end
+	
 	
 	-- distance function
 	local dist
@@ -316,16 +291,6 @@ function scene:createScene( event )
 	-- Bottom wall
 	walls[4].x = 250
 	walls[4].y = 315
-
-	-- Middle wall 1
-	--walls[5].x = 250
-	--walls[5].y = 150
-	--walls[5].rotation = 45
-
-	-- Middle wall 2 
-	--walls[6].x = 150
-	--walls[6].y = 150
-	--walls[6].rotation = 120
 	
 	-- apply physics to wall
 	for count = 1, 4, 1 do
@@ -381,6 +346,10 @@ function scene:exitScene( event )
 	physics.pause()
 	
 	print("Exit A")
+
+	-- add physics to the balls
+	physics.removeBody(ballTable[1])
+	physics.removeBody(ballTable[2])
 end
 
 -- If scene's view is removed, scene:destroyScene() will be called just prior to:

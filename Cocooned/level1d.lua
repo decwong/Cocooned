@@ -14,6 +14,8 @@ display.setStatusBar(display.HiddenStatusBar )
 -- include Corona's "physics" library
 local physics = require "physics"
 physics.start(); physics.pause()
+-- Set view mode to show bounding boxes 
+physics.setDrawMode("hybrid")
 
 
 --------------------------------------------
@@ -181,17 +183,14 @@ function scene:createScene( event )
 	
 	-- make a crate (off-screen), position it, and rotate slightly
 	
-
-	
-	
 	ballTable[1].x = 260
 	ballTable[1].y = 180
 	ballTable[2].x = 160
 	ballTable[2].y = 180
 	
-	-- add physics to the crate
-	physics.addBody(ballTable[1])
-	physics.addBody(ballTable[2])
+	-- add physics to the balls
+	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
+	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
 	
 	-- add new walls
 	-- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
@@ -221,25 +220,40 @@ function scene:createScene( event )
 	walls[4].x = 250
 	walls[4].y = 315
 
-	-- Middle wall 1
-	--walls[5].x = 250
-	--walls[5].y = 150
-	--walls[5].rotation = 45
+	local lines = {
+		-- newRect(left, top, width, height)
 
-	-- Middle wall 2 
-	--walls[6].x = 150
-	--walls[6].y = 150
-	--walls[6].rotation = 120
+		-- Rectangles for inital pane on 
+		-- left and right side
+		[1] = display.newRect(70, 180, 20, 575) ,
+		[2] = display.newRect(410, 180, 20, 575), 
+
+		-- Rectangles for the walls blocking
+		-- the area on the left and right side
+		[3] = display.newRect(15, 200, 85, 15) ,
+		[4] = display.newRect(440, 100, 35, 15) 
+
+		--lines:setFillColor(255, 165, 79)
+	}
 	
 	-- apply physics to wall
 	for count = 1, 4, 1 do
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
+	end
+
+	-- apply physics to wall
+	for count = 1, 4, 1 do
+		physics.addBody(lines[count], "static", { bounce = 0.01 } )
 	end
 		
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
 	group:insert( ballTable[2] )
+	group:insert( lines[1])
+	group:insert( lines[2]) 
+	group:insert( lines[3])
+	group:insert( lines[4])
 end
 
 -- Called immediately after scene has moved onscreen:
@@ -281,6 +295,10 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("enterFrame", frame)
 
 	physics.pause()
+
+	-- add physics to the balls
+	physics.removeBody(ballTable[1])
+	physics.removeBody(ballTable[2])
 
 	print("Exit D")
 	
