@@ -222,6 +222,22 @@ end
 		end
 	end
 
+local lines = {
+		-- newRect(left, top, width, height)
+
+		-- Rectangles for inital pane on 
+		-- left and right side
+		[1] = display.newRect(70, 180, 20, 575) ,
+		[2] = display.newRect(410, 180, 20, 575), 
+
+		-- Rectangles for the walls blocking
+		-- the area on the left and right side
+		[3] = display.newRect(15, 200, 85, 15) ,
+		[4] = display.newRect(440, 100, 35, 15) 
+
+		--lines:setFillColor(255, 165, 79)
+}
+
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
@@ -276,31 +292,14 @@ function scene:createScene( event )
 	walls[4].x = 250
 	walls[4].y = 315
 
-	local lines = {
-		-- newRect(left, top, width, height)
-
-		-- Rectangles for inital pane on 
-		-- left and right side
-		[1] = display.newRect(70, 180, 20, 575) ,
-		[2] = display.newRect(410, 180, 20, 575), 
-
-		-- Rectangles for the walls blocking
-		-- the area on the left and right side
-		[3] = display.newRect(15, 200, 85, 15) ,
-		[4] = display.newRect(440, 100, 35, 15) 
-
-		--lines:setFillColor(255, 165, 79)
-	}
+	
 	
 	-- apply physics to wall
 	for count = 1, 4, 1 do
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
 	end
 
-	-- apply physics to wall
-	for count = 1, 4, 1 do
-		physics.addBody(lines[count], "static", { bounce = 0.01 } )
-	end
+	
 		
 	-- all display objects must be inserted into group
 	group:insert( background )
@@ -321,8 +320,17 @@ function scene:enterScene( event )
 	
 	
 	physics.start()
-	physics.addBody(ballTable[1])
-	physics.addBody(ballTable[2])
+	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
+	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+
+	ballTable[1]:setLinearVelocity(0,0)
+	ballTable[1].angularVelocity = 0
+	ballTable[2]:setLinearVelocity(0,0)
+	ballTable[2].angularVelocity = 0
+	-- apply physics to wall
+	for count = 1, 4, 1 do
+		physics.addBody(lines[count], "static", { bounce = 0.01 } )
+	end
 
 	physics.setGravity(0, 0)
 
@@ -339,6 +347,8 @@ function scene:willEnterScene( event )
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
 
+	
+
 	--print( ballTable[1]:getLinearVelocity())
 
 
@@ -353,18 +363,18 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("touch", moveBall)
 	Runtime:removeEventListener("enterFrame", frame)
 
-	physics.pause()
+	
 
 	-- add physics to the balls
 	physics.removeBody(ballTable[1])
 	physics.removeBody(ballTable[2])
 
-	print("Exit D")
+	for count = 1, 4, 1 do
+		physics.removeBody(lines[count])
+	end
 
-	physics.removeBody(ballTable[1])
-	physics.removeBody(ballTable[2])
-	--physics.pause()
-	
+	physics.pause()
+
 	print("Exit D")
 end
 

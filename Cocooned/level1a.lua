@@ -324,8 +324,13 @@ function scene:enterScene( event )
 	
 	
 	physics.start()
-	physics.addBody(ballTable[1])
-	physics.addBody(ballTable[2])
+	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
+	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+
+	ballTable[1]:setLinearVelocity(0,0)
+	ballTable[1].angularVelocity = 0
+	ballTable[2]:setLinearVelocity(0,0)
+	ballTable[2].angularVelocity = 0
 
 	physics.setGravity(0, 0)
 
@@ -358,13 +363,11 @@ function scene:exitScene( event )
 
 	physics.removeBody(ballTable[1])
 	physics.removeBody(ballTable[2])
-	--physics.pause()
+	
+	physics.pause()
 	
 	print("Exit A")
 
-	-- add physics to the balls
-	physics.removeBody(ballTable[1])
-	physics.removeBody(ballTable[2])
 end
 
 -- If scene's view is removed, scene:destroyScene() will be called just prior to:

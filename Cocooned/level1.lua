@@ -306,8 +306,7 @@ function scene:createScene( event )
 	background.x, background.y = -50, 0
 	
 	-- add physics to the balls
-	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
-	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+	
 	
 	-- add new walls
 	-- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
@@ -376,8 +375,8 @@ function scene:enterScene( event )
 	print("Enter MAIN")
 
 	physics.start()
-	physics.addBody(ballTable[1])
-	physics.addBody(ballTable[2])
+	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
+	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
 
 	Runtime:addEventListener("touch", moveBall)
 	Runtime:addEventListener("enterFrame", frame)
@@ -420,10 +419,6 @@ function scene:exitScene( event )
 	for count = 1, 8, 1 do 
 		physics.removeBody(lines[count])
 	end
-
-	-- add physics to the balls
-	physics.removeBody(ballTable[1], {radius = 15, bounce = .8 })
-	physics.removeBody(ballTable[2], {radius = 15, bounce = .8 })
 
 	physics.pause()
 	
