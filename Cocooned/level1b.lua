@@ -64,18 +64,26 @@ local walls = {
 	walls[4].y = 315
 
 local lines = {
-	-- newRect(left, top, width, height)
-	-- Rectangles for inital pane on 
-	-- left and right side
-	[1] = display.newRect(70, 180, 20, 575) ,
-	[2] = display.newRect(410, 180, 20, 575), 
+		-- newRect(left, top, width, height)
+		-- Rectangles for inital pane on 
+		-- left and right side
+		[1] = display.newRect(70, 180, 20, 575) ,
+		[2] = display.newRect(410, 180, 20, 575), 
 
-	-- Rectangles for the walls blocking
-	-- the area on the left and right side
-	[3] = display.newRect(-10, 200, 35, 15) ,
-	[4] = display.newRect(465, 100, 85, 15) 
+		-- Rectangles for the walls blocking
+		-- the area on the left and right side
+		[3] = display.newRect(-10, 225, 35, 15) ,
+		[4] = display.newRect(465, 100, 85, 15) ,
 
-	--lines:setFillColor(255, 165, 79)
+		-- Rectangles for the center column
+		[5] = display.newRect(130, 165, 20, 140) , 
+		[6] = display.newRect(350, 165, 20, 140) ,
+
+		-- Horizontal rectangles for center column
+		[7] = display.newRect(240, 225, 200, 15) ,
+		[8] = display.newRect(240, 100, 200, 15)
+
+		--lines:setFillColor(255, 165, 79)
 }
 
 local function saveBallLocation()
@@ -208,29 +216,6 @@ local function frame(event)
 		print("Distance =", dist)
 	end
 end
-local lines = {
-		-- newRect(left, top, width, height)
-
-		-- Rectangles for inital pane on 
-		-- left and right side
-		[1] = display.newRect(70, 180, 20, 575) ,
-		[2] = display.newRect(410, 180, 20, 575), 
-
-		-- Rectangles for the walls blocking
-		-- the area on the left and right side
-		[3] = display.newRect(-10, 225, 35, 15) ,
-		[4] = display.newRect(465, 100, 85, 15) ,
-
-		-- Rectangles for the center column
-		[5] = display.newRect(130, 165, 20, 140) , 
-		[6] = display.newRect(350, 165, 20, 140) ,
-
-		-- Horizontal rectangles for center column
-		[7] = display.newRect(240, 225, 200, 15) ,
-		[8] = display.newRect(240, 100, 200, 15)
-
-		--lines:setFillColor(255, 165, 79)
-}
 
 
 -- Called when the scene's view does not exist:
@@ -246,28 +231,10 @@ function scene:createScene( event )
 	background.anchorY = 0.0
 	background.x, background.y = -50, 0
 
-	
-	-- add new walls
-	-- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
-	local walls = {
-		[1] = display.newImage("ground1.png"),
-		[2] = display.newImage("ground1.png"),
-		[3] = display.newImage("ground2.png"),
-		[4] = display.newImage("ground2.png") } 
-		--[5] = display.newImage("ground1.png"), 
-		--[6] = display.newImage("ground1.png") 
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
 	group:insert( ballTable[2] )
-	group:insert( lines[1]) 
-	group:insert( lines[2])
-	group:insert( lines[3])
-	group:insert( lines[4])
-	group:insert( lines[5])
-	group:insert( lines[6])
-	group:insert( lines[7])
-	group:insert( lines[8])
 			
 	for count = 1, #lines do
 		group:insert(lines[count])
@@ -314,11 +281,6 @@ function scene:willEnterScene( event )
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
 	
-	--print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
-	-- apply physics to lines
-	for count = 1, 8, 1 do 
-		physics.addBody(lines[count], "static", { bounce = 0.01 } )
-	end
 	--print( "load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 
 	print("Entering B")

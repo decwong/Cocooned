@@ -63,27 +63,29 @@ local walls = {
 	-- Bottom wall
 	walls[4].x = 250
 	walls[4].y = 315	
-	
+		
 -- Draw lines
-local lines = {
-	-- newRect(left, top, width, height)
-	-- Rectangles for inital pane on 
-	-- left and right side
-	[1] = display.newRect(70, 180, 20, 575) ,
-	[2] = display.newRect(410, 180, 20, 575), 
+	local lines = {
+		-- newRect(left, top, width, height)
 
-	-- Rectangles for the walls blocking
-	-- the area on the left and right side
-	[3] = display.newRect(15, 200, 85, 15) ,
-	[4] = display.newRect(465, 100, 85, 15) , 
+		-- Rectangles for inital pane on 
+		-- left and right side
+		[1] = display.newRect(70, 180, 20, 575) ,
+		[2] = display.newRect(410, 180, 20, 575), 
 
-	-- Rectangles for the center column
-	[5] = display.newRect(130, 180, 20, 400) , 
-	[6] = display.newRect(350, 180, 20, 400) ,
-	
-	-- Horizontal rectangles for center column
-	[7] = display.newRect(240, 225, 200, 15) ,
-	[8] = display.newRect(240, 100, 200, 15) }
+		-- Rectangles for the walls blocking
+		-- the area on the left and right side
+		[3] = display.newRect(15, 225, 85, 15) ,
+		[4] = display.newRect(465, 100, 85, 15) , 
+
+		-- Rectangles for the center column
+		[5] = display.newRect(130, 180, 20, 400) , 
+		[6] = display.newRect(350, 180, 20, 400) ,
+
+		-- Horizontal rectangles for center column
+		[7] = display.newRect(240, 225, 200, 15) ,
+		[8] = display.newRect(240, 100, 200, 15)
+	}
 		
 -- distance function
 local dist
@@ -265,29 +267,6 @@ local function frame(event)
 		print("Distance =", dist)
 	end
 end
-
--- Draw lines
-	local lines = {
-		-- newRect(left, top, width, height)
-
-		-- Rectangles for inital pane on 
-		-- left and right side
-		[1] = display.newRect(70, 180, 20, 575) ,
-		[2] = display.newRect(410, 180, 20, 575), 
-
-		-- Rectangles for the walls blocking
-		-- the area on the left and right side
-		[3] = display.newRect(15, 225, 85, 15) ,
-		[4] = display.newRect(465, 100, 85, 15) , 
-
-		-- Rectangles for the center column
-		[5] = display.newRect(130, 180, 20, 400) , 
-		[6] = display.newRect(350, 180, 20, 400) ,
-
-		-- Horizontal rectangles for center column
-		[7] = display.newRect(240, 225, 200, 15) ,
-		[8] = display.newRect(240, 100, 200, 15)
-	}
 	
 -- Called when the scene's view does not exist:
 function scene:createScene( event )

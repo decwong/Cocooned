@@ -62,7 +62,6 @@ local walls = {
 	walls[4].x = 250
 	walls[4].y = 315
 
-
 local lines = {
 	-- newRect(left, top, width, height)
 	-- Rectangles for inital pane on 
@@ -72,10 +71,17 @@ local lines = {
 
 	-- Rectangles for the walls blocking
 	-- the area on the left and right side
-	[3] = display.newRect(15, 200, 85, 15) ,
-	[4] = display.newRect(440, 100, 35, 15) 
+	[3] = display.newRect(15, 225, 85, 15) ,
+	[4] = display.newRect(440, 100, 35, 15) ,
 
-}
+	-- Rectangles for the center column
+	[5] = display.newRect(130, 165, 20, 140) , 
+	[6] = display.newRect(350, 165, 20, 140) ,
+
+	-- Horizontal rectangles for center column
+	[7] = display.newRect(240, 225, 200, 15) ,
+	[8] = display.newRect(240, 100, 200, 15) } 
+	
 
 local function saveBallLocation()
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
@@ -205,34 +211,7 @@ local function frame(event)
 	if dist <= 35 then
 		print("Distance =", dist)
 	end
-
-local lines = {
-		-- newRect(left, top, width, height)
-
-		-- Rectangles for inital pane on 
-		-- left and right side
-		[1] = display.newRect(70, 180, 20, 575) ,
-		[2] = display.newRect(410, 180, 20, 575), 
-
-		-- Rectangles for the walls blocking
-		-- the area on the left and right side
-		[3] = display.newRect(15, 225, 85, 15) ,
-		[4] = display.newRect(440, 100, 35, 15) ,
-
-		-- Rectangles for the center column
-		[5] = display.newRect(130, 165, 20, 140) , 
-		[6] = display.newRect(350, 165, 20, 140) ,
-
-		-- Horizontal rectangles for center column
-		[7] = display.newRect(240, 225, 200, 15) ,
-		[8] = display.newRect(240, 100, 200, 15)
-
-		--lines:setFillColor(255, 165, 79)
-}
-
 end
- 
-
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
@@ -263,14 +242,6 @@ function scene:createScene( event )
 	group:insert( background )
 	group:insert( ballTable[1] )
 	group:insert( ballTable[2] )
-	group:insert( lines[1])
-	group:insert( lines[2]) 
-	group:insert( lines[3])
-	group:insert( lines[4])
-	group:insert( lines[5])
-	group:insert( lines[6])
-	group:insert( lines[7])
-	group:insert( lines[8])
 	
 	for count = 1, #lines do
 		group:insert(lines[count])
@@ -312,16 +283,10 @@ end
 
 function scene:willEnterScene( event )
 
-
 	ballTable[1].x = ballVariables.getBall1x()
 	ballTable[1].y = ballVariables.getBall1y()
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
-
-	-- apply physics to wall
-	for count = 1, 8, 1 do 
-		physics.addBody(lines[count], "static", { bounce = 0.01 } )
-	end
 
 	print( "load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 	print("Entering D")
