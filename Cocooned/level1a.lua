@@ -98,13 +98,7 @@ end
 
 -- ball movement control
 local function moveBall(event)
-	
-	if isPaused then
-		physics.start()
-		isPaused = false
-	end
-	
-	
+		
 	local x 
 	local y
 	local tap = 0
@@ -304,6 +298,10 @@ function scene:exitScene( event )
 		physics.removeBody(lines[count])
 	end
 
+	for count = 1, #walls do
+		physics.removeBody(walls[count])
+	end
+	
 	physics.pause()
 	
 	print("Exit A")

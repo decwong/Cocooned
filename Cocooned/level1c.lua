@@ -15,6 +15,8 @@ display.setStatusBar(display.HiddenStatusBar )
 local physics = require "physics"
 physics.start(); physics.pause()
 
+-- Set view mode to show bounding boxes 
+physics.setDrawMode("hybrid")
 
 --------------------------------------------
 
@@ -97,6 +99,7 @@ end
 	
 -- ball movement control
 local function moveBall(event)
+		
 	--print("LevelA")
 	local x 
 	local y
@@ -223,11 +226,6 @@ function scene:createScene( event )
 	background.anchorY = 0.0
 	background.x, background.y = -50, 0
 
-	-- apply physics to wall
-	for count = 1, #walls do
-		physics.addBody(walls[count], "static", { bounce = 0.01 } )
-	end
-
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
@@ -268,6 +266,11 @@ function scene:willEnterScene( event )
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
 
+	-- apply physics to wall
+	for count = 1, #walls do
+		physics.addBody(walls[count], "static", { bounce = 0.01 } )
+	end
+	
 	for count = 1, #lines do 
 		physics.addBody(lines[count], "static", { bounce = 0.01 } )
 	end
@@ -290,7 +293,11 @@ function scene:exitScene( event )
 		physics.removeBody(lines[count])
 	end
 
-	physics.pause()
+	for count = 1, #walls do
+		physics.removeBody(walls[count])
+	end
+	
+	--physics.pause()
 	
 	print("Exit C")
 end

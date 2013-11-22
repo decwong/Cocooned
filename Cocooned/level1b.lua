@@ -103,6 +103,7 @@ end
 
 -- ball movement control
 local function moveBall(event)
+
 		local x 
 		local y
 		local tap = 0
@@ -202,10 +203,15 @@ local function moveBall(event)
 				end
 			end	
 		end
-end
+	end
 
 	-- Collision Detection for every frame during game time
 local function frame(event)
+
+	for count = 1, #ballTable do
+		print("B Velocity =", ballTable[count].angularVelocity)
+	end
+
 
 	-- send both ball position values to distance function
 	distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
@@ -256,7 +262,6 @@ function scene:enterScene( event )
 	ballTable[2]:setLinearVelocity(0,0)
 	ballTable[2].angularVelocity = 0
 
-
 	-- apply physics to wall
 	for count = 1, #walls do
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
@@ -266,7 +271,7 @@ function scene:enterScene( event )
 	for count = 1, #lines do 
 		physics.addBody(lines[count], "static", { bounce = 0.01 } )
 	end
-
+	
 	physics.setGravity(0, 0)
 
 	Runtime:addEventListener("touch", moveBall)
@@ -280,7 +285,7 @@ function scene:willEnterScene( event )
 	ballTable[1].y = ballVariables.getBall1y()
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
-	
+		
 	--print( "load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 
 	print("Entering B")
@@ -301,8 +306,12 @@ function scene:exitScene( event )
 	for count = 1, #lines do 
 		physics.removeBody(lines[count])
 	end
+	
+	for count = 1, #walls do
+		physics.removeBody(walls[count])
+	end
 
-	physics.pause()
+	--physics.pause()
 	
 	print("Exit B")
 end
@@ -316,8 +325,8 @@ function scene:destroyScene( event )
 	--physics = nil
 
 	-- add physics to the balls
-	physics.removeBody(ballTable[1])
-	physics.removeBody(ballTable[2])
+	--physics.removeBody(ballTable[1])
+	--physics.removeBody(ballTable[2])
 end
 
 -----------------------------------------------------------------------------------------

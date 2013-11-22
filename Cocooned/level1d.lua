@@ -235,8 +235,8 @@ function scene:createScene( event )
 	ballTable[2].y = 180
 	
 	-- add physics to the balls
-	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
-	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+	--physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
+	--physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
 	
 	-- all display objects must be inserted into group
 	group:insert( background )
@@ -255,27 +255,17 @@ function scene:enterScene( event )
 	print("Enter D")
 	
 	physics.start()
+	
 	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
 	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
-
+	
 	ballTable[1]:setLinearVelocity(0,0)
 	ballTable[1].angularVelocity = 0
 	ballTable[2]:setLinearVelocity(0,0)
 	ballTable[2].angularVelocity = 0
 	
-	
-	-- apply physics to walls
-	for count = 1, #walls do
-		physics.addBody(walls[count], "static", { bounce = 0.01 } )
-	end
-	
-	-- apply physics to lines
-	for count = 1, #lines do
-		physics.addBody(lines[count], "static", { bounce = 0.01 } )
-	end
-
 	physics.setGravity(0, 0)
-
+	
 	Runtime:addEventListener("touch", moveBall)
 	Runtime:addEventListener("enterFrame", frame)
 	
@@ -288,6 +278,16 @@ function scene:willEnterScene( event )
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
 
+	-- apply physics to walls
+	for count = 1, #walls do
+		physics.addBody(walls[count], "static", { bounce = 0.01 } )
+	end
+	
+	-- apply physics to lines
+	for count = 1, #lines do
+		physics.addBody(lines[count], "static", { bounce = 0.01 } )
+	end
+	
 	print( "load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 	print("Entering D")
 end
@@ -306,8 +306,12 @@ function scene:exitScene( event )
 	for count = 1, #lines do
 		physics.removeBody(lines[count])
 	end
+	
+	for count = 1, #walls do
+		physics.removeBody(walls[count])
+	end
 
-	physics.pause()
+	--physics.pause()
 
 	print("Exit D")
 end

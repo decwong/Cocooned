@@ -257,6 +257,14 @@ function scene:exitScene( event )
 
 	physics.removeBody(ballTable[1])
 	physics.removeBody(ballTable[2])
+	
+	--for count = 1, #lines do
+	--	physics.removeBody(walls[count])
+	--end
+	
+	for count = 1, #walls do
+		physics.removeBody(walls[count])
+	end
 
 	physics.pause()
 	
