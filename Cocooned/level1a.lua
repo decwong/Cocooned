@@ -63,27 +63,27 @@ local walls = {
 	-- Bottom wall
 	walls[4].x = 250
 	walls[4].y = 315	
-	
+		
 -- Draw lines
 local lines = {
 	-- newRect(left, top, width, height)
-	-- Rectangles for inital pane on 
+	-- Rectangles for pane on 
 	-- left and right side
-	[1] = display.newRect(70, 180, 20, 575) ,
-	[2] = display.newRect(410, 180, 20, 575), 
+	[1] = display.newRect(70, 120, 20, 220) ,
+	[2] = display.newRect(410, 200, 20, 220), 
 
 	-- Rectangles for the walls blocking
 	-- the area on the left and right side
-	[3] = display.newRect(15, 200, 85, 15) ,
+	[3] = display.newRect(15, 225, 85, 15) ,
 	[4] = display.newRect(465, 100, 85, 15) , 
 
 	-- Rectangles for the center column
-	[5] = display.newRect(130, 180, 20, 400) , 
-	[6] = display.newRect(350, 180, 20, 400) ,
-	
+	[5] = display.newRect(130, 200, 20, 220) , 
+	[6] = display.newRect(350, 120, 20, 220) ,
+
 	-- Horizontal rectangles for center column
-	[7] = display.newRect(240, 225, 200, 15) ,
-	[8] = display.newRect(240, 100, 200, 15) }
+	[7] = display.newRect(270, 225, 150, 15) ,
+	[8] = display.newRect(210, 100, 150, 15) }
 		
 -- distance function
 local dist
@@ -220,30 +220,7 @@ local function frame(event)
 	if dist <= 35 then
 		print("Distance =", dist)
 	end
-
--- Draw lines
-	local lines = {
-		-- newRect(left, top, width, height)
-
-		-- Rectangles for pane on 
-		-- left and right side
-		[1] = display.newRect(70, 120, 20, 220) ,
-		[2] = display.newRect(410, 200, 20, 220), 
-
-		-- Rectangles for the walls blocking
-		-- the area on the left and right side
-		[3] = display.newRect(15, 225, 85, 15) ,
-		[4] = display.newRect(465, 100, 85, 15) , 
-
-		-- Rectangles for the center column
-		[5] = display.newRect(130, 200, 20, 220) , 
-		[6] = display.newRect(350, 120, 20, 220) ,
-
-		-- Horizontal rectangles for center column
-		[7] = display.newRect(270, 225, 150, 15) ,
-		[8] = display.newRect(210, 100, 150, 15)
-	}
-
+	
 end
 
 -- Called when the scene's view does not exist:
@@ -263,14 +240,6 @@ function scene:createScene( event )
 	group:insert( background )
 	group:insert( ballTable[1] )
 	group:insert( ballTable[2] )
-	group:insert( lines[1])
-	group:insert( lines[2])
-	group:insert( lines[3])
-	group:insert( lines[4])
-	group:insert( lines[5])
-	group:insert( lines[6])
-	group:insert( lines[7])
-	group:insert( lines[8])
 
 	for count = 1, #lines do
 		group:insert(lines[count])
@@ -288,14 +257,10 @@ function scene:enterScene( event )
 	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
 	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
 
-	
-
 	ballTable[1]:setLinearVelocity(0,0)
 	ballTable[1].angularVelocity = 0
 	ballTable[2]:setLinearVelocity(0,0)
 	ballTable[2].angularVelocity = 0
-
-	physics.setGravity(0, 0)
 
 	Runtime:addEventListener("touch", moveBall)
 	Runtime:addEventListener("enterFrame", frame)
