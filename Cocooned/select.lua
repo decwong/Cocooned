@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------------------
 --
--- menu.lua
+-- select.lua
 --
 -----------------------------------------------------------------------------------------
 
@@ -13,13 +13,13 @@ local widget = require "widget"
 --------------------------------------------
 
 -- forward declarations and other locals
-local playBtn
+local playLvl = {}
 
 -- 'onRelease' event listener for playBtn
 local function onPlayBtnRelease()
 	
 	-- go to level1.lua scene
-	storyboard.gotoScene( "select", "fade", 500 )
+	storyboard.gotoScene( "level1", "fade", 250 )
 	
 	return true	-- indicates successful touch
 end
@@ -37,35 +37,67 @@ function scene:createScene( event )
 	local group = self.view
 
 	-- display a background image
-	local background = display.newImageRect( "logo.png", display.contentWidth, display.contentHeight )
+	local background = display.newImageRect( "background2.jpg", display.contentWidth, display.contentHeight )
 	--background:setReferencePoint( display.TopLeftReferencePoint )
 	background.anchorX = 0.0
 	background.anchorY = 0.0
 	background.x, background.y = 0, 0
-	
-	-- create/position logo/title image on upper-half of the screen
-	--local titleLogo = display.newImageRect( "logo.png", 264, 125 )
-	--titleLogo:setReferencePoint( display.CenterReferencePoint )
-	--titleLogo.x = display.contentWidth * 0.5
-	--titleLogo.y = 100
-	
+		
 	-- create a widget button (which will loads level1.lua on release)
-	playBtn = widget.newButton{
-		label="Play Now",
+	playLvl[1] = widget.newButton{
+		label="lvl1",
 		labelColor = { default={255}, over={128} },
-		defaultFile="button.png",
-		overFile="button-over.png",
-		width=154, height=50,
+		defaultFile="1.png",
+		overFile="1.png",
+		width=100, height=50,
 		onRelease = onPlayBtnRelease	-- event listener function
 	}
-	--playBtn:setReferencePoint( display.CenterReferencePoint )
-	playBtn.x = display.contentWidth*0.5
-	playBtn.y = display.contentHeight - 70
+	
+	-- create a widget button (which will loads level1.lua on release)
+	playLvl[2] = widget.newButton{
+		label="lvl2",
+		labelColor = { default={255}, over={128} },
+		defaultFile="2.png",
+		overFile="2.png",
+		width=100, height=50,
+		onRelease = onPlayBtnRelease	-- event listener function
+	}
+	
+	-- create a widget button (which will loads level1.lua on release)
+	playLvl[3] = widget.newButton{
+		label="lvl3",
+		labelColor = { default={255}, over={128} },
+		defaultFile="3.png",
+		overFile="3.png",
+		width=100, height=50,
+		onRelease = onPlayBtnRelease	-- event listener function
+	}
+	
+	-- create a widget button (which will loads level1.lua on release)
+	playLvl[4] = widget.newButton{
+		label="lvl4",
+		labelColor = { default={255}, over={128} },
+		defaultFile="4.png",
+		overFile="4.png",
+		width=100, height=50,
+		onRelease = onPlayBtnRelease	-- event listener function
+	}
+
+	playLvl[1].x = 100
+	playLvl[1].y = 100
+	playLvl[2].x = 250
+	playLvl[2].y = 100
+	playLvl[3].x = 400
+	playLvl[3].y = 100
+	playLvl[4].x = 100
+	playLvl[4].y = 200
 	
 	-- all display objects must be inserted into group
 	group:insert( background )
-	--group:insert( titleLogo )
-	group:insert( playBtn )
+	
+	for count = 1, #playLvl do
+		group:insert( playLvl[count])
+	end
 end
 
 -- Called immediately after scene has moved onscreen:
@@ -87,10 +119,13 @@ end
 -- If scene's view is removed, scene:destroyScene() will be called just prior to:
 function scene:destroyScene( event )
 	local group = self.view
-	print("Destoryed menu")
-	if playBtn then
-		playBtn:removeSelf()	-- widgets must be manually removed
-		playBtn = nil
+	print("Destroyed menu")
+	
+	for count = 1, #playLvl do
+		if playLvl[count] then
+			playLvl[count]:removeSelf()	-- widgets must be manually removed
+			playLvl[count] = nil
+		end
 	end
 end
 

@@ -29,34 +29,19 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 -- 
 -----------------------------------------------------------------------------------------
 
-
-
-
-
-	
-	-- make a crate (off-screen), position it, and rotate slightly
-
 local ballTable = { 
 	[1] = display.newImage("ball.png"), 
 	[2] = display.newImage("ball.png") }
 	
+-- add new walls
+-- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
+local walls = {
+	[1] = display.newImage("ground1.png"),
+	[2] = display.newImage("ground1.png"),
+	[3] = display.newImage("ground2.png"),
+	[4] = display.newImage("ground2.png") 
+} 
 	
-	
-local function saveBallLocation()
-	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
-	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
-end
-	-- add new walls
-	-- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
-	local walls = {
-		[1] = display.newImage("ground1.png"),
-		[2] = display.newImage("ground1.png"),
-		[3] = display.newImage("ground2.png"),
-		[4] = display.newImage("ground2.png") 
-	} 
-	
-	
-
 	-- Left wall
 	walls[1].x = -40
 	walls[1].y = 180
@@ -75,70 +60,76 @@ end
 	walls[4].x = 250
 	walls[4].y = 315
 	
-	-- distance function
-	local dist
-	local function distance(x1, x2, y1, y2, detectString)
-		dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
-		if detectString then
-			--print(detectString, dist)
-		end
-	end
-	-- ball movement control
-	local function moveBall(event)
-		--print("LevelA")
-		local x 
-		local y
-		local tap = 0
-		
-		--find distance from start touch to end touch
-		local dx = event.x - event.xStart
-		local dy = event.y - event.yStart
-		
 
-		--checking if touch was a tap touch and not a swipe
-		if dx < 5 then
-			if dx > -5 then
-				if dy < 5 then
-					if dy > -5 then
-						tap = 1
-					end
+local function saveBallLocation()
+	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
+	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
+end
+
+-- distance function
+local dist
+local function distance(x1, x2, y1, y2, detectString)
+	dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
+	if detectString then
+		--print(detectString, dist)
+	end
+end
+	
+-- ball movement control
+local function moveBall(event)
+	--print("LevelA")
+	local x 
+	local y
+	local tap = 0
+	
+	--find distance from start touch to end touch
+	local dx = event.x - event.xStart
+	local dy = event.y - event.yStart
+	
+	--checking if touch was a tap touch and not a swipe
+	if dx < 5 then
+		if dx > -5 then
+			if dy < 5 then
+				if dy > -5 then
+					tap = 1
 				end
 			end
 		end
+	end
 		
-		if tap == 1 then
-			if event.phase == "ended" then
-				for count = 1, 2, 1 do
+	if tap == 1 then
+		if event.phase == "ended" then
+			for count = 1, 2, 1 do
+	
+			-- send mouse/ball position values to distance function
+			distance(event.x, ballTable[count].x, event.y, ballTable[count].y, "Mouse to Ball Distance: ")
 			
-				-- send mouse/ball position values to distance function
-				distance(event.x, ballTable[count].x, event.y, ballTable[count].y, "Mouse to Ball Distance: ")
-			
-				-- if it is taking too many tries to move the ball, increase the distance <= *value*
-				if dist <= 100 then
-						x = event.x - ballTable[count].x;
-						y = event.y - ballTable[count].y;
-						--print (x, y)
+			-- if it is taking too many tries to move the ball, increase the distance <= *value*
+			if dist <= 100 then
+				x = event.x - ballTable[count].x;
+				y = event.y - ballTable[count].y;
+				--print (x, y)
 
-						if x < 0 then
-							if x > -30 then
-								if y > 0 then
-									ballTable[count]:applyLinearImpulse(0,-0.05, ballTable[count].x, ballTable[count].y)
-								elseif y < 0 then
-									ballTable[count]:applyLinearImpulse(0,0.05, ballTable[count].x, ballTable[count].y)
-								end
-							elseif y >0 then
-								if y < 30 then
-									ballTable[count]:applyLinearImpulse(0.05, 0, ballTable[count].x, ballTable[count].y)
-								else
-									ballTable[count]:applyLinearImpulse( 0.05, -0.05 ,ballTable[count].x, ballTable[count].y)
-								end
-							elseif y < 0 then
-								if y > -30 then
-									ballTable[count]:applyLinearImpulse(0.05, 0, ballTable[count].x, ballTable[count].y)
-								else
-									ballTable[count]:applyLinearImpulse( 0.05, 0.05, ballTable[count].x, ballTable[count].y)
-								end
+				if x < 0 then
+					if x > -30 then
+						if y > 0 then
+							ballTable[count]:applyLinearImpulse(0,-0.05, ballTable[count].x, ballTable[count].y)
+						elseif y < 0 then
+							ballTable[count]:applyLinearImpulse(0,0.05, ballTable[count].x, ballTable[count].y)
+						end
+						elseif y >0 then
+							if y < 30 then
+								ballTable[count]:applyLinearImpulse(0.05, 0, ballTable[count].x, ballTable[count].y)
+							else
+								ballTable[count]:applyLinearImpulse( 0.05, -0.05 ,ballTable[count].x, ballTable[count].y)
 							end
+						elseif y < 0 then
+							if y > -30 then
+								ballTable[count]:applyLinearImpulse(0.05, 0, ballTable[count].x, ballTable[count].y)
+							else
+								ballTable[count]:applyLinearImpulse( 0.05, 0.05, ballTable[count].x, ballTable[count].y)
+							end
+						end
 						elseif x > 0 then
 							if x < 30 then
 								if y > 0 then
@@ -214,7 +205,7 @@ function scene:createScene( event )
 	background.x, background.y = -50, 0
 
 	-- apply physics to wall
-	for count = 1, 4, 1 do
+	for count = 1, #walls do
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
 	end
 
@@ -230,8 +221,6 @@ function scene:enterScene( event )
 
 	print("Enter C")
 
-	
-	
 	physics.start()
 	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
 	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
@@ -255,7 +244,7 @@ function scene:willEnterScene( event )
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
 
-	print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
+	--print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
 	print("Entering C")
 end
 

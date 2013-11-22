@@ -36,27 +36,15 @@ local ballTable = {
 		[1] = display.newImage("ball.png"), 
 		[2] = display.newImage("ball.png") }
 
--- distance function
-local dist
-local function distance(x1, x2, y1, y2, detectString)
-	dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
-	if detectString then
-		--print(detectString, dist)
-	end
-end
-
-local function saveBallLocation()
-	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
-	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
-end
-	-- add new walls
-	-- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
-	local walls = {
-		[1] = display.newImage("ground1.png"),
-		[2] = display.newImage("ground1.png"),
-		[3] = display.newImage("ground2.png"),
-		[4] = display.newImage("ground2.png") 
-	} 
+		
+-- add new walls
+-- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
+local walls = {
+	[1] = display.newImage("ground1.png"),
+	[2] = display.newImage("ground1.png"),
+	[3] = display.newImage("ground2.png"),
+	[4] = display.newImage("ground2.png") 
+} 
 
 	-- Left wall
 	walls[1].x = -40
@@ -76,13 +64,45 @@ end
 	walls[4].x = 250
 	walls[4].y = 315	
 	
-	-- apply physics to walls
-	for count = 1, 4, 1 do
-		physics.addBody(walls[count], "static", { bounce = 0.01 } )
-	end
+-- Draw lines
+local lines = {
+	-- newRect(left, top, width, height)
+	-- Rectangles for inital pane on 
+	-- left and right side
+	[1] = display.newRect(70, 180, 20, 575) ,
+	[2] = display.newRect(410, 180, 20, 575), 
+
+	-- Rectangles for the walls blocking
+	-- the area on the left and right side
+	[3] = display.newRect(15, 200, 85, 15) ,
+	[4] = display.newRect(465, 100, 85, 15) , 
+
+	-- Rectangles for the center column
+	[5] = display.newRect(130, 180, 20, 400) , 
+	[6] = display.newRect(350, 180, 20, 400) ,
+	
+	-- Horizontal rectangles for center column
+	[7] = display.newRect(240, 225, 200, 15) ,
+	[8] = display.newRect(240, 100, 200, 15) }
+		
+-- distance function
+local dist
+local function distance(x1, x2, y1, y2)
+	dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
+end
+
+local function saveBallLocation()
+	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
+	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
+end
 
 -- ball movement control
 local function moveBall(event)
+	
+	if isPaused then
+		physics.start()
+		isPaused = false
+	end
 	
 	local x 
 	local y
@@ -190,13 +210,13 @@ local function moveBall(event)
 					storyboard.gotoScene( "level1c", "fade", 500 )
 				elseif event.yStart < event.y and swipeLengthy > 50 then
 					print( "Swiped Up" )
-					ballTable[1]:setLinearVelocity(0,0)
-					ballTable[1].angularVelocity = 0
-					ballTable[2]:setLinearVelocity(0,0)
-					ballTable[2].angularVelocity = 0
+					--ballTable[1]:setLinearVelocity(0,0)
+					--ballTable[1].angularVelocity = 0
+					--ballTable[2]:setLinearVelocity(0,0)
+					--ballTable[2].angularVelocity = 0
 					saveBallLocation()
 					Runtime:removeEventListener("enterFrame", frame)
-					storyboard.gotoScene( "level1a", "fade", 100 )
+					storyboard.gotoScene( "level1a", "fade", 500 )
 				end	
 			end
 		end	
@@ -204,40 +224,34 @@ local function moveBall(event)
 end
 
 
-	-- accelerometer movement
-	local function onAccelerate( event )
-		local xGrav=1
-		local yGrav=1
-		if event.yInstant > 0.1 then
-			xGrav = -1
-		elseif event.yInstant < -0.1 then
-			xGrav = 1
-		elseif event.yGravity > 0.1 then
-			xGrav = -1
-		elseif event.yGravity < -0.1 then
-			xGrav = 1
-			else
-				xGrav = 0
-		end
-		if event.xInstant > 0.1 then
-			yGrav = -1
-		elseif event.xInstant < -0.1 then
-			yGrav = 1
-		elseif event.xGravity > 0.1 then
-			yGrav = -1
-		elseif event.xGravity < -0.1 then
-			yGrav = 1
-			else
-				yGrav = 0
-		end
-		physics.setGravity(12*xGrav, 16*yGrav)
+-- accelerometer movement
+local function onAccelerate( event )
+	local xGrav=1
+	local yGrav=1
+	if event.yInstant > 0.1 then
+		xGrav = -1
+	elseif event.yInstant < -0.1 then
+		xGrav = 1
+	elseif event.yGravity > 0.1 then
+		xGrav = -1
+	elseif event.yGravity < -0.1 then
+		xGrav = 1
+		else
+			xGrav = 0
 	end
-
-	accelerometerON = true
-	if accelerometerON == true then
-		Runtime:addEventListener( "accelerometer", onAccelerate )
+	if event.xInstant > 0.1 then
+		yGrav = -1
+	elseif event.xInstant < -0.1 then
+		yGrav = 1
+	elseif event.xGravity > 0.1 then
+		yGrav = -1
+	elseif event.xGravity < -0.1 then
+		yGrav = 1
+		else
+			yGrav = 0
 	end
-
+	physics.setGravity(12*xGrav, 16*yGrav)
+end
 
 -- Collision Detection for every frame during game time
 local function frame(event)
@@ -252,30 +266,6 @@ local function frame(event)
 	end
 end
 
--- Draw lines
-	local lines = {
-		-- newRect(left, top, width, height)
-
-		-- Rectangles for inital pane on 
-		-- left and right side
-		[1] = display.newRect(70, 180, 20, 575) ,
-		[2] = display.newRect(410, 180, 20, 575), 
-
-		-- Rectangles for the walls blocking
-		-- the area on the left and right side
-		[3] = display.newRect(15, 200, 85, 15) ,
-		[4] = display.newRect(465, 100, 85, 15) , 
-
-		-- Rectangles for the center column
-		[5] = display.newRect(130, 180, 20, 400) , 
-		[6] = display.newRect(350, 180, 20, 400) ,
-
-		-- Horizontal rectangles for center column
-		[7] = display.newRect(240, 225, 200, 15) ,
-		[8] = display.newRect(240, 100, 200, 15)
-	}
-
-
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
 	print("Create MAIN")
@@ -284,71 +274,30 @@ function scene:createScene( event )
 	-- create a grey rectangle as the backdrop
 	-- temp wood background from http://wallpaperstock.net/wood-floor-wallpapers_w6855.html
 	local background = display.newImageRect( "background2.jpg", screenW+100, screenH)
-	--background:setReferencePoint( display.TopLeftReferencePoint )
+
 	background.anchorX = 0.0
 	background.anchorY = 0.0
 	background.x, background.y = -50, 0
 	
-	-- add physics to the balls
-	
-	
-	-- add new walls
-	-- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
-	local walls = {
-		[1] = display.newImage("ground1.png"),
-		[2] = display.newImage("ground1.png"),
-		[3] = display.newImage("ground2.png"),
-		[4] = display.newImage("ground2.png") } 
-		--[5] = display.newImage("ground1.png"), 
-		--[6] = display.newImage("ground1.png") 
-
-	local gameWalls =  {
-		[1] = display.newImage("ground2.png"), 
-		[2] = display.newImage("ground2.png") 
-	}
-	
-	-- Left wall
-	walls[1].x = -40
-	walls[1].y = 180
-	walls[1].rotation = 90
-	
-	-- Right wall
-	walls[2].x = 520
-	walls[2].y = 180
-	walls[2].rotation = 90
-	
-	-- Top wall
-	walls[3].x = 250
-	walls[3].y = 5
-	
-	-- Bottom wall
-	walls[4].x = 250
-	walls[4].y = 315
-
-	-- apply physics to wall
-	for count = 1, 4, 1 do
-		physics.addBody(walls[count], "static", { bounce = 0.01 } )
+		accelerometerON = true
+	if accelerometerON == true then
+		Runtime:addEventListener( "accelerometer", onAccelerate )
 	end
 
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
 	group:insert( ballTable[2] )
-	group:insert( lines[1])
-	group:insert( lines[2])
-	group:insert( lines[3])
-	group:insert( lines[4])
-	group:insert( lines[5])
-	group:insert( lines[6])
-	group:insert( lines[7])
-	group:insert( lines[8])
+	
+	for count = 1, #lines do
+		group:insert(lines[count])
+	end
+
 end
 
 -- Called immediately after scene has moved onscreen:
 function scene:enterScene( event )
 	local group = self.view
-
-
 
 	print("Enter MAIN")
 
@@ -370,11 +319,15 @@ function scene:willEnterScene( event )
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
 
-	for count = 1, 8, 1 do 
-		physics.addBody(lines[count], "static", { bounce = 0.01 } )
+	-- apply physics to walls
+	for count = 1, #walls do
+		physics.addBody(walls[count], "static", { bounce = 0.01 } )
 	end
 	
-	--print("load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
+	for count = 1, #lines do 
+		physics.addBody(lines[count], "static", { bounce = 0.01 } )
+	end
+
 	print("Entering MAIN")
 end
 
@@ -390,7 +343,7 @@ function scene:exitScene( event )
 
 	--print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
 
-	for count = 1, 8, 1 do 
+	for count = 1, #lines do
 		physics.removeBody(lines[count])
 	end
 
