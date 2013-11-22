@@ -307,6 +307,11 @@ function scene:enterScene( event )
 	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
 	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
 
+	ballTable[1]:setLinearVelocity(0,0)
+	ballTable[1].angularVelocity = 0
+	ballTable[2]:setLinearVelocity(0,0)
+	ballTable[2].angularVelocity = 0
+
 	Runtime:addEventListener("touch", moveBall)
 	Runtime:addEventListener("enterFrame", frame)
 	
