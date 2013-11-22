@@ -214,6 +214,29 @@ end
 		end
 	end
 
+-- Draw lines
+	local lines = {
+		-- newRect(left, top, width, height)
+
+		-- Rectangles for pane on 
+		-- left and right side
+		[1] = display.newRect(70, 120, 20, 220) ,
+		[2] = display.newRect(410, 200, 20, 220), 
+
+		-- Rectangles for the walls blocking
+		-- the area on the left and right side
+		[3] = display.newRect(15, 225, 85, 15) ,
+		[4] = display.newRect(465, 100, 85, 15) , 
+
+		-- Rectangles for the center column
+		[5] = display.newRect(130, 200, 20, 220) , 
+		[6] = display.newRect(350, 120, 20, 220) ,
+
+		-- Horizontal rectangles for center column
+		[7] = display.newRect(270, 225, 150, 15) ,
+		[8] = display.newRect(210, 100, 150, 15)
+	}
+
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
@@ -233,6 +256,14 @@ function scene:createScene( event )
 	group:insert( background )
 	group:insert( ballTable[1] )
 	group:insert( ballTable[2] )
+	group:insert( lines[1])
+	group:insert( lines[2])
+	group:insert( lines[3])
+	group:insert( lines[4])
+	group:insert( lines[5])
+	group:insert( lines[6])
+	group:insert( lines[7])
+	group:insert( lines[8])
 end
 
 -- Called immediately after scene has moved onscreen:
@@ -244,6 +275,8 @@ function scene:enterScene( event )
 	physics.start()
 	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
 	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+
+	
 
 	ballTable[1]:setLinearVelocity(0,0)
 	ballTable[1].angularVelocity = 0
@@ -265,6 +298,9 @@ function scene:willEnterScene( event )
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
 
+	for count = 1, 8, 1 do 
+		physics.addBody(lines[count], "static", { bounce = 0.01 } )
+	end
 
 	print( "load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 	print("Entering A")
@@ -279,6 +315,10 @@ function scene:exitScene( event )
 
 	physics.removeBody(ballTable[1])
 	physics.removeBody(ballTable[2])
+
+	for count = 1, 8, 1 do 
+		physics.removeBody(lines[count])
+	end
 
 	physics.pause()
 	

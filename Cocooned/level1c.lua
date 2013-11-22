@@ -199,6 +199,28 @@ end
 		end
 	end
 
+-- Draw lines
+	local lines = {
+		-- newRect(left, top, width, height)
+
+		-- Rectangles for pane on 
+		-- left and right side
+		[1] = display.newRect(70, 180, 20, 575) ,
+		[2] = display.newRect(410, 180, 20, 575), 
+
+		-- Rectangles for the walls blocking
+		-- the area on the left and right side
+		[3] = display.newRect(15, 225, 85, 15) ,
+		[4] = display.newRect(465, 100, 85, 15) , 
+
+		-- Rectangles for the center column
+		[5] = display.newRect(130, 180, 20, 400) , 
+		[6] = display.newRect(350, 180, 20, 400) ,
+
+		-- Horizontal rectangles for center column
+		[7] = display.newRect(240, 225, 200, 15) ,
+		[8] = display.newRect(240, 100, 200, 15)
+	}
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
@@ -222,6 +244,14 @@ function scene:createScene( event )
 	group:insert( background )
 	group:insert( ballTable[1] )
 	group:insert( ballTable[2] )
+	group:insert( lines[1])
+	group:insert( lines[2])
+	group:insert( lines[3])
+	group:insert( lines[4])
+	group:insert( lines[5])
+	group:insert( lines[6])
+	group:insert( lines[7])
+	group:insert( lines[8])
 end
 
 -- Called immediately after scene has moved onscreen:
@@ -255,6 +285,10 @@ function scene:willEnterScene( event )
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
 
+	for count = 1, 8, 1 do 
+		physics.addBody(lines[count], "static", { bounce = 0.01 } )
+	end
+
 	print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
 	print("Entering C")
 end
@@ -268,6 +302,10 @@ function scene:exitScene( event )
 
 	physics.removeBody(ballTable[1])
 	physics.removeBody(ballTable[2])
+
+	for count = 1, 8, 1 do 
+		physics.removeBody(lines[count])
+	end
 
 	physics.pause()
 	

@@ -263,7 +263,7 @@ end
 
 		-- Rectangles for the walls blocking
 		-- the area on the left and right side
-		[3] = display.newRect(15, 200, 85, 15) ,
+		[3] = display.newRect(15, 225, 85, 15) ,
 		[4] = display.newRect(465, 100, 85, 15) , 
 
 		-- Rectangles for the center column

@@ -211,8 +211,16 @@ local lines = {
 
 		-- Rectangles for the walls blocking
 		-- the area on the left and right side
-		[3] = display.newRect(-10, 200, 35, 15) ,
-		[4] = display.newRect(465, 100, 85, 15) 
+		[3] = display.newRect(-10, 225, 35, 15) ,
+		[4] = display.newRect(465, 100, 85, 15) ,
+
+		-- Rectangles for the center column
+		[5] = display.newRect(130, 165, 20, 140) , 
+		[6] = display.newRect(350, 165, 20, 140) ,
+
+		-- Horizontal rectangles for center column
+		[7] = display.newRect(240, 225, 200, 15) ,
+		[8] = display.newRect(240, 100, 200, 15)
 
 		--lines:setFillColor(255, 165, 79)
 }
@@ -241,11 +249,6 @@ function scene:createScene( event )
 		[4] = display.newImage("ground2.png") } 
 		--[5] = display.newImage("ground1.png"), 
 		--[6] = display.newImage("ground1.png") 
-	
-	-- apply physics to wall
-	for count = 1, 4, 1 do
-		physics.addBody(walls[count], "static", { bounce = 0.01 } )
-	end
 		
 	-- all display objects must be inserted into group
 	group:insert( background )
@@ -255,6 +258,10 @@ function scene:createScene( event )
 	group:insert( lines[2])
 	group:insert( lines[3])
 	group:insert( lines[4])
+	group:insert( lines[5])
+	group:insert( lines[6])
+	group:insert( lines[7])
+	group:insert( lines[8])
 end
 
 -- Called immediately after scene has moved onscreen:
@@ -273,10 +280,6 @@ function scene:enterScene( event )
 	ballTable[2]:setLinearVelocity(0,0)
 	ballTable[2].angularVelocity = 0
 
-	-- apply physics to lines
-	for count = 1, 4, 1 do 
-		physics.addBody(lines[count], "static", { bounce = 0.01 } )
-	end
 
 	physics.setGravity(0, 0)
 
@@ -294,7 +297,10 @@ function scene:willEnterScene( event )
 	ballTable[2].y = ballVariables.getBall2y()
 	
 	--print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
-
+	-- apply physics to lines
+	for count = 1, 8, 1 do 
+		physics.addBody(lines[count], "static", { bounce = 0.01 } )
+	end
 	--print( "load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 
 	print("Entering B")
@@ -311,7 +317,7 @@ function scene:exitScene( event )
 	physics.removeBody(ballTable[2])
 
 	-- apply physics to lines
-	for count = 1, 4, 1 do 
+	for count = 1, 8, 1 do 
 		physics.removeBody(lines[count])
 	end
 
