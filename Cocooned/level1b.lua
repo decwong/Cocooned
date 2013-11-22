@@ -14,12 +14,11 @@ display.setStatusBar(display.HiddenStatusBar )
 -- include Corona's "physics" library
 local physics = require "physics"
 physics.start(); physics.pause()
+
 -- Set view mode to show bounding boxes 
 physics.setDrawMode("hybrid")
 
-
 --------------------------------------------
-
 -- forward declarations and other locals
 local screenW, screenH, halfW = display.contentWidth, display.contentHeight, display.contentWidth*0.5
 
@@ -37,10 +36,6 @@ local ballTable = {
 	[1] = display.newImage("ball.png"), 
 	[2] = display.newImage("ball.png") }
 	
-local function saveBallLocation()
-	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
-	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
-end
 -- add new walls
 -- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
 local walls = {
@@ -50,30 +45,43 @@ local walls = {
 	[4] = display.newImage("ground2.png") 
 } 
 
--- Left wall
-walls[1].x = -40
-walls[1].y = 180
-walls[1].rotation = 90
+	-- Left wall
+	walls[1].x = -40
+	walls[1].y = 180
+	walls[1].rotation = 90
 
--- Right wall
-walls[2].x = 520
-walls[2].y = 180
-walls[2].rotation = 90
-	
--- Top wall
-walls[3].x = 250
-walls[3].y = 5
-	
--- Bottom wall
-walls[4].x = 250
-walls[4].y = 315
+	-- Right wall
+	walls[2].x = 520
+	walls[2].y = 180
+	walls[2].rotation = 90
+		
+	-- Top wall
+	walls[3].x = 250
+	walls[3].y = 5
+		
+	-- Bottom wall
+	walls[4].x = 250
+	walls[4].y = 315
 
--- apply physics to walls
-for count = 1, 4, 1 do
-	physics.addBody(walls[count], "static", { bounce = 0.01 } )
+local lines = {
+	-- newRect(left, top, width, height)
+	-- Rectangles for inital pane on 
+	-- left and right side
+	[1] = display.newRect(70, 180, 20, 575) ,
+	[2] = display.newRect(410, 180, 20, 575), 
+
+	-- Rectangles for the walls blocking
+	-- the area on the left and right side
+	[3] = display.newRect(-10, 200, 35, 15) ,
+	[4] = display.newRect(465, 100, 85, 15) 
+
+	--lines:setFillColor(255, 165, 79)
+}
+
+local function saveBallLocation()
+	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
+	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
 end
-
-	
 	
 -- distance function
 local dist
@@ -200,7 +208,6 @@ local function frame(event)
 		print("Distance =", dist)
 	end
 end
-
 local lines = {
 		-- newRect(left, top, width, height)
 
@@ -249,7 +256,6 @@ function scene:createScene( event )
 		[4] = display.newImage("ground2.png") } 
 		--[5] = display.newImage("ground1.png"), 
 		--[6] = display.newImage("ground1.png") 
-		
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
@@ -262,6 +268,10 @@ function scene:createScene( event )
 	group:insert( lines[6])
 	group:insert( lines[7])
 	group:insert( lines[8])
+			
+	for count = 1, #lines do
+		group:insert(lines[count])
+	end
 end
 
 -- Called immediately after scene has moved onscreen:
@@ -270,7 +280,6 @@ function scene:enterScene( event )
 
 	print("Enter B")
 
-	
 	physics.start()
 	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
 	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
@@ -281,6 +290,16 @@ function scene:enterScene( event )
 	ballTable[2].angularVelocity = 0
 
 
+	-- apply physics to wall
+	for count = 1, #walls do
+		physics.addBody(walls[count], "static", { bounce = 0.01 } )
+	end
+	
+	-- apply physics to lines
+	for count = 1, #lines do 
+		physics.addBody(lines[count], "static", { bounce = 0.01 } )
+	end
+
 	physics.setGravity(0, 0)
 
 	Runtime:addEventListener("touch", moveBall)
@@ -289,7 +308,6 @@ function scene:enterScene( event )
 end
 
 function scene:willEnterScene( event )
-
 
 	ballTable[1].x = ballVariables.getBall1x()
 	ballTable[1].y = ballVariables.getBall1y()
@@ -316,8 +334,9 @@ function scene:exitScene( event )
 	physics.removeBody(ballTable[1])
 	physics.removeBody(ballTable[2])
 
-	-- apply physics to lines
-	for count = 1, 8, 1 do 
+
+	-- remove physics to lines
+	for count = 1, #lines do 
 		physics.removeBody(lines[count])
 	end
 

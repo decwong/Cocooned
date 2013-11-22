@@ -31,30 +31,18 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 -- 
 -----------------------------------------------------------------------------------------
 
-
-
-
-
-	
-	-- make a crate (off-screen), position it, and rotate slightly
-
 local ballTable = { 
 	[1] = display.newImage("ball.png"), 
 	[2] = display.newImage("ball.png") }
 
-	
-local function saveBallLocation()
-	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
-	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
-end
-	-- add new walls
-	-- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
-	local walls = {
-		[1] = display.newImage("ground1.png"),
-		[2] = display.newImage("ground1.png"),
-		[3] = display.newImage("ground2.png"),
-		[4] = display.newImage("ground2.png") 
-	} 
+-- add new walls
+-- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
+local walls = {
+	[1] = display.newImage("ground1.png"),
+	[2] = display.newImage("ground1.png"),
+	[3] = display.newImage("ground2.png"),
+	[4] = display.newImage("ground2.png") 
+} 
 
 	-- Left wall
 	walls[1].x = -40
@@ -74,138 +62,148 @@ end
 	walls[4].x = 250
 	walls[4].y = 315
 
-	-- apply physics to walls
-	for count = 1, 4, 1 do
-		physics.addBody(walls[count], "static", { bounce = 0.01 } )
-	end
 
+local lines = {
+	-- newRect(left, top, width, height)
+	-- Rectangles for inital pane on 
+	-- left and right side
+	[1] = display.newRect(70, 180, 20, 575) ,
+	[2] = display.newRect(410, 180, 20, 575), 
+
+	-- Rectangles for the walls blocking
+	-- the area on the left and right side
+	[3] = display.newRect(15, 200, 85, 15) ,
+	[4] = display.newRect(440, 100, 35, 15) 
+
+}
+
+local function saveBallLocation()
+	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
+	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
+end
 	
 	
-	-- distance function
-	local dist
-	local function distance(x1, x2, y1, y2, detectString)
-		--print("Dist A")
-		dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
-		if detectString then
-			--print(detectString, dist)
-		end
+-- distance function
+local dist
+local function distance(x1, x2, y1, y2, detectString)
+	--print("Dist A")
+	dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
+	if detectString then
+		--print(detectString, dist)
 	end
-	-- ball movement control
-	local function moveBall(event)
+end
 
+-- ball movement control
+local function moveBall(event)
 
-		local x 
-		local y
-		local tap = 0
+	local x 
+	local y
+	local tap = 0
 		
-		--find distance from start touch to end touch
-		local dx = event.x - event.xStart
-		local dy = event.y - event.yStart
+	--find distance from start touch to end touch
+	local dx = event.x - event.xStart
+	local dy = event.y - event.yStart
 		
 
-		--checking if touch was a tap touch and not a swipe
-		if dx < 5 then
-			if dx > -5 then
-				if dy < 5 then
-					if dy > -5 then
-						tap = 1
-					end
+	--checking if touch was a tap touch and not a swipe
+	if dx < 5 then
+		if dx > -5 then
+			if dy < 5 then
+				if dy > -5 then
+					tap = 1
 				end
 			end
 		end
-
+	end
 		
-		if tap == 1 then
-			if event.phase == "ended" then
-				for count = 1, 2, 1 do
-			
-				-- send mouse/ball position values to distance function
-				distance(event.x, ballTable[count].x, event.y, ballTable[count].y, "Mouse to Ball Distance: ")
-			
-				-- if it is taking too many tries to move the ball, increase the distance <= *value*
-				if dist <= 100 then
-						x = event.x - ballTable[count].x;
-						y = event.y - ballTable[count].y;
-						--print (x, y)
-
+	if tap == 1 then
+		if event.phase == "ended" then
+			for count = 1, 2, 1 do
+		
+			-- send mouse/ball position values to distance function
+			distance(event.x, ballTable[count].x, event.y, ballTable[count].y, "Mouse to Ball Distance: ")
+		
+			-- if it is taking too many tries to move the ball, increase the distance <= *value*
+			if dist <= 100 then
+					x = event.x - ballTable[count].x;
+					y = event.y - ballTable[count].y;
+					--print (x, y)
 						if x < 0 then
-							if x > -30 then
-								if y > 0 then
-									ballTable[count]:applyLinearImpulse(0,-0.05, ballTable[count].x, ballTable[count].y)
-								elseif y < 0 then
-									ballTable[count]:applyLinearImpulse(0,0.05, ballTable[count].x, ballTable[count].y)
-								end
-							elseif y >0 then
-								if y < 30 then
-									ballTable[count]:applyLinearImpulse(0.05, 0, ballTable[count].x, ballTable[count].y)
-								else
-									ballTable[count]:applyLinearImpulse( 0.05, -0.05 ,ballTable[count].x, ballTable[count].y)
-								end
+						if x > -30 then
+							if y > 0 then
+								ballTable[count]:applyLinearImpulse(0,-0.05, ballTable[count].x, ballTable[count].y)
 							elseif y < 0 then
-								if y > -30 then
-									ballTable[count]:applyLinearImpulse(0.05, 0, ballTable[count].x, ballTable[count].y)
-								else
-									ballTable[count]:applyLinearImpulse( 0.05, 0.05, ballTable[count].x, ballTable[count].y)
-								end
+								ballTable[count]:applyLinearImpulse(0,0.05, ballTable[count].x, ballTable[count].y)
 							end
-						elseif x > 0 then
-							if x < 30 then
-								if y > 0 then
-									ballTable[count]:applyLinearImpulse(0,-0.05, ballTable[count].x, ballTable[count].y)
-								elseif y < 0 then
-									ballTable[count]:applyLinearImpulse(0,0.05, ballTable[count].x, ballTable[count].y)
-								end
+						elseif y >0 then
+							if y < 30 then
+								ballTable[count]:applyLinearImpulse(0.05, 0, ballTable[count].x, ballTable[count].y)
+							else
+								ballTable[count]:applyLinearImpulse( 0.05, -0.05 ,ballTable[count].x, ballTable[count].y)
+							end
+						elseif y < 0 then
+							if y > -30 then
+								ballTable[count]:applyLinearImpulse(0.05, 0, ballTable[count].x, ballTable[count].y)
+							else
+								ballTable[count]:applyLinearImpulse( 0.05, 0.05, ballTable[count].x, ballTable[count].y)
+							end
+						end
+					elseif x > 0 then
+						if x < 30 then
+							if y > 0 then
+								ballTable[count]:applyLinearImpulse(0,-0.05, ballTable[count].x, ballTable[count].y)
 							elseif y < 0 then
-								if y > -30 then
-									ballTable[count]:applyLinearImpulse(-0.05, 0, ballTable[count].x, ballTable[count].y)
-								else
-									ballTable[count]:applyLinearImpulse( -0.05, 0.05, ballTable[count].x, ballTable[count].y)
-								end
-							elseif y > 0 then
-								if y < 30 then
-									ballTable[count]:applyLinearImpulse(-0.05, 0, ballTable[count].x, ballTable[count].y)
-								else
-									ballTable[count]:applyLinearImpulse( -0.05, -0.05, ballTable[count].x, ballTable[count].y)
-								end
+								ballTable[count]:applyLinearImpulse(0,0.05, ballTable[count].x, ballTable[count].y)
+							end
+						elseif y < 0 then
+							if y > -30 then
+								ballTable[count]:applyLinearImpulse(-0.05, 0, ballTable[count].x, ballTable[count].y)
+							else
+								ballTable[count]:applyLinearImpulse( -0.05, 0.05, ballTable[count].x, ballTable[count].y)
+							end
+						elseif y > 0 then
+							if y < 30 then
+								ballTable[count]:applyLinearImpulse(-0.05, 0, ballTable[count].x, ballTable[count].y)
+							else
+								ballTable[count]:applyLinearImpulse( -0.05, -0.05, ballTable[count].x, ballTable[count].y)
 							end
 						end
 					end
 				end
 			end
-		elseif tap == 0 then
-			local swipeLength = math.abs(event.x - event.xStart)
-			local swipeLengthy = math.abs(event.y - event.yStart)
-			--print(event.phase, swipeLength)
-			local t = event.target
-			local phase = event.phase
-			if "began" == phase then
-				return true
-			elseif "moved" == phase then
-			elseif "ended" == phase or "cancelled" == phase then
-				local current = storyboard.getCurrentSceneName()
-				if current == "level1d" then
-					if event.xStart < event.x and swipeLength > 50 then 
-						print( "Swiped Right" )
-						saveBallLocation()
-						Runtime:removeEventListener("enterFrame", frame)
-						storyboard.gotoScene( "level1", "fade", 500 )
-					end
+		end
+	elseif tap == 0 then
+		local swipeLength = math.abs(event.x - event.xStart)
+		local swipeLengthy = math.abs(event.y - event.yStart)
+		--print(event.phase, swipeLength)
+		local t = event.target
+		local phase = event.phase
+		if "began" == phase then
+			return true
+		elseif "moved" == phase then
+		elseif "ended" == phase or "cancelled" == phase then
+			local current = storyboard.getCurrentSceneName()
+			if current == "level1d" then
+				if event.xStart < event.x and swipeLength > 50 then 
+					print( "Swiped Right" )
+					saveBallLocation()
+					Runtime:removeEventListener("enterFrame", frame)
+					storyboard.gotoScene( "level1", "fade", 500 )
 				end
-			end	
-		end
+			end
+		end	
 	end
+end
 
-	-- Collision Detection for every frame during game time
-	local function frame(event)
-
-		-- send both ball position values to distance function
-		distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
-		
-		-- When less than distance of 35 pixels, do something
-		-- 			Used print as testing. Works successfully!
-		if dist <= 35 then
-			print("Distance =", dist)
-		end
+-- Collision Detection for every frame during game time
+local function frame(event)
+	-- send both ball position values to distance function
+	distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
+	
+	-- When less than distance of 35 pixels, do something
+	-- 			Used print as testing. Works successfully!
+	if dist <= 35 then
+		print("Distance =", dist)
 	end
 
 local lines = {
@@ -231,6 +229,9 @@ local lines = {
 
 		--lines:setFillColor(255, 165, 79)
 }
+
+end
+ 
 
 
 -- Called when the scene's view does not exist:
@@ -258,41 +259,6 @@ function scene:createScene( event )
 	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
 	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
 	
-	-- add new walls
-	-- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
-	local walls = {
-		[1] = display.newImage("ground1.png"),
-		[2] = display.newImage("ground1.png"),
-		[3] = display.newImage("ground2.png"),
-		[4] = display.newImage("ground2.png") } 
-		--[5] = display.newImage("ground1.png"), 
-		--[6] = display.newImage("ground1.png") 
-	
-	-- Left wall
-	walls[1].x = -40
-	walls[1].y = 180
-	walls[1].rotation = 90
-	
-	-- Right wall
-	walls[2].x = 520
-	walls[2].y = 180
-	walls[2].rotation = 90
-	
-	-- Top wall
-	walls[3].x = 250
-	walls[3].y = 5
-	
-	-- Bottom wall
-	walls[4].x = 250
-	walls[4].y = 315
-
-	
-	
-	-- apply physics to wall
-	for count = 1, 4, 1 do
-		physics.addBody(walls[count], "static", { bounce = 0.01 } )
-	end
-
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
@@ -305,6 +271,10 @@ function scene:createScene( event )
 	group:insert( lines[6])
 	group:insert( lines[7])
 	group:insert( lines[8])
+	
+	for count = 1, #lines do
+		group:insert(lines[count])
+	end
 end
 
 -- Called immediately after scene has moved onscreen:
@@ -321,6 +291,17 @@ function scene:enterScene( event )
 	ballTable[1].angularVelocity = 0
 	ballTable[2]:setLinearVelocity(0,0)
 	ballTable[2].angularVelocity = 0
+	
+	
+	-- apply physics to walls
+	for count = 1, #walls do
+		physics.addBody(walls[count], "static", { bounce = 0.01 } )
+	end
+	
+	-- apply physics to lines
+	for count = 1, #lines do
+		physics.addBody(lines[count], "static", { bounce = 0.01 } )
+	end
 
 	physics.setGravity(0, 0)
 
@@ -357,7 +338,7 @@ function scene:exitScene( event )
 	physics.removeBody(ballTable[1])
 	physics.removeBody(ballTable[2])
 
-	for count = 1, 8, 1 do 
+	for count = 1, #lines do
 		physics.removeBody(lines[count])
 	end
 
