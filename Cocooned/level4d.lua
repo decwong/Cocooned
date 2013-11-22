@@ -301,7 +301,6 @@ function scene:exitScene( event )
 	-- add physics to the balls
 	physics.removeBody(ballTable[1])
 	--physics.removeBody(ballTable[2])
-
 	for count = 1, #lines do
 		physics.removeBody(walls[count])
 	end

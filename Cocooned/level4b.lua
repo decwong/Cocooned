@@ -319,6 +319,10 @@ function scene:exitScene( event )
 		boxes[count] = "box"
 	end
 
+	for count = 1, #walls do
+		physics.removeBody(walls[count])
+	end
+	
 	physics.pause()
 	
 	print("Exit B")

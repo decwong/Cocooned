@@ -266,6 +266,10 @@ function scene:enterScene( event )
 	--for count = 1, #lines do
 	--	physics.addBody(lines[count], "static", { bounce = 0.01 } )
 	--end
+	
+	for count = 1, #walls do
+		physics.removeBody(walls[count])
+	end
 
 	physics.setGravity(0, 0)
 
