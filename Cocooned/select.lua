@@ -15,11 +15,39 @@ local widget = require "widget"
 -- forward declarations and other locals
 local playLvl = {}
 
--- 'onRelease' event listener for playBtn
-local function onPlayBtnRelease()
+-- DIRTY DIRTY DIRTY CODE FOR RELEASE LISTENERS!
+-- 'onRelease' event listener for playLvl1
+local function onPlayLvl1Release()
 	
 	-- go to level1.lua scene
 	storyboard.gotoScene( "level1", "fade", 250 )
+	
+	return true	-- indicates successful touch
+end
+
+-- 'onRelease' event listener for playLvl2
+local function onPlayLvl2Release()
+	
+	-- go to level2.lua scene
+	storyboard.gotoScene( "level2", "fade", 250 )
+	
+	return true	-- indicates successful touch
+end
+
+-- 'onRelease' event listener for playLvl2
+local function onPlayLvl3Release()
+	
+	-- go to level3.lua scene
+	storyboard.gotoScene( "level3", "fade", 250 )
+	
+	return true	-- indicates successful touch
+end
+
+-- 'onRelease' event listener for playLvl2
+local function onPlayLvl4Release()
+	
+	-- go to level4.lua scene
+	storyboard.gotoScene( "level4", "fade", 250 )
 	
 	return true	-- indicates successful touch
 end
@@ -50,7 +78,7 @@ function scene:createScene( event )
 		defaultFile="1.png",
 		overFile="1.png",
 		width=100, height=50,
-		onRelease = onPlayBtnRelease	-- event listener function
+		onRelease = onPlayLvl1Release	-- event listener function
 	}
 	
 	-- create a widget button (which will loads level1.lua on release)
@@ -60,7 +88,7 @@ function scene:createScene( event )
 		defaultFile="2.png",
 		overFile="2.png",
 		width=100, height=50,
-		onRelease = onPlayBtnRelease	-- event listener function
+		onRelease = onPlayLvl2Release	-- event listener function
 	}
 	
 	-- create a widget button (which will loads level1.lua on release)
@@ -70,7 +98,7 @@ function scene:createScene( event )
 		defaultFile="3.png",
 		overFile="3.png",
 		width=100, height=50,
-		onRelease = onPlayBtnRelease	-- event listener function
+		onRelease = onPlayLvl3Release	-- event listener function
 	}
 	
 	-- create a widget button (which will loads level1.lua on release)
@@ -80,7 +108,7 @@ function scene:createScene( event )
 		defaultFile="4.png",
 		overFile="4.png",
 		width=100, height=50,
-		onRelease = onPlayBtnRelease	-- event listener function
+		onRelease = onPlayLvl4Release	-- event listener function
 	}
 
 	playLvl[1].x = 100
