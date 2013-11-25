@@ -15,9 +15,10 @@ display.setStatusBar(display.HiddenStatusBar )
 local physics = require "physics"
 physics.start(); physics.pause()
 
+-- Set view mode to show bounding boxes 
+physics.setDrawMode("hybrid")
 
 --------------------------------------------
-
 -- forward declarations and other locals
 local screenW, screenH, halfW = display.contentWidth, display.contentHeight, display.contentWidth*0.5
 
@@ -28,10 +29,12 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 --		 unless storyboard.removeScene() is called.
 -- 
 -----------------------------------------------------------------------------------------
+--doorOpen = true
 
 local ballTable = { 
-	[1] = display.newImage("ball.png"), 
-	[2] = display.newImage("ball.png") }
+	[1] = display.newImage("ball.png")
+}
+	--[2] = display.newImage("ball.png") }
 	
 -- add new walls
 -- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
@@ -59,11 +62,23 @@ local walls = {
 	-- Bottom wall
 	walls[4].x = 250
 	walls[4].y = 315
+
+	local door = display.newRect(235, 230, 150, 25)
+
+	-- Draw lines
+	local lines = {
+		-- newRect(left, top, width, height)
+		-- Rectangles for top, left, and bottom
+		-- side
+		[1] = display.newRect(235, 115, 150, 25), 
+		[2] = display.newRect(295, 180, 25, 100),
+		[3] = display.newRect(170, 180, 25, 100)
+	}
 	
 
 local function saveBallLocation()
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
-	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
+	--ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
 end
 
 -- distance function
@@ -99,7 +114,7 @@ local function moveBall(event)
 		
 	if tap == 1 then
 		if event.phase == "ended" then
-			for count = 1, 2, 1 do
+			for count = 1, #ballTable, 1 do
 	
 			-- send mouse/ball position values to distance function
 			distance(event.x, ballTable[count].x, event.y, ballTable[count].y, "Mouse to Ball Distance: ")
@@ -177,19 +192,6 @@ local function moveBall(event)
 		end
 	end
 
-	-- Collision Detection for every frame during game time
-	local function frame(event)
-
-		-- send both ball position values to distance function
-		distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
-		
-		-- When less than distance of 35 pixels, do something
-		-- 			Used print as testing. Works successfully!
-		if dist <= 35 then
-			print("Distance =", dist)
-		end
-	end
-
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
@@ -204,16 +206,36 @@ function scene:createScene( event )
 	background.anchorY = 0.0
 	background.x, background.y = -50, 0
 
-	-- apply physics to wall
-	for count = 1, #walls do
-		physics.addBody(walls[count], "static", { bounce = 0.01 } )
-	end
-
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
-	group:insert( ballTable[2] )
+	--group:insert( ballTable[2] )
+	group:insert( door) 
+
+	for count = 1, #lines do
+		group:insert(lines[count])
+	end
 end
+
+-- Collision Detection for every frame during game time
+	local function frame(event)
+
+		-- send both ball position values to distance function
+		--distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
+		
+		-- When less than distance of 35 pixels, do something
+		-- 			Used print as testing. Works successfully!
+		--if dist <= 35 then
+		--	print("Distance =", dist)
+		--end
+		--[[
+		if door then
+			if doorOpen == true then 
+				door:removeSelf( )
+			end
+		end
+		--]]
+	end
 
 -- Called immediately after scene has moved onscreen:
 function scene:enterScene( event )
@@ -223,13 +245,30 @@ function scene:enterScene( event )
 
 	physics.start()
 	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
-	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+	--physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+	physics.addBody(door, "static", {bounce = 0.01})
 
 	ballTable[1]:setLinearVelocity(0,0)
 	ballTable[1].angularVelocity = 0
-	ballTable[2]:setLinearVelocity(0,0)
-	ballTable[2].angularVelocity = 0
+	--ballTable[2]:setLinearVelocity(0,0)
+	--ballTable[2].angularVelocity = 0
+
+	-- apply physics to walls
+	for count = 1, #walls do
+		physics.addBody(walls[count], "static", { bounce = 0.01 } )
+	end
 	
+	-- apply physics to lines
+	for count = 1, #lines do 
+		physics.addBody(lines[count], "static", { bounce = 0.01 } )
+	end
+
+		if door then
+			if doorOpen == true then 
+				door:removeSelf( )
+			end
+		end
+
 	physics.setGravity(0, 0)
 
 	Runtime:addEventListener("touch", moveBall)
@@ -241,10 +280,9 @@ function scene:willEnterScene( event )
 
 	ballTable[1].x = ballVariables.getBall1x()
 	ballTable[1].y = ballVariables.getBall1y()
-	ballTable[2].x = ballVariables.getBall2x()
-	ballTable[2].y = ballVariables.getBall2y()
+	--ballTable[2].x = ballVariables.getBall2x()
+	--ballTable[2].y = ballVariables.getBall2y()
 
-	--print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
 	print("Entering C")
 end
 
@@ -256,17 +294,20 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("enterFrame", frame)
 
 	physics.removeBody(ballTable[1])
-	physics.removeBody(ballTable[2])
+	--physics.removeBody(ballTable[2])
+	physics.removeBody(door)
 	
-	--for count = 1, #lines do
-	--	physics.removeBody(walls[count])
-	--end
-	
+	-- remove physics from walls and lines
 	for count = 1, #walls do
 		physics.removeBody(walls[count])
 	end
 
-	physics.pause()
+	for count = 1, #lines do
+		physics.removeBody(lines[count])
+	end
+
+
+	--physics.pause()
 	
 	print("Exit C")
 end

@@ -32,8 +32,12 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 -----------------------------------------------------------------------------------------
 
 local ballTable = { 
-	[1] = display.newImage("ball.png"), 
-	[2] = display.newImage("ball.png") }
+	[1] = display.newImage("ball.png")
+	--[2] = display.newImage("ball.png") 
+}
+
+local ballSwitch = display.newImage("ball_switch.png")
+ballSwitch.x = 350; ballSwitch.y = 75
 
 -- add new walls
 -- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
@@ -63,26 +67,23 @@ local walls = {
 	walls[4].y = 315
 
 
---local lines = {
-	-- newRect(left, top, width, height)
-	-- Rectangles for inital pane on 
-	-- left and right side
-	--[1] = display.newRect(70, 180, 20, 575) ,
-	--[2] = display.newRect(410, 180, 20, 575), 
-
-	-- Rectangles for the walls blocking
-	-- the area on the left and right side
-	--[3] = display.newRect(15, 200, 85, 15) ,
-	--[4] = display.newRect(440, 100, 35, 15) }
+local lines = {
+	[1] = display.newRect(250, 150, 50, 50)
+}
 
 local function saveBallLocation()
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
-	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
+	--ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
 end
 	
 	
 -- distance function
 local dist
+local switchDistance
+
+local function switchDistance(x1, x2, y1, y2, detectString)
+	return math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
+end
 local function distance(x1, x2, y1, y2, detectString)
 	--print("Dist A")
 	dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
@@ -116,7 +117,7 @@ local function moveBall(event)
 		
 	if tap == 1 then
 		if event.phase == "ended" then
-			for count = 1, 2, 1 do
+			for count = 1, #ballTable, 1 do
 		
 			-- send mouse/ball position values to distance function
 			distance(event.x, ballTable[count].x, event.y, ballTable[count].y, "Mouse to Ball Distance: ")
@@ -196,12 +197,18 @@ end
 -- Collision Detection for every frame during game time
 local function frame(event)
 	-- send both ball position values to distance function
-	distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
+	--distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
 	
 	-- When less than distance of 35 pixels, do something
 	-- 			Used print as testing. Works successfully!
-	if dist <= 35 then
-		print("Distance =", dist)
+	--if dist <= 35 then
+	--	print("Distance =", dist)
+	--end
+
+	switchDist = switchDistance(ballTable[1].x, ballSwitch.x, ballTable[1].y, ballSwitch.y)
+
+	if switchDist <= 55 then
+		switchOpen = true 
 	end
 end
 
@@ -224,21 +231,22 @@ function scene:createScene( event )
 	
 	ballTable[1].x = 260
 	ballTable[1].y = 180
-	ballTable[2].x = 160
-	ballTable[2].y = 180
+	--ballTable[2].x = 160
+	--ballTable[2].y = 180
 	
 	-- add physics to the balls
 	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
-	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+	--physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
 	
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
-	group:insert( ballTable[2] )
+	--group:insert( ballTable[2] )
+	group:insert( ballSwitch)
 	
-	--for count = 1, #lines do
-	--	group:insert(lines[count])
-	--end
+	for count = 1, #lines do
+		group:insert(lines[count])
+	end
 end
 
 -- Called immediately after scene has moved onscreen:
@@ -249,12 +257,12 @@ function scene:enterScene( event )
 	
 	physics.start()
 	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
-	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+	--physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
 
 	ballTable[1]:setLinearVelocity(0,0)
 	ballTable[1].angularVelocity = 0
-	ballTable[2]:setLinearVelocity(0,0)
-	ballTable[2].angularVelocity = 0
+	--ballTable[2]:setLinearVelocity(0,0)
+	--ballTable[2].angularVelocity = 0
 	
 	
 	-- apply physics to walls
@@ -263,15 +271,15 @@ function scene:enterScene( event )
 	end
 	
 	-- apply physics to lines
-	--for count = 1, #lines do
-	--	physics.addBody(lines[count], "static", { bounce = 0.01 } )
-	--end
-	
-	for count = 1, #walls do
-		physics.removeBody(walls[count])
+	for count = 1, #lines do
+	 physics.addBody(lines[count], "static", { bounce = 0.01 } )
 	end
 
 	physics.setGravity(0, 0)
+
+	if ballSwitch then
+			switchOpen = true
+		end
 
 	Runtime:addEventListener("touch", moveBall)
 	Runtime:addEventListener("enterFrame", frame)
@@ -283,10 +291,10 @@ function scene:willEnterScene( event )
 
 	ballTable[1].x = ballVariables.getBall1x()
 	ballTable[1].y = ballVariables.getBall1y()
-	ballTable[2].x = ballVariables.getBall2x()
-	ballTable[2].y = ballVariables.getBall2y()
+	--ballTable[2].x = ballVariables.getBall2x()
+	--ballTable[2].y = ballVariables.getBall2y()
 
-	print( "load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
+	--print( "load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 	print("Entering D")
 end
 
@@ -299,13 +307,17 @@ function scene:exitScene( event )
 
 	-- add physics to the balls
 	physics.removeBody(ballTable[1])
-	physics.removeBody(ballTable[2])
+	--physics.removeBody(ballTable[2])
 
-	--for count = 1, #lines do
-	--	physics.removeBody(lines[count])
-	--end
 
-	physics.pause()
+	-- remove physics from walls
+	for count = 1, #walls do
+		physics.removeBody(walls[count], "static", { bounce = 0.01 } )
+	end
+
+	for count = 1, #lines do
+		physics.removeBody(lines[count])
+	end
 
 	print("Exit D")
 end
