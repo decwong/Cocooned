@@ -255,8 +255,8 @@ function scene:enterScene( event )
 	print("Enter A")
 
 	physics.start()
-	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
-	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
+	physics.addBody(ballTable[2], {radius = 15, bounce = .25 })
 
 	-- apply physics to walls
 	for count = 1, #walls do
@@ -289,7 +289,7 @@ function scene:willEnterScene( event )
 	if ballVariables.getMagnetized2() then
 		ballTable[2]:setFillColor(1,0,0)
 	else
-		ballTable[1]:setFillColor(1,1,1)
+		ballTable[2]:setFillColor(1,1,1)
 	end
 
 	
@@ -311,7 +311,7 @@ function scene:exitScene( event )
 
 	for count = 1, #lines do
 		physics.removeBody(lines[count])
-	
+	end
 	for count = 1, #walls do
 		physics.removeBody(walls[count])
 	end

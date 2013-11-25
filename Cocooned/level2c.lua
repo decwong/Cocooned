@@ -260,8 +260,8 @@ function scene:enterScene( event )
 	print("Enter C")
 
 	physics.start()
-	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
-	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
+	physics.addBody(ballTable[2], {radius = 15, bounce = .25 })
 
 	ballTable[1]:setLinearVelocity(0,0)
 	ballTable[1].angularVelocity = 0
@@ -288,7 +288,7 @@ function scene:willEnterScene( event )
 	if ballVariables.getMagnetized2() then
 		ballTable[2]:setFillColor(1,0,0)
 	else
-		ballTable[1]:setFillColor(1,1,1)
+		ballTable[2]:setFillColor(1,1,1)
 	end
 
 	-- apply physics to walls

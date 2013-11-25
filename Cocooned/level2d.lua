@@ -267,8 +267,8 @@ function scene:createScene( event )
 	ballTable[2].y = 180
 	
 	-- add physics to the balls
-	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
-	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
+	physics.addBody(ballTable[2], {radius = 15, bounce = .25 })
 	
 	-- all display objects must be inserted into group
 	group:insert( background )
@@ -333,7 +333,7 @@ function scene:willEnterScene( event )
 	if ballVariables.getMagnetized2() then
 		ballTable[2]:setFillColor(1,0,0)
 	else
-		ballTable[1]:setFillColor(1,1,1)
+		ballTable[2]:setFillColor(1,1,1)
 	end
 
 	print( "load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)

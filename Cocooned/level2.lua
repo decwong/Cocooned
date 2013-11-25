@@ -35,6 +35,10 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 local ballTable = { 
 		[1] = display.newImage("ball.png"), 
 		[2] = display.newImage("ball.png") }
+
+local star = display.newImage("star.png")
+	star.x = 450
+	star.y = 260
 		
 
 		
@@ -269,6 +273,11 @@ local function frame(event)
 		ballVariables.setRepelled(true);
 		timer.performWithDelay( 2000, ballVariables.setRepelled(false) )
 	end
+
+	if distanceFrom(ballTable[1], star) < 30 and distanceFrom(ballTable[2], star) < 30 and ballVariables.getMagnetized1() == false and ballVariables.getMagnetized2() == false then
+		storyboard.gotoScene("select", "fade", 500)
+	end
+
 	-- When less than distance of 35 pixels, do something
 	-- 			Used print as testing. Works successfully!
 	if dist <= 35 then
@@ -299,6 +308,7 @@ function scene:createScene( event )
 	group:insert( background )
 	group:insert( ballTable[1] )
 	group:insert( ballTable[2] )
+	group:insert(star)
 	
 	for count = 1, #lines do
 		group:insert(lines[count])
@@ -314,8 +324,8 @@ function scene:enterScene( event )
 	print("Enter MAIN")
 
 	physics.start()
-	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
-	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
+	physics.addBody(ballTable[2], {radius = 15, bounce = .25 })
 
 
 	-- apply physics to walls
