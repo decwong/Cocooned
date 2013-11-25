@@ -1,7 +1,7 @@
 module("ballVariables", package.seeall)
 
-local ball1x = 15
-local ball1y = 15
+local ball1x = 25
+local ball1y = 25
 local ball2x = 475
 local ball2y = 300
 local ballColor = "white"
@@ -38,4 +38,11 @@ end
 
 function setBallColor( string ) 
 	ballColor = string
+end
+
+function resetBall()
+	ball1x = 15
+	ball1y = 45
+	ball2x = 475
+	ball2y = 300
 end
