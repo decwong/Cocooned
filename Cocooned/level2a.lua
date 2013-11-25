@@ -311,6 +311,9 @@ function scene:exitScene( event )
 
 	for count = 1, #lines do
 		physics.removeBody(lines[count])
+	
+	for count = 1, #walls do
+		physics.removeBody(walls[count])
 	end
 
 	physics.pause()

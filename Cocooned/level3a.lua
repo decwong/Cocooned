@@ -294,6 +294,10 @@ function scene:exitScene( event )
 	--	physics.removeBody(lines[count])
 	--end
 
+	for count = 1, #walls do
+		physics.removeBody(walls[count])
+	end
+	
 	physics.pause()
 	
 	print("Exit A")

@@ -100,12 +100,7 @@ end
 
 -- ball movement control
 local function moveBall(event)
-	
-	if isPaused then
-		physics.start()
-		isPaused = false
-	end
-	
+		
 	local x 
 	local y
 	local tap = 0
@@ -225,7 +220,6 @@ local function moveBall(event)
 	end
 end
 
-
 -- accelerometer movement
 local function onAccelerate( event )
 	local xGrav=1
@@ -255,8 +249,17 @@ local function onAccelerate( event )
 	physics.setGravity(12*xGrav, 16*yGrav)
 end
 
+		accelerometerON = true
+	if accelerometerON == true then
+		Runtime:addEventListener( "accelerometer", onAccelerate )
+	end
+
 -- Collision Detection for every frame during game time
 local function frame(event)
+	
+	for count = 1, #ballTable do
+		print("MAIN Velocity =", ballTable[count].angularVelocity)
+	end
 
 	-- send both ball position values to distance function
 	distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
@@ -281,11 +284,6 @@ function scene:createScene( event )
 	background.anchorY = 0.0
 	background.x, background.y = -50, 0
 	
-		accelerometerON = true
-	if accelerometerON == true then
-		Runtime:addEventListener( "accelerometer", onAccelerate )
-	end
-
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
@@ -307,6 +305,20 @@ function scene:enterScene( event )
 	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
 	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
 
+	ballTable[1]:setLinearVelocity(0,0)
+	ballTable[1].angularVelocity = 0
+	ballTable[2]:setLinearVelocity(0,0)
+	ballTable[2].angularVelocity = 0
+	
+	-- apply physics to walls
+	for count = 1, #walls do
+		physics.addBody(walls[count], "static", { bounce = 0.01 } )
+	end
+	
+	for count = 1, #lines do 
+		physics.addBody(lines[count], "static", { bounce = 0.01 } )
+	end
+	
 	Runtime:addEventListener("touch", moveBall)
 	Runtime:addEventListener("enterFrame", frame)
 	
@@ -320,15 +332,6 @@ function scene:willEnterScene( event )
 	ballTable[1].y = ballVariables.getBall1y()
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
-
-	-- apply physics to walls
-	for count = 1, #walls do
-		physics.addBody(walls[count], "static", { bounce = 0.01 } )
-	end
-	
-	for count = 1, #lines do 
-		physics.addBody(lines[count], "static", { bounce = 0.01 } )
-	end
 
 	print("Entering MAIN")
 end
@@ -348,8 +351,12 @@ function scene:exitScene( event )
 	for count = 1, #lines do
 		physics.removeBody(lines[count])
 	end
+	
+	for count = 1, #walls do
+		physics.removeBody(walls[count])
+	end
 
-	physics.pause()
+	--physics.pause()
 	
 	print("Exit MAIN")
 end

@@ -7,6 +7,7 @@
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 local widget = require("widget");
+require("ballVariables")
 
 local font = "Helvetica" or system.nativeFont;
 display.setStatusBar(display.HiddenStatusBar )
@@ -16,7 +17,7 @@ local physics = require "physics"
 physics.start(); physics.pause()
 
 -- Set view mode to show bounding boxes 
-physics.setDrawMode("hybrid")
+--physics.setDrawMode("hybrid")
 
 --------------------------------------------
 -- forward declarations and other locals
@@ -32,9 +33,7 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 	
 	-- make a crate (off-screen), position it, and rotate slightly
 
-local ballTable = { 
-	[1] = display.newImage("ball.png"), 
-	[2] = display.newImage("ball.png") }
+
 	
 -- add new walls
 -- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
@@ -63,32 +62,69 @@ local walls = {
 	walls[4].x = 250
 	walls[4].y = 315
 
---local lines = {
+-- Draw lines
+local lines = {
 	-- newRect(left, top, width, height)
 	-- Rectangles for inital pane on 
 	-- left and right side
-	--[1] = display.newRect(70, 180, 20, 575) ,
-	--[2] = display.newRect(410, 180, 20, 575), 
+	[1] = display.newRect(70, 105, 10, 180), 
+	[2] = display.newRect(17.5, 190, 95, 10), --blue rect
+	[3] = display.newRect(110, 190, 70, 10),
+	[4] = display.newRect(150, 105, 10, 180),
+	[5] = display.newRect(232.5, 100, 155, 10),
+	[6] = display.newRect(315, 150, 10, 90),
+	[7] = display.newRect(270,200,80,10),
+	[8] = display.newRect(225,250,10,110),
+	[9] = display.newRect(350,100,80,10), -- red wall
+	[10] = display.newRect(395,110,10,190),
+	[11] = display.newRect(455,200,110,10),
+	[12] = display.newRect(350,200,80,10)
 
-	-- Rectangles for the walls blocking
-	-- the area on the left and right side
-	--[3] = display.newRect(-10, 200, 35, 15) ,
-	--[4] = display.newRect(465, 100, 85, 15) 
 
-	--lines:setFillColor(255, 165, 79) }
+
+}
+
+for count = 1, #lines do
+	lines[count]:setFillColor(0,0,0)
+	lines[count].alpha = 0.75
+end
+
+local boxes = {
+
+	[1] = display.newRect(18, 150, 40, 40),
+	[2] = display.newRect(350,55,40,40),
+	[3] = display.newRect(270,260,40,40)
+	
+}
+
+boxes[1]:setFillColor(0,0,140)
+boxes[1].alpha = 0.3
+boxes[2]:setFillColor(140,0,0)
+boxes[2].alpha = 0.3
+boxes[3]:setFillColor(255,255,255)
+boxes[3].alpha = 0.3
+
+
+
+local ballTable = { 
+	[1] = display.newImage("ball.png"), 
+	--[2] = display.newImage("ball.png") 
+}
 
 local function saveBallLocation()
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
-	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
+	--ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
 end
 	
 -- distance function
-local dist
 local function distance(x1, x2, y1, y2, detectString)
+	local dist
 	dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
 	if detectString then
 		--print(detectString, dist)
 	end
+
+	return dist
 end
 
 
@@ -117,10 +153,11 @@ local function moveBall(event)
 		
 		if tap == 1 then
 			if event.phase == "ended" then
-				for count = 1, 2, 1 do
+				for count = 1, #ballTable do
 			
+				local dist
 				-- send mouse/ball position values to distance function
-				distance(event.x, ballTable[count].x, event.y, ballTable[count].y, "Mouse to Ball Distance: ")
+				dist = distance(event.x, ballTable[count].x, event.y, ballTable[count].y, "Mouse to Ball Distance: ")
 			
 				-- if it is taking too many tries to move the ball, increase the distance <= *value*
 				if dist <= 100 then
@@ -195,16 +232,33 @@ local function moveBall(event)
 		end
 end
 
-	-- Collision Detection for every frame during game time
+-- Collision Detection for every frame during game time
 local function frame(event)
+	local distB
+	local distR
+	local distW
 
 	-- send both ball position values to distance function
-	distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
+	distB = distance(ballTable[1].x, boxes[1].x, ballTable[1].y, boxes[1].y)
+	distR = distance(ballTable[1].x, boxes[2].x, ballTable[1].y, boxes[2].y)
+	distW = distance(ballTable[1].x, boxes[3].x, ballTable[1].y, boxes[3].y)
 	
 	-- When less than distance of 35 pixels, do something
 	-- 			Used print as testing. Works successfully!
-	if dist <= 35 then
-		print("Distance =", dist)
+	if distB <= 15 then
+		print("DistanceB =", dist)
+		ballTable[1]:setFillColor(0,0,140)
+		ballVariables.setBallColor("blue")
+	end
+	if distW <= 15 then
+		print("DistanceW =", dist)
+		ballTable[1]:setFillColor(255,255,255)
+		ballVariables.setBallColor("white")
+	end
+	if distR <= 15 then
+		print("DistanceR =", dist)
+		ballTable[1]:setFillColor(140,0,0)
+		ballVariables.setBallColor("red")
 	end
 end
 
@@ -224,11 +278,15 @@ function scene:createScene( event )
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
-	group:insert( ballTable[2] )
+	--group:insert( ballTable[2] )
 			
-	--for count = 1, #lines do
-	--	group:insert(lines[count])
-	--end
+	for count = 1, #lines do
+		group:insert(lines[count])
+	end
+	print("boxes", #boxes)
+	for count = 1, #boxes do
+		group:insert(boxes[count]);
+	end
 end
 
 -- Called immediately after scene has moved onscreen:
@@ -238,23 +296,26 @@ function scene:enterScene( event )
 	print("Enter B")
 
 	physics.start()
-	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
-	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
+	--physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
 
 	ballTable[1]:setLinearVelocity(0,0)
 	ballTable[1].angularVelocity = 0
-	ballTable[2]:setLinearVelocity(0,0)
-	ballTable[2].angularVelocity = 0
+	--ballTable[2]:setLinearVelocity(0,0)
+	--ballTable[2].angularVelocity = 0
 
-	-- apply physics to wall
+	-- apply physics to walls
 	for count = 1, #walls do
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
 	end
 	
-	-- apply physics to lines
-	--for count = 1, #lines do 
-	--	physics.addBody(lines[count], "static", { bounce = 0.01 } )
-	--end
+	for count = 1, #lines do 
+		physics.addBody(lines[count], "static", { bounce = 0.01 } )
+	end
+
+	
+
+	
 
 	physics.setGravity(0, 0)
 
@@ -265,10 +326,21 @@ end
 
 function scene:willEnterScene( event )
 
+	local ballColor = ballVariables.getBallColor()
+	if ballColor == "white" then
+		ballTable[1]:setFillColor(255,255,255)
+	elseif ballColor == "blue" then
+		ballTable[1]:setFillColor(0,0,140)
+	elseif ballColor == "red" then
+		ballTable[1]:setFillColor(140,0,0)
+	end
+
 	ballTable[1].x = ballVariables.getBall1x()
 	ballTable[1].y = ballVariables.getBall1y()
-	ballTable[2].x = ballVariables.getBall2x()
-	ballTable[2].y = ballVariables.getBall2y()
+	--ballTable[2].x = ballVariables.getBall2x()
+	--ballTable[2].y = ballVariables.getBall2y()
+
+	print( ballVariables.getBall1x(), ballVariables.getBall1y())
 	
 	print("Entering B")
 end
@@ -281,13 +353,16 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("enterFrame", frame)
 
 	physics.removeBody(ballTable[1])
-	physics.removeBody(ballTable[2])
+	--physics.removeBody(ballTable[2])
 
-	-- remove physics to lines
-	--for count = 1, #lines do 
-	--	physics.removeBody(lines[count])
-	--end
+	for count = 1, #walls do
+		physics.removeBody(walls[count])
+	end
 
+	for count = 1, #lines do
+		physics.removeBody(lines[count])
+	end
+	
 	physics.pause()
 	
 	print("Exit B")
@@ -303,7 +378,7 @@ function scene:destroyScene( event )
 
 	-- add physics to the balls
 	physics.removeBody(ballTable[1])
-	physics.removeBody(ballTable[2])
+	--physics.removeBody(ballTable[2])
 end
 
 -----------------------------------------------------------------------------------------

@@ -357,6 +357,10 @@ function scene:exitScene( event )
 	if magnet then
 		physics.removeBody(magnet)
 	end
+	
+	for count = 1, #walls do
+		physics.removeBody(walls[count])
+	end
 
 	physics.pause()
 

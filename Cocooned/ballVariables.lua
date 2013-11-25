@@ -1,9 +1,11 @@
 module("ballVariables", package.seeall)
 
-local ball1x = 450
-local ball1y = 15
+local ball1x = 25
+local ball1y = 25
 local ball2x = 475
-local ball2y = 15
+local ball2y = 300
+local ballColor = "white"
+
 
 function setBall1( x, y )
 	ball1x = x
@@ -53,4 +55,18 @@ end
 function getMagnetized2()
 	return magnetized2
 end
+--color
+function getBallColor() 
+	return ballColor
+end
 
+function setBallColor( string ) 
+	ballColor = string
+end
+
+function resetBall()
+	ball1x = 15
+	ball1y = 45
+	ball2x = 475
+	ball2y = 300
+end
