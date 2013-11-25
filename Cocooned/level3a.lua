@@ -33,9 +33,15 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 
 -- make a crate (off-screen), position it, and rotate slightly
 local ballTable = { 
-		[1] = display.newImage("ball.png"), 
-		[2] = display.newImage("ball.png") }
+		[1] = display.newImage("ball.png")
+	}
+		--[2] = display.newImage("ball.png") }
 
+-- Make a switch that activates when the light
+-- ball is inside the switch in pane D 
+local switch = display.newImage("switch.png")
+switch.x = 130; switch.y = 40
+switch.gravityScale = 0.25
 		
 -- add new walls
 -- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
@@ -65,25 +71,13 @@ local walls = {
 	walls[4].y = 315	
 	
 -- Draw lines
---local lines = {
+local lines = {
 	-- newRect(left, top, width, height)
-	-- Rectangles for inital pane on 
-	-- left and right side
-	--[1] = display.newRect(70, 180, 20, 575) ,
-	--[2] = display.newRect(410, 180, 20, 575), 
-
-	-- Rectangles for the walls blocking
-	-- the area on the left and right side
-	--[3] = display.newRect(15, 200, 85, 15) ,
-	--[4] = display.newRect(465, 100, 85, 15) , 
-
-	-- Rectangles for the center column
-	--[5] = display.newRect(130, 180, 20, 400) , 
-	--[6] = display.newRect(350, 180, 20, 400) ,
-	
-	-- Horizontal rectangles for center column
-	--[7] = display.newRect(240, 225, 200, 15) ,
-	--[8] = display.newRect(240, 100, 200, 15) }
+	-- Rectangles for top area of the screen
+	[1] = display.newRect(200, 75, 250, 25) ,
+	[2] = display.newRect(90, 40, 25, 50) ,
+	[3] = display.newRect(250, 150, 50, 50)
+}
 		
 -- distance function
 local dist
@@ -93,7 +87,7 @@ end
 
 local function saveBallLocation()
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
-	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
+	--ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
 end
 
 -- ball movement control
@@ -128,7 +122,7 @@ local function moveBall(event)
 		
 	if tap == 1 then
 		if event.phase == "ended" then
-			for count = 1, 2, 1 do
+			for count = 1, #ballTable, 1 do
 		
 			-- send mouse/ball position values to distance function
 			distance(event.x, ballTable[count].x, event.y, ballTable[count].y, "Mouse to Ball Distance: ")
@@ -209,13 +203,13 @@ end
 local function frame(event)
 
 	-- send both ball position values to distance function
-	distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
+	--distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
 	
 	-- When less than distance of 35 pixels, do something
 	-- 			Used print as testing. Works successfully!
-	if dist <= 35 then
-		print("Distance =", dist)
-	end
+	--if dist <= 35 then
+	--	print("Distance =", dist)
+	--end
 end
 
 -- Called when the scene's view does not exist:
@@ -234,11 +228,11 @@ function scene:createScene( event )
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
-	group:insert( ballTable[2] )
+	--group:insert( ballTable[2] )
 	
-	--for count = 1, #lines do
-	--	group:insert(lines[count])
-	--end
+	for count = 1, #lines do
+		group:insert(lines[count])
+	end
 
 end
 
@@ -249,13 +243,22 @@ function scene:enterScene( event )
 	print("Enter A")
 
 	physics.start()
-	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
-	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
+	--physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
 
 	Runtime:addEventListener("touch", moveBall)
 	Runtime:addEventListener("enterFrame", frame)
 	
 	physics.setGravity(0, 0)
+
+	-- apply physics to walls
+	for count = 1, #walls do
+		physics.addBody(walls[count], "static", { bounce = 0.01 } )
+	end
+	
+	for count = 1, #lines do 
+		physics.addBody(lines[count], "static", { bounce = 0.01 } )
+	end
 	
 end
 
@@ -263,19 +266,39 @@ function scene:willEnterScene( event )
 
 	ballTable[1].x = ballVariables.getBall1x()
 	ballTable[1].y = ballVariables.getBall1y()
-	ballTable[2].x = ballVariables.getBall2x()
-	ballTable[2].y = ballVariables.getBall2y()
-
-	-- apply physics to walls
-	for count = 1, #walls do
-		physics.addBody(walls[count], "static", { bounce = 0.01 } )
-	end
-	
-	--for count = 1, #lines do 
-	--	physics.addBody(lines[count], "static", { bounce = 0.01 } )
-	--end
+	--ballTable[2].x = ballVariables.getBall2x()
+	--ballTable[2].y = ballVariables.getBall2y()
 
 	print("Entering A")
+end
+
+--rectangle-based collision detection
+local function hasCollided( ballTable, switch )
+   if ( crate == nil ) then  --make sure the first object exists
+      return false
+   end
+   if ( switch == nil ) then  --make sure the other object exists
+      return false
+   end
+
+   if ballTable[1].contentBounds.xMin <= switch.contentBounds.xMin and ballTable[1].contentBounds.xMax >= switch.contentBounds.xMin then
+   	return true
+   end
+   if ballTable[1].contentBounds.xMin >= switch.contentBounds.xMin and ballTable[1].contentBounds.xMin <= switch.contentBounds.xMax then
+   	return true
+   end
+   if ballTable[1].contentBounds.yMin <= switch.contentBounds.yMin and ballTable[1].contentBounds.yMax >= switch.contentBounds.yMin then
+   	return true
+   end
+   if ballTable[1].contentBounds.yMin >= switch.contentBounds.yMin and ballTable[1].contentBounds.yMin <= switch.contentBounds.yMax then
+   	return true
+   end
+
+   --return (left or right) and (up or down)
+end
+
+if hasCollided(ballTable[1], switch) == true then
+	print("collision")
 end
 
 -- Called when scene is about to move offscreen:
@@ -286,20 +309,18 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("enterFrame", frame)
 
 	physics.removeBody(ballTable[1])
-	physics.removeBody(ballTable[2])
+	--physics.removeBody(ballTable[2])
 
 	--print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
 
-	--for count = 1, #lines do
-	--	physics.removeBody(lines[count])
-	--end
+	for count = 1, #lines do
+		physics.removeBody(lines[count])
+	end
 
 	for count = 1, #walls do
 		physics.removeBody(walls[count])
 	end
-	
-	physics.pause()
-	
+		
 	print("Exit A")
 end
 

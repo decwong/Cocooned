@@ -31,10 +31,14 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 -- 
 -----------------------------------------------------------------------------------------
 
+doorOpen = false
+switchOpen = false  
+
 -- make a crate (off-screen), position it, and rotate slightly
 local ballTable = { 
-		[1] = display.newImage("ball.png"), 
-		[2] = display.newImage("ball.png") }
+		[1] = display.newImage("ball.png")
+	}
+		--[2] = display.newImage("ball.png") }
 
 		
 -- add new walls
@@ -65,25 +69,13 @@ local walls = {
 	walls[4].y = 315	
 	
 -- Draw lines
---local lines = {
+local lines = {
 	-- newRect(left, top, width, height)
 	-- Rectangles for inital pane on 
 	-- left and right side
-	--[1] = display.newRect(70, 180, 20, 575) ,
-	--[2] = display.newRect(410, 180, 20, 575), 
-
-	-- Rectangles for the walls blocking
-	-- the area on the left and right side
-	--[3] = display.newRect(15, 200, 85, 15) ,
-	--[4] = display.newRect(465, 100, 85, 15) , 
-
-	-- Rectangles for the center column
-	--[5] = display.newRect(130, 180, 20, 400) , 
-	--[6] = display.newRect(350, 180, 20, 400) ,
-	
-	-- Horizontal rectangles for center column
-	--[7] = display.newRect(240, 225, 200, 15) ,
-	--[8] = display.newRect(240, 100, 200, 15) }
+	[1] = display.newRect(70, 180, 20, 575) ,
+	[2] = display.newRect(410, 180, 20, 575) 
+}
 		
 -- distance function
 local dist
@@ -93,7 +85,7 @@ end
 
 local function saveBallLocation()
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
-	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
+	--ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
 end
 
 -- ball movement control
@@ -127,7 +119,7 @@ local function moveBall(event)
 		
 	if tap == 1 then
 		if event.phase == "ended" then
-			for count = 1, 2, 1 do
+			for count = 1, #ballTable, 1 do
 		
 			-- send mouse/ball position values to distance function
 			distance(event.x, ballTable[count].x, event.y, ballTable[count].y, "Mouse to Ball Distance: ")
@@ -255,15 +247,14 @@ end
 
 -- Collision Detection for every frame during game time
 local function frame(event)
-
 	-- send both ball position values to distance function
-	distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
+	--distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
 	
 	-- When less than distance of 35 pixels, do something
 	-- 			Used print as testing. Works successfully!
-	if dist <= 35 then
-		print("Distance =", dist)
-	end
+	--if dist <= 35 then
+	--	print("Distance =", dist)
+	--end
 end
 
 -- Called when the scene's view does not exist:
@@ -287,11 +278,11 @@ function scene:createScene( event )
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
-	group:insert( ballTable[2] )
+	--group:insert( ballTable[2] )
 	
-	--for count = 1, #lines do
-	--	group:insert(lines[count])
-	--end
+	for count = 1, #lines do
+		group:insert(lines[count])
+	end
 
 end
 
@@ -302,8 +293,17 @@ function scene:enterScene( event )
 	print("Enter MAIN")
 
 	physics.start()
-	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
-	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
+	--physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+
+	-- apply physics to walls
+	for count = 1, #walls do
+		physics.addBody(walls[count], "static", { bounce = 0.01 } )
+	end
+	
+	for count = 1, #lines do 
+		physics.addBody(lines[count], "static", { bounce = 0.01 } )
+	end
 
 	Runtime:addEventListener("touch", moveBall)
 	Runtime:addEventListener("enterFrame", frame)
@@ -316,17 +316,8 @@ function scene:willEnterScene( event )
 
 	ballTable[1].x = ballVariables.getBall1x()
 	ballTable[1].y = ballVariables.getBall1y()
-	ballTable[2].x = ballVariables.getBall2x()
-	ballTable[2].y = ballVariables.getBall2y()
-
-	-- apply physics to walls
-	for count = 1, #walls do
-		physics.addBody(walls[count], "static", { bounce = 0.01 } )
-	end
-	
-	--for count = 1, #lines do 
-	--	physics.addBody(lines[count], "static", { bounce = 0.01 } )
-	--end
+	--ballTable[2].x = ballVariables.getBall2x()
+	--ballTable[2].y = ballVariables.getBall2y()
 
 	print("Entering MAIN")
 end
@@ -339,19 +330,19 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("enterFrame", frame)
 
 	physics.removeBody(ballTable[1])
-	physics.removeBody(ballTable[2])
+	--physics.removeBody(ballTable[2])
 
 	--print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
 
-	--for count = 1, #lines do
-	--	physics.removeBody(lines[count])
-	--end
+	for count = 1, #lines do
+		physics.removeBody(lines[count])
+	end
 	
 	for count = 1, #walls do
 		physics.removeBody(walls[count])
 	end
 
-	physics.pause()
+	--physics.pause()
 	
 	print("Exit MAIN")
 end

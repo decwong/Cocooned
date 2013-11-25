@@ -28,7 +28,10 @@ end
 
 -- 'onRelease' event listener for playLvl2
 local function onPlayLvl2Release()
-	
+	ballVariables.setBall1(450, 15)
+	ballVariables.setBall2(475, 15)
+	ballVariables.setMagnetized1(true)
+	ballVariables.setMagnetized2(true)
 	-- go to level2.lua scene
 	storyboard.gotoScene( "level2", "fade", 250 )
 	
@@ -47,6 +50,8 @@ end
 -- 'onRelease' event listener for playLvl2
 local function onPlayLvl4Release()
 	
+	ballVariables.setBall1(25, 45)
+	ballVariables.setBall2(450, 450)
 	-- go to level4.lua scene
 	storyboard.gotoScene( "level4", "fade", 250 )
 	

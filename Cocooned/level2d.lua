@@ -15,7 +15,7 @@ display.setStatusBar(display.HiddenStatusBar )
 local physics = require "physics"
 physics.start(); physics.pause()
 -- Set view mode to show bounding boxes 
-physics.setDrawMode("hybrid")
+--physics.setDrawMode("hybrid")
 
 
 --------------------------------------------
@@ -34,7 +34,12 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 local ballTable = { 
 	[1] = display.newImage("ball.png"), 
 	[2] = display.newImage("ball.png") }
-
+	if ballVariables.getMagnetized1() then
+		ballTable[1]:setFillColor(1,0,0)
+	end
+	if ballVariables.getMagnetized2() then
+		ballTable[2]:setFillColor(1,0,0)
+	end
 -- add new walls
 -- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
 local walls = {
@@ -43,6 +48,10 @@ local walls = {
 	[3] = display.newImage("ground2.png"),
 	[4] = display.newImage("ground2.png") 
 } 
+local magnet = display.newImage("magnet3.png")
+
+	magnet.x = 30
+	magnet.y = 260
 
 	-- Left wall
 	walls[1].x = -40
@@ -63,17 +72,22 @@ local walls = {
 	walls[4].y = 315
 
 
---local lines = {
+local lines = {
 	-- newRect(left, top, width, height)
-	-- Rectangles for inital pane on 
-	-- left and right side
-	--[1] = display.newRect(70, 180, 20, 575) ,
-	--[2] = display.newRect(410, 180, 20, 575), 
-
-	-- Rectangles for the walls blocking
-	-- the area on the left and right side
-	--[3] = display.newRect(15, 200, 85, 15) ,
-	--[4] = display.newRect(440, 100, 35, 15) }
+	--center line
+	[1] = display.newRect(display.contentWidth/2+10, display.contentHeight/2, 20, display.contentHeight) ,
+	--wall containing win zone
+	[2] = display.newRect(display.contentWidth/4*3 + 30, 250, 20, display.contentHeight/3),
+	--wall above win zone
+	[3] = display.newRect(display.contentWidth/4*3 + 65, 75, display.contentWidth/4 + 50, 20),
+	--left vertical line
+	[4] = display.newRect(display.contentWidth/4-10, display.contentHeight/2+30, 20, display.contentHeight/2+90) ,
+	--bottom horizontal line
+	[5] = display.newRect(display.contentWidth/4+50, display.contentHeight/2 + 30, display.contentWidth/4+50, 20) ,
+	--top horizontal line
+	[6] = display.newRect(display.contentWidth/4+50, 75, display.contentWidth/4+50, 20),	
+	[7] = display.newRect(display.contentWidth/4*3 + 80, 200, display.contentWidth/4 + 10, 20)	
+}
 
 local function saveBallLocation()
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
@@ -197,6 +211,31 @@ end
 local function frame(event)
 	-- send both ball position values to distance function
 	distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
+
+	if distanceFrom(ballTable[1], ballTable[2]) < 100 and ballVariables.getRepelled() == false then
+		if ballVariables.getMagnetized1() then
+			ballTable[1]:applyLinearImpulse((ballTable[1].x - ballTable[2].x)/1000,(ballTable[1].y-ballTable[2].y)/1000, ballTable[1].x, ballTable[1].y)
+		end
+		if ballVariables.getMagnetized2() then
+			ballTable[2]:applyLinearImpulse((ballTable[2].x - ballTable[1].x)/1000,(ballTable[2].y-ballTable[1].y)/1000, ballTable[2].x, ballTable[2].y)
+		end
+		ballVariables.setRepelled(true);
+		timer.performWithDelay( 2000, ballVariables.setRepelled(false) )
+	end
+
+	if magnet then
+		if distanceFrom(magnet, ballTable[1]) < 50 and ballVariables.getMagnetized1() then
+			ballVariables.setMagnetized1(false)
+			magnet:removeSelf()
+			ballTable[2]:setFillColor(1,1,1)
+			magnet = nil
+		elseif distanceFrom(magnet, ballTable[2]) < 50 and ballVariables.getMagnetized2() then
+			ballVariables.setMagnetized2(false)
+			magnet:removeSelf()
+			ballTable[2]:setFillColor(1,1,1)
+			magnet = nil
+		end
+	end
 	
 	-- When less than distance of 35 pixels, do something
 	-- 			Used print as testing. Works successfully!
@@ -228,17 +267,18 @@ function scene:createScene( event )
 	ballTable[2].y = 180
 	
 	-- add physics to the balls
-	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
-	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
+	physics.addBody(ballTable[2], {radius = 15, bounce = .25 })
 	
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
 	group:insert( ballTable[2] )
+	group:insert(magnet)
 	
-	--for count = 1, #lines do
-	--	group:insert(lines[count])
-	--end
+	for count = 1, #lines do
+		group:insert(lines[count])
+	end
 end
 
 -- Called immediately after scene has moved onscreen:
@@ -255,7 +295,10 @@ function scene:enterScene( event )
 	ballTable[1].angularVelocity = 0
 	ballTable[2]:setLinearVelocity(0,0)
 	ballTable[2].angularVelocity = 0
-	
+
+	if magnet then
+		physics.addBody(magnet, "static", { bounce = 0.01 } )
+	end
 	
 	-- apply physics to walls
 	for count = 1, #walls do
@@ -263,10 +306,9 @@ function scene:enterScene( event )
 	end
 	
 	-- apply physics to lines
-	--for count = 1, #lines do
-	--	physics.addBody(lines[count], "static", { bounce = 0.01 } )
-	--end
-	
+	for count = 1, #lines do
+		physics.addBody(lines[count], "static", { bounce = 0.01 } )
+	end
 
 	physics.setGravity(0, 0)
 
@@ -283,6 +325,17 @@ function scene:willEnterScene( event )
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
 
+	if ballVariables.getMagnetized1() then
+		ballTable[1]:setFillColor(1,0,0)
+	else 
+		ballTable[1]:setFillColor(1,1,1)
+	end
+	if ballVariables.getMagnetized2() then
+		ballTable[2]:setFillColor(1,0,0)
+	else
+		ballTable[2]:setFillColor(1,1,1)
+	end
+
 	print( "load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 	print("Entering D")
 end
@@ -298,9 +351,12 @@ function scene:exitScene( event )
 	physics.removeBody(ballTable[1])
 	physics.removeBody(ballTable[2])
 
-	--for count = 1, #lines do
-	--	physics.removeBody(lines[count])
-	--end
+	for count = 1, #lines do
+		physics.removeBody(lines[count])
+	end
+	if magnet then
+		physics.removeBody(magnet)
+	end
 	
 	for count = 1, #walls do
 		physics.removeBody(walls[count])
