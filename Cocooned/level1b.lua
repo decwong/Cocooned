@@ -321,12 +321,6 @@ function scene:destroyScene( event )
 	local group = self.view
 	
 	print("destroyed B")
-	--package.loaded[physics] = nil
-	--physics = nil
-
-	-- add physics to the balls
-	--physics.removeBody(ballTable[1])
-	--physics.removeBody(ballTable[2])
 end
 
 -----------------------------------------------------------------------------------------

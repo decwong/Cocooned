@@ -29,12 +29,22 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 --		 unless storyboard.removeScene() is called.
 -- 
 -----------------------------------------------------------------------------------------
-	
-	-- make a crate (off-screen), position it, and rotate slightly
 
+	
 local ballTable = { 
-	[1] = display.newImage("ball.png"), 
-	[2] = display.newImage("ball.png") }
+	[1] = display.newImage("ball.png")
+	--[2] = display.newImage("ball.png") 
+}
+
+-- Add a crate
+local crate = display.newImage("crate.png")
+crate.x = 350; crate.y = 150
+crate.gravityScale = 0.25
+
+-- Add a switch to place the light ball on
+local switch = display.newImage("switch.png")
+switch.x = 100; switch.y = 150
+switch.gravityScale = 0.25
 	
 -- add new walls
 -- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
@@ -63,32 +73,29 @@ local walls = {
 	walls[4].x = 250
 	walls[4].y = 315
 
---local lines = {
-	-- newRect(left, top, width, height)
-	-- Rectangles for inital pane on 
-	-- left and right side
-	--[1] = display.newRect(70, 180, 20, 575) ,
-	--[2] = display.newRect(410, 180, 20, 575), 
-
-	-- Rectangles for the walls blocking
-	-- the area on the left and right side
-	--[3] = display.newRect(-10, 200, 35, 15) ,
-	--[4] = display.newRect(465, 100, 85, 15) 
-
-	--lines:setFillColor(255, 165, 79) }
-
+local lines = {
+	[1] = display.newRect(250, 150, 50, 50)
+}
 local function saveBallLocation()
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
-	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
+	--ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
 end
 	
--- distance function
+-- distance functions
+local ballDistance
+local switchDistance
 local dist
+
+local function ballDistance(x1, x2, y1, y2, detectString)
+	return math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
+end
+
+local function switchDistance(x1, x2, y1, y2, detectString)
+	return math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
+end
+
 local function distance(x1, x2, y1, y2, detectString)
 	dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
-	if detectString then
-		--print(detectString, dist)
-	end
 end
 
 
@@ -117,7 +124,7 @@ local function moveBall(event)
 		
 		if tap == 1 then
 			if event.phase == "ended" then
-				for count = 1, 2, 1 do
+				for count = 1, #ballTable, 1 do
 			
 				-- send mouse/ball position values to distance function
 				distance(event.x, ballTable[count].x, event.y, ballTable[count].y, "Mouse to Ball Distance: ")
@@ -197,19 +204,26 @@ end
 
 	-- Collision Detection for every frame during game time
 local function frame(event)
+	local ballDist
+	local switchDist
 
 	-- send both ball position values to distance function
-	distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
+	--ballDist = ballDistance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
+	switchDist = switchDistance(crate.x, switch.x, crate.y, switch.y)
 	
 	-- When less than distance of 35 pixels, do something
 	-- 			Used print as testing. Works successfully!
-	if dist <= 35 then
-		print("Distance =", dist)
+	--if ballDist <= 35 then
+	--	print("Ball Distance =", ballDist)
+	--end 
+	if switchDist <= 55 then
+		doorOpen = true 
 	end
 end
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
+	print(switchOpen)
 	print("Create C")
 	local group = self.view
 
@@ -224,11 +238,18 @@ function scene:createScene( event )
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
-	group:insert( ballTable[2] )
+	--group:insert( ballTable[2] )
+	group:insert( crate)
+
+	for count = 1, #lines do
+		group:insert(lines[count])
+	end
+
+	if switchOpen == true then 
+		print("showing switch")
+		group:insert( switch)
+	end
 			
-	--for count = 1, #lines do
-	--	group:insert(lines[count])
-	--end
 end
 
 -- Called immediately after scene has moved onscreen:
@@ -237,24 +258,28 @@ function scene:enterScene( event )
 
 	print("Enter B")
 
+	-- Apply physics to ball, crate, and switch
 	physics.start()
-	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
-	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
+	--physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+	physics.addBody( crate, { density=0.01, friction=5000, bounce=.1 } )
+	--physics.addBody( switch) 
 
 	ballTable[1]:setLinearVelocity(0,0)
 	ballTable[1].angularVelocity = 0
-	ballTable[2]:setLinearVelocity(0,0)
-	ballTable[2].angularVelocity = 0
+	--ballTable[2]:setLinearVelocity(0,0)
+	--ballTable[2].angularVelocity = 0
+	crate.angularVelocity = 0
 
 	-- apply physics to wall
 	for count = 1, #walls do
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
 	end
-	
+
 	-- apply physics to lines
-	--for count = 1, #lines do 
-	--	physics.addBody(lines[count], "static", { bounce = 0.01 } )
-	--end
+	for count = 1, #lines do 
+		physics.addBody(lines[count], "static", { bounce = 0.01 } )
+	end 
 
 	physics.setGravity(0, 0)
 
@@ -267,10 +292,45 @@ function scene:willEnterScene( event )
 
 	ballTable[1].x = ballVariables.getBall1x()
 	ballTable[1].y = ballVariables.getBall1y()
-	ballTable[2].x = ballVariables.getBall2x()
-	ballTable[2].y = ballVariables.getBall2y()
+	--ballTable[2].x = ballVariables.getBall2x()
+	--ballTable[2].y = ballVariables.getBall2y()
+
+	if switchOpen then 
+		switch.alpha = 1
+	elseif switchOpen == false then
+		switch.alpha = 0
+	end 
 	
 	print("Entering B")
+end
+
+--rectangle-based collision detection
+local function hasCollided( crate, switch )
+   if ( crate == nil ) then  --make sure the first object exists
+      return false
+   end
+   if ( switch == nil ) then  --make sure the other object exists
+      return false
+   end
+
+   if crate.contentBounds.xMin <= switch.contentBounds.xMin and crate.contentBounds.xMax >= switch.contentBounds.xMin then
+   	return true
+   end
+   if crate.contentBounds.xMin >= switch.contentBounds.xMin and crate.contentBounds.xMin <= switch.contentBounds.xMax then
+   	return true
+   end
+   if crate.contentBounds.yMin <= switch.contentBounds.yMin and crate.contentBounds.yMax >= switch.contentBounds.yMin then
+   	return true
+   end
+   if crate.contentBounds.yMin >= switch.contentBounds.yMin and crate.contentBounds.yMin <= switch.contentBounds.yMax then
+   	return true
+   end
+
+   --return (left or right) and (up or down)
+end
+
+if hasCollided(crate, switch) == true then
+	print("collision")
 end
 
 -- Called when scene is about to move offscreen:
@@ -281,19 +341,23 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("enterFrame", frame)
 
 	physics.removeBody(ballTable[1])
-	physics.removeBody(ballTable[2])
+	--physics.removeBody(ballTable[2])
 
-	-- remove physics to lines
-	--for count = 1, #lines do 
-	--	physics.removeBody(lines[count])
-	--end
+	-- Remove crate physics
+	physics.removeBody( crate )
 
+	-- Remove switch physics
+	--physics.removeBody( switch)
+
+	-- Remove wall physics
 	for count = 1, #walls do
 		physics.removeBody(walls[count])
 	end
-	
-	physics.pause()
-	
+
+	for count = 1, #lines do
+		physics.removeBody(lines[count])
+	end
+		
 	print("Exit B")
 end
 
@@ -307,7 +371,7 @@ function scene:destroyScene( event )
 
 	-- add physics to the balls
 	physics.removeBody(ballTable[1])
-	physics.removeBody(ballTable[2])
+	--physics.removeBody(ballTable[2])
 end
 
 -----------------------------------------------------------------------------------------
