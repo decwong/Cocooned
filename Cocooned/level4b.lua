@@ -62,6 +62,11 @@ local walls = {
 	walls[4].x = 250
 	walls[4].y = 315
 
+-- Draw Menu Button
+local menu = display.newImage("floor.png")
+	menu.x = 245
+	menu.y = 10
+	
 -- Draw lines
 local lines = {
 	-- newRect(left, top, width, height)
@@ -79,9 +84,6 @@ local lines = {
 	[10] = display.newRect(395,110,10,190),
 	[11] = display.newRect(455,200,110,10),
 	[12] = display.newRect(350,200,80,10)
-
-
-
 }
 
 for count = 1, #lines do
@@ -117,14 +119,40 @@ local function saveBallLocation()
 end
 	
 -- distance function
-local function distance(x1, x2, y1, y2, detectString)
+local function distance(x1, x2, y1, y2)
 	local dist
 	dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
-	if detectString then
-		--print(detectString, dist)
-	end
-
 	return dist
+end
+
+-- MENU FUNCTION
+local menuBool = false
+local function menuCheck(event)
+	if event.phase == "ended" then
+		local dist
+		dist = distance(event.x, menu.x, event.y, menu.y)
+		if dist < 20 and menuBool == false then
+			menuBool = true
+		elseif dist < 20 and menuBool == true then
+			menuBool = false
+		end
+		
+		if menuBool == true then
+			print("menuBool: ", menuBool)
+			-- OVERLAY CODE!!!!!!!!!
+			local options =
+			{
+				effect = "slideDown",
+				time = 400
+			}
+			
+			physics.pause()
+			storyboard.showOverlay("overlay_scene", options)
+		elseif menuBool == false then
+			storyboard.hideOverlay("slideUp", 400)
+			physics.start()
+		end
+	end
 end
 
 local tapTime = 0
@@ -338,6 +366,7 @@ function scene:enterScene( event )
 	physics.setGravity(0, 0)
 
 	Runtime:addEventListener("touch", moveBall)
+	Runtime:addEventListener("touch", menuCheck)
 	Runtime:addEventListener("enterFrame", frame)
 	
 end
@@ -369,6 +398,7 @@ function scene:exitScene( event )
 	local group = self.view
 	
 	Runtime:removeEventListener("touch", moveBall)
+	Runtime:removeEventListener("touch", menuCheck)
 	Runtime:removeEventListener("enterFrame", frame)
 
 	physics.removeBody(ballTable[1])
@@ -381,6 +411,8 @@ function scene:exitScene( event )
 	for count = 1, #lines do
 		physics.removeBody(lines[count])
 	end
+	
+	menuBool = false
 	
 	physics.pause()
 	if miniMap then

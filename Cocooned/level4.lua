@@ -63,6 +63,11 @@ local walls = {
 	walls[4].x = 250
 	walls[4].y = 315	
 	
+-- Draw Menu Button
+local menu = display.newImage("floor.png")
+	menu.x = 245
+	menu.y = 10
+	
 -- Draw lines
 local lines = {
 	-- newRect(left, top, width, height)
@@ -114,6 +119,36 @@ end
 local function saveBallLocation()
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
 	--ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
+end
+
+-- MENU FUNCTION
+local menuBool = false
+local function menuCheck(event)
+	if event.phase == "ended" then
+		local dist
+		dist = distance(event.x, menu.x, event.y, menu.y)
+		if dist < 20 and menuBool == false then
+			menuBool = true
+		elseif dist < 20 and menuBool == true then
+			menuBool = false
+		end
+		
+		if menuBool == true then
+			print("menuBool: ", menuBool)
+			-- OVERLAY CODE!!!!!!!!!
+			local options =
+			{
+				effect = "slideDown",
+				time = 400
+			}
+			
+			physics.pause()
+			storyboard.showOverlay("overlay_scene", options)
+		elseif menuBool == false then
+			storyboard.hideOverlay("slideUp", 400)
+			physics.start()
+		end
+	end
 end
 
 local tapTime = 0
@@ -349,6 +384,7 @@ function scene:enterScene( event )
 	--physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
 
 	Runtime:addEventListener("touch", moveBall)
+	Runtime:addEventListener("touch", menuCheck)
 	--Runtime:addEventListener("enterFrame", frame)
 
 	-- apply physics to walls
@@ -397,11 +433,20 @@ function scene:willEnterScene( event )
 	print("Entering MAIN")
 end
 
+function scene:overlayBegan( event )
+	print( "Showing overlay: " .. event.sceneName)
+end
+
+function scene:overlayEnded( event )
+	print( "Overlay removed: " .. event.sceneName)
+end
+
 -- Called when scene is about to move offscreen:
 function scene:exitScene( event )
 	local group = self.view
 	
 	Runtime:removeEventListener("touch", moveBall)
+	Runtime:removeEventListener("touch", menuCheck)
 	--Runtime:removeEventListener("enterFrame", frame)
 
 	physics.removeBody(ballTable[1])
@@ -417,7 +462,7 @@ function scene:exitScene( event )
 		physics.removeBody(lines[count])
 	end
 
-
+	menuBool = false
 
 	physics.pause()
 

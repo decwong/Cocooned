@@ -374,6 +374,8 @@ function scene:exitScene( event )
 		physics.removeBody(walls[count])
 	end
 	
+	menuBool = false
+	
 	physics.pause()
 	
 	print("Exit A")

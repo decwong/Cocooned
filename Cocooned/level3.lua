@@ -67,6 +67,11 @@ local walls = {
 	-- Bottom wall
 	walls[4].x = 250
 	walls[4].y = 315	
+
+-- Draw Menu Button
+local menu = display.newImage("floor.png")
+	menu.x = 245
+	menu.y = 10
 	
 -- Draw lines
 local lines = {
@@ -78,14 +83,45 @@ local lines = {
 }
 		
 -- distance function
-local dist
 local function distance(x1, x2, y1, y2)
+	local dist
 	dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
+	return dist
 end
 
 local function saveBallLocation()
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
 	--ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
+end
+
+-- MENU FUNCTION
+local menuBool = false
+local function menuCheck(event)
+	if event.phase == "ended" then
+		local dist
+		dist = distance(event.x, menu.x, event.y, menu.y)
+		if dist < 20 and menuBool == false then
+			menuBool = true
+		elseif dist < 20 and menuBool == true then
+			menuBool = false
+		end
+		
+		if menuBool == true then
+			print("menuBool: ", menuBool)
+			-- OVERLAY CODE!!!!!!!!!
+			local options =
+			{
+				effect = "slideDown",
+				time = 400
+			}
+			
+			physics.pause()
+			storyboard.showOverlay("overlay_scene", options)
+		elseif menuBool == false then
+			storyboard.hideOverlay("slideUp", 400)
+			physics.start()
+		end
+	end
 end
 
 -- ball movement control
@@ -99,6 +135,7 @@ local function moveBall(event)
 	local x 
 	local y
 	local tap = 0
+	local dist
 		
 	--find distance from start touch to end touch
 	local dx = event.x - event.xStart
@@ -122,7 +159,7 @@ local function moveBall(event)
 			for count = 1, #ballTable, 1 do
 		
 			-- send mouse/ball position values to distance function
-			distance(event.x, ballTable[count].x, event.y, ballTable[count].y, "Mouse to Ball Distance: ")
+			dist = distance(event.x, ballTable[count].x, event.y, ballTable[count].y)
 			
 			-- if it is taking too many tries to move the ball, increase the distance <= *value*
 			if dist <= 100 then
@@ -306,6 +343,7 @@ function scene:enterScene( event )
 	end
 
 	Runtime:addEventListener("touch", moveBall)
+	Runtime:addEventListener("touch", menuCheck)
 	Runtime:addEventListener("enterFrame", frame)
 	
 	physics.setGravity(0, 0)
@@ -322,11 +360,20 @@ function scene:willEnterScene( event )
 	print("Entering MAIN")
 end
 
+function scene:overlayBegan( event )
+	print( "Showing overlay: " .. event.sceneName)
+end
+
+function scene:overlayEnded( event )
+	print( "Overlay removed: " .. event.sceneName)
+end
+
 -- Called when scene is about to move offscreen:
 function scene:exitScene( event )
 	local group = self.view
 	
 	Runtime:removeEventListener("touch", moveBall)
+	Runtime:removeEventListener("touch", menuCheck)
 	Runtime:removeEventListener("enterFrame", frame)
 
 	physics.removeBody(ballTable[1])
@@ -342,6 +389,8 @@ function scene:exitScene( event )
 		physics.removeBody(walls[count])
 	end
 
+	menuBool = false
+	
 	--physics.pause()
 	
 	print("Exit MAIN")
@@ -366,8 +415,13 @@ scene:addEventListener( "enterScene", scene )
 
 scene:addEventListener( "willEnterScene", scene)
 
+-- "overlay" events is dispatched whenever scene is paused
+scene:addEventListener( "overlayBegan" ) 
+
 -- "exitScene" event is dispatched whenever before next scene's transition begins
 scene:addEventListener( "exitScene", scene )
+
+scene:addEventListener( "overlayEnded" )
 
 -- "destroyScene" event is dispatched before view is unloaded, which can be
 -- automatically unloaded in low memory situations, or explicitly via a call to

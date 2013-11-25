@@ -73,6 +73,11 @@ local walls = {
 	walls[4].x = 250
 	walls[4].y = 315
 
+-- Draw Menu Button
+local menu = display.newImage("floor.png")
+	menu.x = 245
+	menu.y = 10
+	
 local lines = {
 	[1] = display.newRect(250, 150, 50, 50)
 }
@@ -80,6 +85,7 @@ local function saveBallLocation()
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
 	--ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
 end
+	
 	
 -- distance functions
 local ballDistance
@@ -94,8 +100,41 @@ local function switchDistance(x1, x2, y1, y2, detectString)
 	return math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
 end
 
-local function distance(x1, x2, y1, y2, detectString)
+-- distance function
+local function distance(x1, x2, y1, y2)
+	local dist
 	dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
+	return dist
+end
+
+-- MENU FUNCTION
+local menuBool = false
+local function menuCheck(event)
+	if event.phase == "ended" then
+		local dist
+		dist = distance(event.x, menu.x, event.y, menu.y)
+		if dist < 20 and menuBool == false then
+			menuBool = true
+		elseif dist < 20 and menuBool == true then
+			menuBool = false
+		end
+		
+		if menuBool == true then
+			print("menuBool: ", menuBool)
+			-- OVERLAY CODE!!!!!!!!!
+			local options =
+			{
+				effect = "slideDown",
+				time = 400
+			}
+			
+			physics.pause()
+			storyboard.showOverlay("overlay_scene", options)
+		elseif menuBool == false then
+			storyboard.hideOverlay("slideUp", 400)
+			physics.start()
+		end
+	end
 end
 
 
@@ -104,6 +143,7 @@ local function moveBall(event)
 		local x 
 		local y
 		local tap = 0
+		local dist
 		
 		--find distance from start touch to end touch
 		local dx = event.x - event.xStart
@@ -127,7 +167,7 @@ local function moveBall(event)
 				for count = 1, #ballTable, 1 do
 			
 				-- send mouse/ball position values to distance function
-				distance(event.x, ballTable[count].x, event.y, ballTable[count].y, "Mouse to Ball Distance: ")
+				dist = distance(event.x, ballTable[count].x, event.y, ballTable[count].y, "Mouse to Ball Distance: ")
 			
 				-- if it is taking too many tries to move the ball, increase the distance <= *value*
 				if dist <= 100 then
@@ -284,6 +324,7 @@ function scene:enterScene( event )
 	physics.setGravity(0, 0)
 
 	Runtime:addEventListener("touch", moveBall)
+	Runtime:addEventListener("touch", menuCheck)
 	Runtime:addEventListener("enterFrame", frame)
 	
 end
@@ -338,6 +379,7 @@ function scene:exitScene( event )
 	local group = self.view
 	
 	Runtime:removeEventListener("touch", moveBall)
+	Runtime:removeEventListener("touch", menuCheck)
 	Runtime:removeEventListener("enterFrame", frame)
 
 	physics.removeBody(ballTable[1])
@@ -357,6 +399,8 @@ function scene:exitScene( event )
 	for count = 1, #lines do
 		physics.removeBody(lines[count])
 	end
+	
+	menuBool = false
 		
 	print("Exit B")
 end
