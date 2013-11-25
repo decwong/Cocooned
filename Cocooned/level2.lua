@@ -16,7 +16,7 @@ display.setStatusBar(display.HiddenStatusBar )
 local physics = require "physics"
 physics.start(); physics.pause()
 -- Set view mode to show bounding boxes 
-physics.setDrawMode("hybrid")
+--physics.setDrawMode("hybrid")
 
 --------------------------------------------
 
@@ -35,6 +35,7 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 local ballTable = { 
 		[1] = display.newImage("ball.png"), 
 		[2] = display.newImage("ball.png") }
+		
 
 		
 -- add new walls
@@ -65,25 +66,21 @@ local walls = {
 	walls[4].y = 315	
 	
 -- Draw lines
---local lines = {
+local lines = {
 	-- newRect(left, top, width, height)
-	-- Rectangles for inital pane on 
-	-- left and right side
-	--[1] = display.newRect(70, 180, 20, 575) ,
-	--[2] = display.newRect(410, 180, 20, 575), 
-
-	-- Rectangles for the walls blocking
-	-- the area on the left and right side
-	--[3] = display.newRect(15, 200, 85, 15) ,
-	--[4] = display.newRect(465, 100, 85, 15) , 
-
-	-- Rectangles for the center column
-	--[5] = display.newRect(130, 180, 20, 400) , 
-	--[6] = display.newRect(350, 180, 20, 400) ,
-	
-	-- Horizontal rectangles for center column
-	--[7] = display.newRect(240, 225, 200, 15) ,
-	--[8] = display.newRect(240, 100, 200, 15) }
+	--center line
+	[1] = display.newRect(display.contentWidth/2+10, display.contentHeight/2, 20, display.contentHeight) ,
+	--wall containing win zone
+	[2] = display.newRect(display.contentWidth/4*3 + 30, 250, 20, display.contentHeight/3),
+	--wall above win zone
+	[3] = display.newRect(display.contentWidth/4*3 + 65, 75, display.contentWidth/4 + 50, 20),
+	--left vertical line
+	[4] = display.newRect(display.contentWidth/4-10, display.contentHeight/2, 20, display.contentHeight) ,
+	--bottom horizontal line
+	[5] = display.newRect(display.contentWidth/4-10, display.contentHeight/2 + 30, display.contentWidth/2+50, 20) ,
+	--top horizontal line
+	[6] = display.newRect(display.contentWidth/4-10, 75, display.contentWidth/2+50, 20)
+}
 		
 -- distance function
 local dist
@@ -253,18 +250,32 @@ local function onAccelerate( event )
 	physics.setGravity(12*xGrav, 16*yGrav)
 end
 
+function distanceFrom(o1,o2)
+return math.sqrt((o1.x-o2.x)^2+(o1.y-o2.y)^2)
+end
 -- Collision Detection for every frame during game time
 local function frame(event)
 
 	-- send both ball position values to distance function
 	distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
-	
+
+	if distanceFrom(ballTable[1], ballTable[2]) < 100 and ballVariables.getRepelled() == false then
+		if ballVariables.getMagnetized1() then
+			ballTable[1]:applyLinearImpulse((ballTable[1].x - ballTable[2].x)/1000,(ballTable[1].y-ballTable[2].y)/1000, ballTable[1].x, ballTable[1].y)
+		end
+		if ballVariables.getMagnetized2() then
+			ballTable[2]:applyLinearImpulse((ballTable[2].x - ballTable[1].x)/1000,(ballTable[2].y-ballTable[1].y)/1000, ballTable[2].x, ballTable[2].y)
+		end
+		ballVariables.setRepelled(true);
+		timer.performWithDelay( 2000, ballVariables.setRepelled(false) )
+	end
 	-- When less than distance of 35 pixels, do something
 	-- 			Used print as testing. Works successfully!
 	if dist <= 35 then
 		print("Distance =", dist)
 	end
 end
+
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
@@ -289,21 +300,32 @@ function scene:createScene( event )
 	group:insert( ballTable[1] )
 	group:insert( ballTable[2] )
 	
-	--for count = 1, #lines do
-	--	group:insert(lines[count])
-	--end
+	for count = 1, #lines do
+		group:insert(lines[count])
+	end
 
 end
 
 -- Called immediately after scene has moved onscreen:
 function scene:enterScene( event )
 	local group = self.view
+	
 
 	print("Enter MAIN")
 
 	physics.start()
 	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
 	physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+
+
+	-- apply physics to walls
+	for count = 1, #walls do
+		physics.addBody(walls[count], "static", { bounce = 0.01 } )
+	end
+	
+	for count = 1, #lines do 
+		physics.addBody(lines[count], "static", { bounce = 0.01 } )
+	end
 
 	Runtime:addEventListener("touch", moveBall)
 	Runtime:addEventListener("enterFrame", frame)
@@ -319,14 +341,17 @@ function scene:willEnterScene( event )
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
 
-	-- apply physics to walls
-	for count = 1, #walls do
-		physics.addBody(walls[count], "static", { bounce = 0.01 } )
+	if ballVariables.getMagnetized1() then
+		ballTable[1]:setFillColor(1,0,0)
+	else 
+		ballTable[1]:setFillColor(1,1,1)
 	end
-	
-	--for count = 1, #lines do 
-	--	physics.addBody(lines[count], "static", { bounce = 0.01 } )
-	--end
+	if ballVariables.getMagnetized2() then
+		ballTable[2]:setFillColor(1,0,0)
+	else
+		ballTable[2]:setFillColor(1,1,1)
+	end
+
 
 	print("Entering MAIN")
 end
@@ -343,9 +368,9 @@ function scene:exitScene( event )
 
 	--print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
 
-	--for count = 1, #lines do
-	--	physics.removeBody(lines[count])
-	--end
+	for count = 1, #lines do
+		physics.removeBody(lines[count])
+	end
 
 	for count = 1, #walls do
 		physics.removeBody(walls[count])

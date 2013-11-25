@@ -6,6 +6,7 @@
 
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
+require("ballVariables")
 
 -- include Corona's "widget" library
 local widget = require "widget"
