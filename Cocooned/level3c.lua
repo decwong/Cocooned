@@ -244,7 +244,7 @@ function scene:enterScene( event )
 	print("Enter C")
 
 	physics.start()
-	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
+	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
 	--physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
 	physics.addBody(door, "static", {bounce = 0.01})
 

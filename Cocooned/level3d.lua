@@ -235,7 +235,7 @@ function scene:createScene( event )
 	--ballTable[2].y = 180
 	
 	-- add physics to the balls
-	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
+	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
 	--physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
 	
 	-- all display objects must be inserted into group

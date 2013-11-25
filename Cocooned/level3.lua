@@ -293,7 +293,7 @@ function scene:enterScene( event )
 	print("Enter MAIN")
 
 	physics.start()
-	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
+	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
 	--physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
 
 	-- apply physics to walls

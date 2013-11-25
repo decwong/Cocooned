@@ -260,7 +260,7 @@ function scene:enterScene( event )
 
 	-- Apply physics to ball, crate, and switch
 	physics.start()
-	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
+	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
 	--physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
 	physics.addBody( crate, { density=0.01, friction=5000, bounce=.1 } )
 	--physics.addBody( switch) 
