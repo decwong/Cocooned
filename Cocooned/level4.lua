@@ -9,6 +9,8 @@ local scene = storyboard.newScene()
 local widget = require("widget");
 require("ballVariables")
 
+system.activate( "multitouch" )
+
 local font = "Helvetica" or system.nativeFont;
 display.setStatusBar(display.HiddenStatusBar )
 
@@ -114,17 +116,20 @@ local function saveBallLocation()
 	--ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
 end
 
+local tapTime = 0
+local miniMap = false
+
 -- ball movement control
 local function moveBall(event)
 	
 	local x 
 	local y
+	local eventTime = event.time
 	local tap = 0
 		
 	--find distance from start touch to end touch
 	local dx = event.x - event.xStart
 	local dy = event.y - event.yStart
-		
 
 	--checking if touch was a tap touch and not a swipe
 	if dx < 5 then
@@ -137,9 +142,26 @@ local function moveBall(event)
 			end
 		end
 	end
-		
+
+	if event.phase == "ended" then
+		if(eventTime - tapTime) < 300 then
+				if miniMap == false then 
+					physics.pause()
+					storyboard.showOverlay("miniMapLevel4", "fade", 300)
+					miniMap = true
+				elseif miniMap == true then
+					storyboard.hideOverlay("fade", 300)
+					physics.start()
+					miniMap = false
+				end
+				print("double tap")
+			end
+			tapTime = eventTime
+	end
+	
 	if tap == 1 then
 		if event.phase == "ended" then
+
 			for count = 1, #ballTable do
 
 			local dist
@@ -282,7 +304,6 @@ local function frame(event)
 	end
 end
 
-
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
 	print("Create MAIN")
@@ -308,6 +329,10 @@ function scene:createScene( event )
 	
 	for count = 1, #lines do
 		group:insert(lines[count])
+	end
+
+	for count = 1, #walls do
+		group:insert(walls[count])
 	end
 
 
@@ -395,6 +420,11 @@ function scene:exitScene( event )
 
 
 	physics.pause()
+
+	if miniMap then
+		miniMap = false
+	end
+
 	
 	print("Exit MAIN")
 end
@@ -425,6 +455,10 @@ scene:addEventListener( "exitScene", scene )
 -- automatically unloaded in low memory situations, or explicitly via a call to
 -- storyboard.purgeScene() or storyboard.removeScene().
 scene:addEventListener( "destroyScene", scene )
+
+scene:addEventListener("hideOverlay", scene)
+
+scene:addEventListener("showOverlay", scene)
 
 -----------------------------------------------------------------------------------------
 

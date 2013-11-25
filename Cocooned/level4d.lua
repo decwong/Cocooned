@@ -111,12 +111,31 @@ local function distance(x1, x2, y1, y2, detectString)
 	return dist
 end
 
+local tapTime = 0
+local miniMap = false
+
 -- ball movement control
 local function moveBall(event)
 
 	local x 
 	local y
 	local tap = 0
+	local eventTime = event.time
+	if event.phase == "ended" then
+		if(eventTime - tapTime) < 300 then
+				if miniMap == false then 
+					physics.pause()
+					storyboard.showOverlay("miniMapLevel4", "fade", 300)
+					miniMap = true
+				elseif miniMap == true then
+					storyboard.hideOverlay("fade", 300)
+					physics.start()
+					miniMap = false
+				end
+				print("double tap")
+			end
+			tapTime = eventTime
+	end
 		
 	--find distance from start touch to end touch
 	local dx = event.x - event.xStart
@@ -282,6 +301,7 @@ function scene:enterScene( event )
 	end
 	physics.setGravity(0, 0)
 
+
 	Runtime:addEventListener("touch", moveBall)
 	Runtime:addEventListener("enterFrame", frame)
 	
@@ -326,6 +346,9 @@ function scene:exitScene( event )
 	end
 
 	physics.pause()
+	if miniMap then
+		miniMap = false
+	end
 
 	print("Exit D")
 end
