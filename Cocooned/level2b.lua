@@ -50,6 +50,12 @@ local walls = {
 	[3] = display.newImage("ground2.png"),
 	[4] = display.newImage("ground2.png") 
 } 
+
+-- Draw Menu Button
+local menu = display.newImage("floor.png")
+	menu.x = 245
+	menu.y = 10
+
 local magnet =display.newImage("magnet3.png")
 	
 	magnet.x = 180
@@ -96,20 +102,48 @@ local function saveBallLocation()
 end
 	
 -- distance function
-local dist
-local function distance(x1, x2, y1, y2, detectString)
+local function distance(x1, x2, y1, y2)
+	local dist
 	dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
-	if detectString then
-		--print(detectString, dist)
-	end
+	return dist
 end
 
+-- MENU FUNCTION
+local menuBool = false
+local function menuCheck(event)
+	if event.phase == "ended" then
+		local dist
+		dist = distance(event.x, menu.x, event.y, menu.y)
+		if dist < 10 and menuBool == false then
+			menuBool = true
+		elseif dist < 10 and menuBool == true then
+			menuBool = false
+		end
+		
+		if  menuBool == true then
+			print("menuBool: ", menuBool)
+			-- OVERLAY CODE!!!!!!!!!
+			local options =
+			{
+				effect = "slideDown",
+				time = 400
+			}
+			
+			physics.pause()
+			storyboard.showOverlay("overlay_scene", options)
+		elseif menuBool == false then
+			storyboard.hideOverlay("slideUp", 400)
+			physics.start()
+		end
+	end
+end
 
 -- ball movement control
 local function moveBall(event)
 		local x 
 		local y
 		local tap = 0
+		local dist
 		
 		--find distance from start touch to end touch
 		local dx = event.x - event.xStart
@@ -133,7 +167,7 @@ local function moveBall(event)
 				for count = 1, 2, 1 do
 			
 				-- send mouse/ball position values to distance function
-				distance(event.x, ballTable[count].x, event.y, ballTable[count].y, "Mouse to Ball Distance: ")
+				dist = distance(event.x, ballTable[count].x, event.y, ballTable[count].y, "Mouse to Ball Distance: ")
 			
 				-- if it is taking too many tries to move the ball, increase the distance <= *value*
 				if dist <= 100 then
@@ -210,9 +244,9 @@ end
 
 	-- Collision Detection for every frame during game time
 local function frame(event)
-
+	local dist
 	-- send both ball position values to distance function
-	distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
+	dist = distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
 	--magnetized repel
 	if distanceFrom(ballTable[1], ballTable[2]) < 100 and ballVariables.getRepelled() == false then
 		if ballVariables.getMagnetized1() then
@@ -301,6 +335,7 @@ function scene:enterScene( event )
 	physics.setGravity(0, 0)
 
 	Runtime:addEventListener("touch", moveBall)
+	Runtime:addEventListener("touch", menuCheck)
 	Runtime:addEventListener("enterFrame", frame)
 	
 end
@@ -330,6 +365,7 @@ function scene:exitScene( event )
 	local group = self.view
 	
 	Runtime:removeEventListener("touch", moveBall)
+	Runtime:removeEventListener("touch", menuCheck)
 	Runtime:removeEventListener("enterFrame", frame)
 
 	physics.removeBody(ballTable[1])
@@ -347,6 +383,7 @@ function scene:exitScene( event )
 		physics.removeBody(walls[count])
 	end
 
+	menuBool = false
 	physics.pause()
 	
 	print("Exit B")
