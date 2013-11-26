@@ -74,8 +74,16 @@ local lines = {
 	-- Rectangles for inital pane on 
 	-- left and right side
 	[1] = display.newRect(70, 180, 20, 575) ,
-	[2] = display.newRect(410, 180, 20, 575) 
+	[2] = display.newRect(410, 180, 20, 575) ,
+	[3] = display.newRect(305, 55, 25, 75) ,
+	[4] = display.newRect(170, 265, 25, 75)
 }
+
+local star1 = display.newImage("star.png")
+star1.x = 125; star1.y = 260
+
+local star2 = display.newImage("star.png")
+star2.x = 350; star2.y = 50
 		
 -- distance function
 local dist
@@ -245,6 +253,10 @@ local function onAccelerate( event )
 	physics.setGravity(12*xGrav, 16*yGrav)
 end
 
+function distanceFrom(x1, x2, y1, y2)
+	return math.sqrt((x2-x1)^2+(y2-y1)^2)
+end
+
 -- Collision Detection for every frame during game time
 local function frame(event)
 	-- send both ball position values to distance function
@@ -255,6 +267,16 @@ local function frame(event)
 	--if dist <= 35 then
 	--	print("Distance =", dist)
 	--end
+
+	if distanceFrom(ballTable[1], star1) < 30 or distanceFrom(ballTable[2], star1) < 30 then
+		star1Check = true
+	end
+	if distanceFrom(ballTable[1], star2) < 30 or distanceFrom(ballTable[2], star2) < 30 then
+		star2Check = true
+	end 
+	if star1Check and star2Check then
+		storyboard.gotoScene("select", "fade", 500)
+	end
 end
 
 -- Called when the scene's view does not exist:
@@ -279,6 +301,8 @@ function scene:createScene( event )
 	group:insert( background )
 	group:insert( ballTable[1] )
 	--group:insert( ballTable[2] )
+	group:insert( star1)
+	group:insert( star2)
 	
 	for count = 1, #lines do
 		group:insert(lines[count])

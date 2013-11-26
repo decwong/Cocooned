@@ -255,7 +255,7 @@ local function onAccelerate( event )
 end
 
 function distanceFrom(o1,o2)
-return math.sqrt((o1.x-o2.x)^2+(o1.y-o2.y)^2)
+	return math.sqrt((o1.x-o2.x)^2+(o1.y-o2.y)^2)
 end
 -- Collision Detection for every frame during game time
 local function frame(event)

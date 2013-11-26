@@ -208,7 +208,7 @@ local function frame(event)
 	switchDist = switchDistance(ballTable[1].x, ballSwitch.x, ballTable[1].y, ballSwitch.y)
 
 	if switchDist <= 55 then
-		switchOpen = true 
+		
 	end
 end
 
