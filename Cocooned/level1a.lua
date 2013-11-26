@@ -87,6 +87,7 @@ local chests = {
 local menu = display.newImage("floor.png")
 	menu.x = 245
 	menu.y = 10
+
 	
 -- Draw lines
 local lines = {
@@ -115,42 +116,37 @@ local function menuCheck(event)
 	if event.phase == "ended" then
 		local dist
 		dist = distance(event.x, menu.x, event.y, menu.y)
-		if dist < 10 and menuBool == false then
-			menuBool = true
-		elseif dist < 10 and menuBool == true then
-			menuBool = false
-		end
-		
-		if  menuBool == true then
-			print("menuBool: ", menuBool)
-			-- OVERLAY CODE!!!!!!!!!
+		if dist < 20 and menuBool == false then
 			local options =
 			{
 				effect = "slideDown",
 				time = 400
 			}
-			
 			physics.pause()
 			storyboard.showOverlay("overlay_scene", options)
-		elseif menuBool == false then
+			menuBool = true
+		elseif dist < 20 and menuBool == true then
+			print("hide")
 			storyboard.hideOverlay("slideUp", 400)
 			physics.start()
+			menuBool = false
 		end
 	end
 end
+local tapTime = 0
+local miniMap = false
 
 -- ball movement control
 local function moveBall(event)
-		
+	
 	local x 
 	local y
+	local eventTime = event.time
 	local tap = 0
-	local dist
 		
 	--find distance from start touch to end touch
 	local dx = event.x - event.xStart
 	local dy = event.y - event.yStart
-		
 
 	--checking if touch was a tap touch and not a swipe
 	if dx < 5 then
@@ -162,6 +158,24 @@ local function moveBall(event)
 				end
 			end
 		end
+	end
+
+	if event.phase == "ended" then
+		if(eventTime - tapTime) < 300 then
+			if menuBool == false then
+				if miniMap == false then 
+					physics.pause()
+					storyboard.showOverlay("miniMapLevel1", "fade", 300)
+					miniMap = true
+				elseif miniMap == true then
+					storyboard.hideOverlay("fade", 300)
+					physics.start()
+					miniMap = false
+				end
+				print("double tap")
+			end
+		end
+			tapTime = eventTime
 	end
 		
 	if tap == 1 then
@@ -299,8 +313,13 @@ function scene:createScene( event )
 	for count = 1, #lines do
 		group:insert(lines[count])
 	end
+	for count = 1, #walls do
+		group:insert(walls[count])
+	end
 	
-	--group:insert( menu )
+	group:insert( menu )
+
+
 end
 
 -- Called immediately after scene has moved onscreen:

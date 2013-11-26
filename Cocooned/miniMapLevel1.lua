@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------------------
 --
--- overlay_scene.lua
+-- level4.lua
 --
 -----------------------------------------------------------------------------------------
 
@@ -8,6 +8,7 @@ local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 local widget = require("widget");
 
+local font = "Helvetica" or system.nativeFont;
 display.setStatusBar(display.HiddenStatusBar )
 
 -- include Corona's "physics" library
@@ -28,78 +29,82 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 --		 unless storyboard.removeScene() is called.
 -- 
 -----------------------------------------------------------------------------------------
-			
--- Draw Menu Button
-local menu = display.newImage("floor.png")
-	menu.x = 245
-	menu.y = 10
 
--- distance function
-local dist
-local function distance(x1, x2, y1, y2)
-	dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
-end
 
-local function handleButtonEvent( event )
-	if "ended" == event.phase then
-		Runtime:removeEventListener("touch", menuCheck)
-		storyboard.gotoScene( "select", "fade", 500 )
-	end
-end
-
-local myButton = widget.newButton
-{
-	labelColor = { default={255}, over={128} },
-	width = 150,
-	height = 50,
-	defaultFile = "button.png",
-	overFile = "button-over.png",
-	label = "button",
-	onEvent = handleButtonEvent
-}
-
-myButton:setLabel( "Change Levels" )
-myButton.x = 245
-myButton.y = 100
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
-	print("Create OVERLAY")
-	local group = self.view
 
-	-- create a grey rectangle as the backdrop
-	-- temp wood background from http://wallpaperstock.net/wood-floor-wallpapers_w6855.html
+	local group = self.view
+	print("Create miniMap")
+
 	local background = display.newImageRect( "background.jpg", screenW+100, screenH)
 
 	background.anchorX = 0.0
 	background.anchorY = 0.0
 	background.x, background.y = -50, 0
-	
-	-- all display objects must be inserted into group
-	group:insert( background )
-	group:insert( myButton )
-	group:insert(menu)
+	background.alpha = 0.5
+
+	local mapM = display.newImage("Level1M.png")
+	mapM.x = 240
+	mapM.y = 160
+	mapM:scale(0.15,0.15)
+
+	local mapB = display.newImage("Level1B.png")
+	mapB.x = 60 
+	mapB.y = 160
+	mapB:scale(0.15,0.15)
+
+	local mapD = display.newImage("Level1D.png")
+	mapD.x = 420 
+	mapD.y = 160
+	mapD:scale(0.15,0.15)
+
+	local mapA = display.newImage("Level1A.png")
+	mapA.x = 240 
+	mapA.y = 55
+	mapA:scale(0.15,0.15)
+
+	local mapC = display.newImage("Level1C.png")
+	mapC.x = 240 
+	mapC.y = 265
+	mapC:scale(0.15,0.15)
+
+	group:insert(background)
+	group:insert(mapM)
+	group:insert(mapB)
+	group:insert(mapD)
+	group:insert(mapA)
+	group:insert(mapC)
 end
 
 -- Called immediately after scene has moved onscreen:
 function scene:enterScene( event )
 	local group = self.view
 
-	print("Enter OVERLAY")
+	print("Enter miniMap")
+	
+end
+
+function scene:willEnterScene( event )
+
+
+	print("Entering miniMap")
 end
 
 -- Called when scene is about to move offscreen:
 function scene:exitScene( event )
 	local group = self.view
+
 	
-	print("Exit OVERLAY")
+	print("Exit miniMap")
 end
 
 -- If scene's view is removed, scene:destroyScene() will be called just prior to:
 function scene:destroyScene( event )
 	local group = self.view
 	
-	print("destroyed OVERLAY")
+	print("destroyed miniMap")
 end
 
 -----------------------------------------------------------------------------------------
@@ -111,6 +116,8 @@ scene:addEventListener( "createScene", scene )
 
 -- "enterScene" event is dispatched whenever scene transition has finished
 scene:addEventListener( "enterScene", scene )
+
+scene:addEventListener( "willEnterScene", scene)
 
 -- "exitScene" event is dispatched whenever before next scene's transition begins
 scene:addEventListener( "exitScene", scene )

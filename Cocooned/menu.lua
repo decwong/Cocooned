@@ -12,6 +12,8 @@ local widget = require "widget"
 
 --------------------------------------------
 
+
+
 -- forward declarations and other locals
 local playBtn
 
@@ -48,6 +50,7 @@ function scene:createScene( event )
 	--titleLogo:setReferencePoint( display.CenterReferencePoint )
 	--titleLogo.x = display.contentWidth * 0.5
 	--titleLogo.y = 100
+
 	
 	-- create a widget button (which will loads level1.lua on release)
 	playBtn = widget.newButton{
@@ -64,7 +67,6 @@ function scene:createScene( event )
 	
 	-- all display objects must be inserted into group
 	group:insert( background )
-	--group:insert( titleLogo )
 	group:insert( playBtn )
 end
 
