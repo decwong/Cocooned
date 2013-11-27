@@ -72,8 +72,80 @@ local lines = {
 	-- left and right side
 	[1] = display.newRect(70, 180, 20, 575) ,
 	[2] = display.newRect(410, 180, 20, 575) 
-
 } 
+	
+	for count = 1, #lines do
+		lines[count]:setFillColor(0, 0, 0)
+	end
+	
+-- Draw crates
+local blackholes = {
+	[1] = display.newImage("blackhole2.png"),
+	[2] = display.newImage("blackhole2.png"),
+	[3] = display.newImage("blackhole2.png"),
+	[4] = display.newImage("blackhole2.png"),
+	[5] = display.newImage("blackhole2.png"),
+	[6] = display.newImage("blackhole2.png"),
+	[7] = display.newImage("blackhole2.png"),
+	[8] = display.newImage("blackhole2.png"),
+	[9] = display.newImage("blackhole2.png"),
+	[10] = display.newImage("blackhole2.png"),
+	
+	[11] = display.newImage("blackhole2.png"),
+	[12] = display.newImage("blackhole2.png"),
+	[13] = display.newImage("blackhole2.png"),
+	[14] = display.newImage("blackhole2.png"),
+	[15] = display.newImage("blackhole2.png"),
+	[16] = display.newImage("blackhole2.png"),
+	[17] = display.newImage("blackhole2.png"),
+	[18] = display.newImage("blackhole2.png"),
+	[19] = display.newImage("blackhole2.png"),
+	[20] = display.newImage("blackhole2.png"),
+	
+}
+
+	blackholes[1].x = 180
+	blackholes[1].y = 70
+	blackholes[2].x = 240
+	blackholes[2].y = 70
+	blackholes[3].x = 180
+	blackholes[3].y = 130
+	blackholes[4].x = 240
+	blackholes[4].y = 130
+	blackholes[5].x = 120
+	blackholes[5].y = 70
+	blackholes[6].x = 300
+	blackholes[6].y = 70
+	blackholes[7].x = 120
+	blackholes[7].y = 130
+	blackholes[8].x = 300
+	blackholes[8].y = 130
+	blackholes[9].x = 360
+	blackholes[9].y = 70
+	blackholes[10].x = 360
+	blackholes[10].y = 130
+	
+	blackholes[11].x = 180
+	blackholes[11].y = 190
+	blackholes[12].x = 240
+	blackholes[12].y = 190
+	blackholes[13].x = 180
+	blackholes[13].y = 250
+	blackholes[14].x = 240
+	blackholes[14].y = 250
+	blackholes[15].x = 120
+	blackholes[15].y = 190
+	blackholes[16].x = 300
+	blackholes[16].y = 190
+	blackholes[17].x = 120
+	blackholes[17].y = 250
+	blackholes[18].x = 300
+	blackholes[18].y = 250
+	blackholes[19].x = 360
+	blackholes[19].y = 190
+	blackholes[20].x = 360
+	blackholes[20].y = 250
+
 	
 local function saveBallLocation()
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
@@ -222,15 +294,22 @@ end
 
 -- Collision Detection for every frame during game time
 local function frame(event)
-	local dist
-	-- send both ball position values to distance function
-	--dist = distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
+	local distBH
 	
-	-- When less than distance of 35 pixels, do something
-	-- 			Used print as testing. Works successfully!
-	--if dist <= 35 then
-	--	print("Distance =", dist)
-	--end
+	-- You spin me right round, baby; Right round like a record, baby; Right round round round [BLACKHOLES]
+	-- send ball position values and blackholes values to distance function
+	for count = 1, #blackholes do
+		blackholes[count]:rotate(-24)
+		distBH = distance(ballTable[1].x, blackholes[count].x, ballTable[1].y, blackholes[count].y)
+		if distBH <= 35 then
+			print("GAMEOVER")
+			print("GAMEOVER")
+			print("GAMEOVER")
+			print("GAMEOVER")
+			print("GAMEOVER")
+			storyboard.gotoScene( "select", "fade", 500)
+		end	
+	end	
 end
 
 -- Called when the scene's view does not exist:
@@ -241,25 +320,18 @@ function scene:createScene( event )
 	-- create a grey rectangle as the backdrop
 	-- temp wood background from http://wallpaperstock.net/wood-floor-wallpapers_w6855.html
 	local background = display.newImageRect( "background2_d.jpg", screenW+100, screenH)
-	--background:setReferencePoint( display.TopLeftReferencePoint )
+
 	background.anchorX = 0.0
 	background.anchorY = 0.0
 	background.x, background.y = -50, 0
-
-	-- Real time event listeners/activators
-	--Runtime:addEventListener("enterFrame", frame)
-	
-	ballTable[1].x = 260
-	ballTable[1].y = 180
-	--ballTable[2].x = 160
-	--ballTable[2].y = 180
-	
-	-- add physics to the balls
-	--physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
-	--physics.addBody(ballTable[2], {radius = 15, bounce = .25 })
 	
 	-- all display objects must be inserted into group
 	group:insert( background )
+	
+	for count = 1, #blackholes do
+		group:insert(blackholes[count])
+	end
+	
 	group:insert( ballTable[1] )
 	
 	
@@ -278,12 +350,9 @@ function scene:enterScene( event )
 	physics.start()
 	
 	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
-	--physics.addBody(ballTable[2], {radius = 15, bounce = .25 })
-	
+
 	ballTable[1]:setLinearVelocity(0,0)
 	ballTable[1].angularVelocity = 0
-	--ballTable[2]:setLinearVelocity(0,0)
-	--ballTable[2].angularVelocity = 0
 	
 	physics.setGravity(0, 0)
 	

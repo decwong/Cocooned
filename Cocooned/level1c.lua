@@ -66,16 +66,97 @@ local walls = {
 local menu = display.newImage("floor.png")
 	menu.x = 245
 	menu.y = 10
+		
+-- Draw Blackholes
+local blackholes = {
+	[1] = display.newImage("blackhole2.png"),
+	[2] = display.newImage("blackhole2.png"),
+	[3] = display.newImage("blackhole2.png")
+}
+		
+	blackholes[1].x = 245
+	blackholes[1].y = 150
+	blackholes[2].x = 465
+	blackholes[2].y = 270
+	blackholes[3].x = 0
+	blackholes[3].y = 270
 
+-- Draw Treasure Chests
+local chests = {
+	[1] = display.newImage("chest2.png")
+}
+	chests[1].x = 130
+	chests[1].y = 50
+	chests[1].rotation = -90
+	
+-- Draw Keys
+--     Temp art from: http://www.clker.com/cliparts/M/Q/n/y/v/q/jail-house-key-th.png
+local keys = {
+	[1] = display.newImage("key.png")
+}
+	keys[1]:scale(0.6, 0.6)
+	keys[1].x = 465
+	keys[1].y = 205
+	
+local boostPlat = {
+	[1] = display.newImage("boost_platform.png")
+}
+	boostPlat[1]:scale(0.8, 0.8)
+	boostPlat[1].x = 360
+	boostPlat[1].y = 230 
+
+local crates = {
+	[1] = display.newImage("crate.png")
+}
+	crates[1]:scale(0.9, 0.9)
+	crates[1].x = 25
+	crates[1].y = 100
+	
+-- Draw gem
+--		Temp art from:	http://sweetclipart.com/colorful-neon-gemstones-886	
+local gems = {
+	[1] = display.newImage("star2.png")
+}
+	gems[1].x = chests[1].x
+	gems[1].y = chests[1].y
+	gems[1]:setFillColor(0, 1, 0)
+	gems[1].alpha = 0
+	
 -- Draw lines
 local lines = {
 	-- newRect(left, top, width, height)
-	-- Rectangles for pane on 
+	-- Rectangles for inital pane on 
 	-- left and right side
-	[1] = display.newRect(70, 180, 20, 575) ,
-	[2] = display.newRect(410, 180, 20, 575) 
+	
+	-- vertical
+	[1] = display.newRect(90, 50, 20, 100) ,
+	[3] = display.newRect(155, 130, 20, 65),
+	[4] = display.newRect(415, 180, 20, 350),
+	
+	--diagonal
+	[6] = display.newRect(130, 200, 20, 100),
+	
+	--horizontal
+	[2] = display.newRect(123, 100, 85, 20),
+	[5] = display.newRect(10, 160, 120, 20),
+	[7] = display.newRect(210, 240, 200, 20)
 }
 
+	lines[6].rotation = 35
+
+	for count = 1, #lines do
+		lines[count]:setFillColor(0, 0, 0)
+	end
+
+local xdirection,ydirection = 1,1
+local xpos,ypos
+local arrow = display.newImage("boost_arrow.png");
+      arrow.x = 360
+	  arrow.y = 275
+	  
+local animationLine = display.newRect(345, 150, 85, 20)
+	  animationLine.alpha = 0
+	
 local function saveBallLocation()
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
 	--ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
@@ -87,6 +168,22 @@ local function distance(x1, x2, y1, y2)
 	dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
 	return dist
 end
+
+local function animate(event)
+    local dist
+	
+    ypos = 5 + (ydirection * 0.00001);
+ 
+	dist = distance(arrow.x, animationLine.x, arrow.y, animationLine.y)
+	
+	if dist < 50 then
+		arrow.x = 360
+		arrow.y = 275
+	end
+		
+    arrow:translate( 0, -ypos/2)
+end
+	
 
 -- MENU FUNCTION
 local menuBool = false
@@ -222,19 +319,80 @@ local function moveBall(event)
 		end
 	end
 
-	-- Collision Detection for every frame during game time
-	local function frame(event)
-		local dist
-		
-		-- send both ball position values to distance function
-		--dist = distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
+-- Collision Detection for every frame during game time
+local function frame(event)
+	local dist
+	
+	-- send ball position values and blackholes values to distance function
+	for count = 1, #blackholes do
+		blackholes[count]:rotate(-24)
+		dist = distance(ballTable[1].x, blackholes[count].x, ballTable[1].y, blackholes[count].y)
 		
 		-- When less than distance of 35 pixels, do something
 		-- 			Used print as testing. Works successfully!
-		--if dist <= 35 then
-		--	print("Distance =", dist)
-		--end
+		if dist <= 35 then
+			print("GAMEOVER")
+			print("GAMEOVER")
+			print("GAMEOVER")
+			print("GAMEOVER")
+			print("GAMEOVER")
+			storyboard.gotoScene( "select", "fade", 500)
+		end
 	end
+	
+	for count = 1, #chests do
+		distChest = distance(ballTable[1].x, chests[count].x, ballTable[1].y, chests[count].y)
+		
+		if distChest <= 50 and inventory ~= 1 and inventory == 3 then
+			print("inventory =", inventory)
+			chests[1]:removeSelf()
+			chests[1] = nil
+			gems[1].alpha = 1
+		--else
+		--	physics.addBody(chests[1], {radius = 15, bounce = .25 })
+		end
+	end
+	
+		-- Ball vs Boost Platform
+	for count = 1, #boostPlat do
+		distBP = distance(ballTable[count].x, boostPlat[count].x, ballTable[count].y, boostPlat[count].y)
+	end
+	
+	-- When less than distance of 35 pixels, do something
+	-- 			Used print as testing. Works successfully!
+	for count = 1, #ballTable do
+		if distBP <= 55 then
+			ballTable[count]:applyLinearImpulse(0, -0.05, ballTable[count].x, ballTable[count].y)
+		end
+	end
+	
+	--
+	-- Ball vs Key
+	for count = 1, #keys do
+		distKey = distance(ballTable[1].x, keys[count].x, ballTable[1].y, keys[count].y)
+		if distKey < 50 and inventory ~= 3 then
+			print("DESTROY KEY")
+			keys[1]:removeSelf()
+			keys[1] = nil
+			inventory = 1
+			print(inventory)
+		end
+	end
+	
+	for count = 1, #gems do
+		distGem = distance(ballTable[1].x, gems[count].x, ballTable[1].y, gems[count].y)
+		
+		if distGem <= 35 then
+			gems[1]:removeSelf()
+			gems[1] = nil
+			inventory = 4
+		end
+	end
+	
+	if gems[1] then
+		gems[1]:rotate(5)
+	end
+end
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
@@ -250,10 +408,29 @@ function scene:createScene( event )
 	background.x, background.y = -50, 0
 
 	-- all display objects must be inserted into group
+	
 	group:insert( background )
+		
+	for count = 1, #blackholes do
+		group:insert(blackholes[count])
+	end
+	
+	for count = 1, #boostPlat do
+		group:insert(boostPlat[count])
+	end
+	
+	for count = 1, #crates do
+		group:insert(crates[count])
+	end
+	
+	for count = 1, #chests do
+		group:insert(chests[count])
+	end
+	
+	group:insert( keys[1] )
+	group:insert( arrow )
 	group:insert( ballTable[1] )
 	
-	--group:insert( ballTable[2] )
 	
 	for count = 1, #lines do
 		group:insert(lines[count])
@@ -270,15 +447,13 @@ function scene:enterScene( event )
 
 	physics.start()
 	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
-	--physics.addBody(ballTable[2], {radius = 15, bounce = .25 })
 
 	ballTable[1]:setLinearVelocity(0,0)
 	ballTable[1].angularVelocity = 0
-	--ballTable[2]:setLinearVelocity(0,0)
-	--ballTable[2].angularVelocity = 0
 	
 	physics.setGravity(0, 0)
 
+	Runtime:addEventListener( "enterFrame", animate );
 	Runtime:addEventListener("touch", moveBall)
 	Runtime:addEventListener("touch", menuCheck)
 	Runtime:addEventListener("enterFrame", frame)
@@ -289,8 +464,6 @@ function scene:willEnterScene( event )
 
 	ballTable[1].x = ballVariables.getBall1x()
 	ballTable[1].y = ballVariables.getBall1y()
-	--ballTable[2].x = ballVariables.getBall2x()
-	--ballTable[2].y = ballVariables.getBall2y()
 
 	-- apply physics to wall
 	for count = 1, #walls do
@@ -301,7 +474,14 @@ function scene:willEnterScene( event )
 		physics.addBody(lines[count], "static", { bounce = 0.01 } )
 	end
 
-	--print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
+	for count = 1, #crates do 
+		physics.addBody(crates[count], "static", { bounce = 0.01 } )
+	end
+	
+	for count = 1, #chests do 
+		physics.addBody(chests[count], "static", { bounce = 0.01 } )
+	end
+
 	print("Entering C")
 end
 
@@ -309,19 +489,27 @@ end
 function scene:exitScene( event )
 	local group = self.view
 	
+	Runtime:removeEventListener( "enterFrame", animate );
 	Runtime:removeEventListener("touch", moveBall)
 	Runtime:removeEventListener("touch", menuCheck)
 	Runtime:removeEventListener("enterFrame", frame)
 
 	physics.removeBody(ballTable[1])
-	--physics.removeBody(ballTable[2])
 
 	for count = 1, #lines do 
 		physics.removeBody(lines[count])
 	end
-
+	
 	for count = 1, #walls do
 		physics.removeBody(walls[count])
+	end
+	
+	for count = 1, #crates do
+		physics.removeBody(crates[count])
+	end
+	
+	for count = 1, #chests do
+		physics.removeBody(chests[count])
 	end
 	
 	--physics.pause()

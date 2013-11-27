@@ -68,15 +68,27 @@ local menu = display.newImage("floor.png")
 	menu.x = 245
 	menu.y = 10
 	
+-- Draw Keys
+--     Temp art from: http://www.clker.com/cliparts/M/Q/n/y/v/q/jail-house-key-th.png
+local keys = {
+	[1] = display.newImage("key.png")
+}
+	keys[1]:scale(0.6, 0.6)
+	keys[1].x = 465
+	keys[1].y = 280
+	keys[1]:setFillColor(0, 1, 0)
+	
 local lines = {
 		-- newRect(left, top, width, height)
 		-- Rectangles for inital pane on 
 		-- left and right side
-		[1] = display.newRect(70, 180, 20, 575) ,
-		[2] = display.newRect(410, 180, 20, 575) 
-
-		--lines:setFillColor(255, 165, 79)
+		[1] = display.newRect(250, 100, 580, 20),
+		[2] = display.newRect(250, 235, 580, 20)
 }
+
+	for count = 1, #lines do
+		lines[count]:setFillColor(0, 0, 0)
+	end
 
 local function saveBallLocation()
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
@@ -227,14 +239,19 @@ local function moveBall(event)
 
 	-- Collision Detection for every frame during game time
 local function frame(event)
-	-- send both ball position values to distance function
-	--dist = distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
+	local distKey
 	
-	-- When less than distance of 35 pixels, do something
-	-- 			Used print as testing. Works successfully!
-	--if dist <= 35 then
-	--	print("Distance =", dist)
-	--end
+	-- Ball vs Key
+	for count = 1, #keys do
+		distKey = distance(ballTable[1].x, keys[count].x, ballTable[1].y, keys[count].y)
+		if distKey < 50 then
+			print("DESTROY KEY")
+			keys[1]:removeSelf()
+			keys[1] = nil
+			inventory = 3
+			print(inventory)
+		end
+	end
 end
 
 
@@ -254,7 +271,7 @@ function scene:createScene( event )
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
-	--group:insert( ballTable[2] )
+	group:insert( keys[1] )
 	
 			
 	for count = 1, #lines do
@@ -301,10 +318,6 @@ function scene:willEnterScene( event )
 
 	ballTable[1].x = ballVariables.getBall1x()
 	ballTable[1].y = ballVariables.getBall1y()
-	--ballTable[2].x = ballVariables.getBall2x()
-	--ballTable[2].y = ballVariables.getBall2y()
-		
-	--print( "load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 
 	print("Entering B")
 end
@@ -318,8 +331,6 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("enterFrame", frame)
 
 	physics.removeBody(ballTable[1])
-	--physics.removeBody(ballTable[2])
-
 
 	-- remove physics to lines
 	for count = 1, #lines do 

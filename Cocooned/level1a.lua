@@ -30,6 +30,8 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 -- 
 -----------------------------------------------------------------------------------------
 
+local wCounter = winCounter
+
 -- make a crate (off-screen), position it, and rotate slightly
 local ballTable = { 
 		[1] = display.newImage("ball.png") } 
@@ -44,7 +46,6 @@ local walls = {
 	[3] = display.newImage("ground2.png"),
 	[4] = display.newImage("ground2.png") 
 } 
-
 	-- Left wall
 	walls[1].x = -40
 	walls[1].y = 180
@@ -63,6 +64,7 @@ local walls = {
 	walls[4].x = 250
 	walls[4].y = 315	
 
+
 -- Draw Blackholes
 local blackholes = {
 	[1] = display.newImage("blackhole2.png"),
@@ -74,7 +76,17 @@ local blackholes = {
 		
 	blackholes[2].x = 365
 	blackholes[2].y = 275
+
+local crates = {
+	[1] = display.newImage("crate.png"),
+	[2] = display.newImage("crate.png")
+}	
+	crates[1].x = 15
+	crates[1].y = 265
+	crates[2].x = 460
+	crates[2].y = 55
 	
+
 -- Draw Treasure Chests
 local chests = {
 	[1] = display.newImage("chest.png")
@@ -82,6 +94,15 @@ local chests = {
 	
 	chests[1].x = 245
 	chests[1].y = 150
+	
+-- Draw gem
+--		Temp art from:	http://sweetclipart.com/colorful-neon-gemstones-886	
+local gems = {
+	[1] = display.newImage("star2.png")
+}
+	gems[1].x = chests[1].x
+	gems[1].y = chests[1].y
+	gems[1].alpha = 0
 
 -- Draw Menu Button
 local menu = display.newImage("floor.png")
@@ -95,7 +116,12 @@ local lines = {
 	-- left and right side
 	[1] = display.newRect(70, 120, 20, 220) ,
 	[2] = display.newRect(410, 200, 20, 220)
+	
 }
+
+	for count = 1, #lines do
+		lines[count]:setFillColor(0, 0, 0)
+	end
 		
 -- distance function
 local function distance(x1, x2, y1, y2)
@@ -250,6 +276,8 @@ end
 -- Collision Detection for every frame during game time
 local function frame(event)
 	local dist
+	local distChest
+	local distGem
 	
 	-- send ball position values and blackholes values to distance function
 	for count = 1, #blackholes do
@@ -259,12 +287,42 @@ local function frame(event)
 		-- When less than distance of 35 pixels, do something
 		-- 			Used print as testing. Works successfully!
 		if dist <= 35 then
-			print("Distance =", dist)
+			print("GAMEOVER")
+			print("GAMEOVER")
+			print("GAMEOVER")
+			print("GAMEOVER")
+			print("GAMEOVER")
+			storyboard.gotoScene( "select", "fade", 500)
 		end
 	end
 	
-	-- send both ball position values to distance function
-	--dist = distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
+	for count = 1, #chests do
+		distChest = distance(ballTable[1].x, chests[count].x, ballTable[1].y, chests[count].y)
+		
+		if distChest <= 50 and inventory == 1 then
+			print("inventory =", inventory)
+			chests[1]:removeSelf()
+			chests[1] = nil
+			gems[1].alpha = 1
+		--else
+		--	physics.addBody(chests[1], {radius = 15, bounce = .25 })
+		end
+	end
+	
+	for count = 1, #gems do
+		distGem = distance(ballTable[1].x, gems[count].x, ballTable[1].y, gems[count].y)
+		
+		if distGem <= 35 then
+			gems[1]:removeSelf()
+			gems[1] = nil
+			inventory = 2
+		end
+	end
+	
+	if gems[1] then
+		gems[1]:rotate(5)
+	end
+	
 end
 
 -- Called when the scene's view does not exist:
@@ -288,6 +346,11 @@ function scene:createScene( event )
 
 	for count = 1, #blackholes do
 		group:insert(blackholes[count])
+	end
+	
+	for count = 1, #crates do
+		crates[count]:scale(0.8, 0.8)
+		group:insert(crates[count])
 	end
 	
 	for count = 1, #chests do
@@ -338,10 +401,18 @@ function scene:willEnterScene( event )
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
 	end
 	
+	for count = 1, #crates do
+		physics.addBody(crates[count], "static", { bounce = 0.01 } )
+	end
+	
 	for count = 1, #lines do 
 		physics.addBody(lines[count], "static", { bounce = 0.01 } )
 	end
 
+	if chests[1] then
+		physics.addBody(chests[1], "static", { bounce = .25 })
+	end
+	
 	print("Entering A")
 end
 
@@ -364,6 +435,10 @@ function scene:exitScene( event )
 	
 	for count = 1, #blackholes do
 		physics.removeBody(blackholes[count])
+	end
+	
+	for count = 1, #crates do
+		physics.removeBody(crates[count])
 	end
 	
 	for count = 1, #lines do

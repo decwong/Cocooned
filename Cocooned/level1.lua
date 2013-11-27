@@ -30,11 +30,13 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 -- 
 -----------------------------------------------------------------------------------------
 
+local inventory
+local winCounter
+
 -- make a crate (off-screen), position it, and rotate slightly
 local ballTable = { 
 		[1] = display.newImage("ball.png") }
 
-		
 -- add new walls
 -- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
 local walls = {
@@ -62,30 +64,54 @@ local walls = {
 	walls[4].x = 250
 	walls[4].y = 315
 
+-- Draw crates
+local crates = {
+	[1] = display.newImage("crate.png"),
+	[2] = display.newImage("crate.png"),
+	[3] = display.newImage("crate.png"),
+	[4] = display.newImage("crate.png")
+}
+
+	crates[1].x = 190
+	crates[1].y = 115
+	crates[2].x = 290
+	crates[2].y = 115
+	crates[3].x = 190
+	crates[3].y = 215
+	crates[4].x = 290
+	crates[4].y = 215
+	
 -- Draw Blackholes
 local blackholes = {
-	[1] = display.newImage("blackhole2.png")
+	[1] = display.newImage("blackhole2.png"),
+	[2] = display.newImage("blackhole2.png")
 }
 		
-	blackholes[1].x = 245
-	blackholes[1].y = 150
-
-	
+	blackholes[1].x = 15
+	blackholes[1].y = 275
+		
+	blackholes[2].x = 465
+	blackholes[2].y = 50
+		
 -- Draw Menu Button
 local menu = display.newImage("floor.png")
 	menu.x = 245
 	menu.y = 10
-		
+
 -- Draw lines
 local lines = {
 	-- newRect(left, top, width, height)
-	-- Rectangles for inital pane on 
+	-- Rectangles for pane on 
 	-- left and right side
 	[1] = display.newRect(70, 180, 20, 575) ,
-	[2] = display.newRect(410, 180, 20, 575)
+	[2] = display.newRect(410, 180, 20, 575) 
 }
-
-
+	
+	for count = 1, #lines do
+		lines[count]:setFillColor(0, 0, 0)
+	end
+	
+	
 -- distance function
 local function distance(x1, x2, y1, y2)
 	local dist
@@ -95,8 +121,8 @@ end
 
 local function saveBallLocation()
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
-end
-
+end	  
+	
 
 -- MENU FUNCTION
 local menuBool = false
@@ -134,6 +160,7 @@ local function moveBall(event)
 	local x 
 	local y
 	local tap = 0
+	local distBP
 		
 	--find distance from start touch to end touch
 	local dx = event.x - event.xStart
@@ -151,7 +178,7 @@ local function moveBall(event)
 			end
 		end
 	end
-		
+			
 	if tap == 1 then
 		if event.phase == "ended" then
 			for count = 1, #ballTable do
@@ -244,7 +271,7 @@ local function moveBall(event)
 				end	
 			end
 		end	
-	end
+	end	
 end
 
 -- accelerometer movement
@@ -283,24 +310,43 @@ end
 
 -- Collision Detection for every frame during game time
 local function frame(event)
-	local dist 
-	-- You spin me right round, baby; Right round like a record, baby; Right round round round [BLACKHOLES]
-	for count = 1, #blackholes do
-		blackholes[count]:rotate(-24)
-	end
+	local distBH 
+	local distBP
 	
+	-- You spin me right round, baby; Right round like a record, baby; Right round round round [BLACKHOLES]
 	-- send ball position values and blackholes values to distance function
 	for count = 1, #blackholes do
-		dist = distance(ballTable[count].x, blackholes[count].x, ballTable[count].y, blackholes[count].y)
+		blackholes[count]:rotate(-24)
+		distBH = distance(ballTable[1].x, blackholes[count].x, ballTable[1].y, blackholes[count].y)
+		if distBH <= 35 then
+			print("GAMEOVER")
+			print("GAMEOVER")
+			print("GAMEOVER")
+			print("GAMEOVER")
+			print("GAMEOVER")
+			storyboard.gotoScene( "select", "fade", 500)
+		end	
+	end	
+	
+	if inventory == 4 then
+		winCounter = winCounter + 1
+		print("winCounter = ", winCounter)
 	end
-	
-	-- send both ball position values to distance function
-	--dist = distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
-	
-	-- When less than distance of 35 pixels, do something
-	-- 			Used print as testing. Works successfully!
-	if dist <= 35 then
-		print("Distance =", dist)
+
+	if inventory == 2 then
+		winCounter = winCounter + 1
+		print("winCounter = ", winCounter)
+	end
+
+	if winCounter == 2 then
+		print("GAMEOVER")
+		print("GAMEOVER")
+		print("GAMEOVER")
+		print("GAMEOVER")
+		print("GAMEOVER")
+		ballTable[1].x = 20
+		ballTable[1].y = 20
+		storyboard.gotoScene( "select", "fade", 500)
 	end
 end
 	
@@ -319,15 +365,17 @@ function scene:createScene( event )
 	
 	-- all display objects must be inserted into group
 	group:insert( background )
-	
-	--group:insert( ballTable[2] )
-
-	
+		
 	for count = 1, #blackholes do
 		group:insert(blackholes[count])
 	end
-
+	
+	for count = 1, #crates do
+		group:insert(crates[count])
+	end
+	
 	group:insert( ballTable[1] )
+
 	
 	for count = 1, #lines do
 		group:insert(lines[count])
@@ -344,12 +392,9 @@ function scene:enterScene( event )
 
 	physics.start()
 	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
-	--physics.addBody(ballTable[2], {radius = 15, bounce = .25 })
 
 	ballTable[1]:setLinearVelocity(0,0)
 	ballTable[1].angularVelocity = 0
-	--ballTable[2]:setLinearVelocity(0,0)
-	--ballTable[2].angularVelocity = 0
 		
 	-- apply physics to walls
 	for count = 1, #walls do
@@ -358,6 +403,10 @@ function scene:enterScene( event )
 	
 	for count = 1, #lines do 
 		physics.addBody(lines[count], "static", { bounce = 0.01 } )
+	end
+	
+	for count = 1, #crates do 
+		physics.addBody(crates[count], "static", { bounce = 0.01 } )
 	end
 	
 	Runtime:addEventListener("touch", moveBall)
@@ -372,9 +421,7 @@ function scene:willEnterScene( event )
 
 	ballTable[1].x = ballVariables.getBall1x()
 	ballTable[1].y = ballVariables.getBall1y()
-	--ballTable[2].x = ballVariables.getBall2x()
-	--ballTable[2].y = ballVariables.getBall2y()
-
+	
 	print("Entering MAIN")
 end
 
@@ -395,7 +442,6 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("enterFrame", frame)
 
 	physics.removeBody(ballTable[1])
-	--physics.removeBody(ballTable[2])
 
 	--for count = 1, #blackholes do
 	--	physics.removeBody(blackholes[count])
@@ -409,6 +455,10 @@ function scene:exitScene( event )
 	
 	for count = 1, #walls do
 		physics.removeBody(walls[count])
+	end
+	
+	for count = 1, #crates do
+		physics.removeBody(crates[count])
 	end
 
 	--physics.pause()
