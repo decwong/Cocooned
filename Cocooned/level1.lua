@@ -131,28 +131,25 @@ local function menuCheck(event)
 		local dist
 		dist = distance(event.x, menu.x, event.y, menu.y)
 		if dist < 20 and menuBool == false then
-			menuBool = true
-		elseif dist < 20 and menuBool == true then
-			menuBool = false
-		end
-		
-		if menuBool == true then
-			print("menuBool: ", menuBool)
-			-- OVERLAY CODE!!!!!!!!!
 			local options =
 			{
 				effect = "slideDown",
 				time = 400
 			}
-			
 			physics.pause()
 			storyboard.showOverlay("overlay_scene", options)
-		elseif menuBool == false then
+			menuBool = true
+		elseif dist < 20 and menuBool == true then
+			print("hide")
 			storyboard.hideOverlay("slideUp", 400)
 			physics.start()
+			menuBool = false
 		end
 	end
 end
+
+local tapTime = 0
+local miniMap = false
 
 -- ball movement control
 local function moveBall(event)
@@ -160,7 +157,9 @@ local function moveBall(event)
 	local x 
 	local y
 	local tap = 0
+
 	local distBP
+	local eventTime = event.time
 		
 	--find distance from start touch to end touch
 	local dx = event.x - event.xStart
@@ -178,7 +177,25 @@ local function moveBall(event)
 			end
 		end
 	end
-			
+
+	if event.phase == "ended" then
+		if(eventTime - tapTime) < 300 then
+			if menuBool == false then
+				if miniMap == false then 
+					physics.pause()
+					storyboard.showOverlay("miniMapLevel1", "fade", 300)
+					miniMap = true
+				elseif miniMap == true then
+					storyboard.hideOverlay("fade", 300)
+					physics.start()
+					miniMap = false
+				end
+				print("double tap")
+			end
+		end
+			tapTime = eventTime
+	end
+		
 	if tap == 1 then
 		if event.phase == "ended" then
 			for count = 1, #ballTable do
@@ -380,8 +397,12 @@ function scene:createScene( event )
 	for count = 1, #lines do
 		group:insert(lines[count])
 	end
+
+	for count = 1, #walls do
+		group:insert(walls[count])
+	end
 	
-	--group:insert( menu )
+	group:insert( menu )
 end
 
 -- Called immediately after scene has moved onscreen:

@@ -121,6 +121,7 @@ local function saveBallLocation()
 	--ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
 end
 
+
 -- MENU FUNCTION
 local menuBool = false
 local function menuCheck(event)
@@ -128,25 +129,19 @@ local function menuCheck(event)
 		local dist
 		dist = distance(event.x, menu.x, event.y, menu.y)
 		if dist < 20 and menuBool == false then
-			menuBool = true
-		elseif dist < 20 and menuBool == true then
-			menuBool = false
-		end
-		
-		if menuBool == true then
-			print("menuBool: ", menuBool)
-			-- OVERLAY CODE!!!!!!!!!
 			local options =
 			{
 				effect = "slideDown",
 				time = 400
 			}
-			
 			physics.pause()
 			storyboard.showOverlay("overlay_scene", options)
-		elseif menuBool == false then
+			menuBool = true
+		elseif dist < 20 and menuBool == true then
+			print("hide")
 			storyboard.hideOverlay("slideUp", 400)
 			physics.start()
+			menuBool = false
 		end
 	end
 end
@@ -180,6 +175,7 @@ local function moveBall(event)
 
 	if event.phase == "ended" then
 		if(eventTime - tapTime) < 300 then
+			if menuBool == false then
 				if miniMap == false then 
 					physics.pause()
 					storyboard.showOverlay("miniMapLevel4", "fade", 300)
@@ -191,6 +187,7 @@ local function moveBall(event)
 				end
 				print("double tap")
 			end
+		end
 			tapTime = eventTime
 	end
 	
@@ -360,6 +357,7 @@ function scene:createScene( event )
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
+
 	--group:insert( ballTable[2] )
 	
 	for count = 1, #lines do
@@ -370,6 +368,7 @@ function scene:createScene( event )
 		group:insert(walls[count])
 	end
 
+	group:insert(menu)
 
 end
 
