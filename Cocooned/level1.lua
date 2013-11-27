@@ -157,11 +157,8 @@ local function moveBall(event)
 	local x 
 	local y
 	local tap = 0
-<<<<<<< HEAD
-
 	local distBP
-=======
->>>>>>> 88ec870d9154d1c456705f773c09645e1b888e86
+
 	local eventTime = event.time
 		
 	--find distance from start touch to end touch
