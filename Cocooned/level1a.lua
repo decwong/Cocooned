@@ -381,6 +381,7 @@ function scene:createScene( event )
 	end
 	
 	group:insert( menu )
+	group:insert( gems[1])
 
 
 end
