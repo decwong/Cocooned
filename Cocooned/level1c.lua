@@ -106,6 +106,7 @@ local boostPlat = {
 	boostPlat[1].y = 230 
 
 
+<<<<<<< HEAD
 local crates = {
 	[1] = display.newImage("crate.png")
 }
@@ -122,6 +123,8 @@ local gems = {
 	gems[1]:setFillColor(0, 1, 0)
 	gems[1].alpha = 0
 	
+=======
+>>>>>>> 88ec870d9154d1c456705f773c09645e1b888e86
 -- Draw lines
 local lines = {
 	-- newRect(left, top, width, height)

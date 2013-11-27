@@ -68,6 +68,7 @@ local menu = display.newImage("floor.png")
 	menu.x = 245
 	menu.y = 10
 
+<<<<<<< HEAD
 	
 -- Draw Keys
 --     Temp art from: http://www.clker.com/cliparts/M/Q/n/y/v/q/jail-house-key-th.png
@@ -78,6 +79,8 @@ local keys = {
 	keys[1].x = 465
 	keys[1].y = 280
 	keys[1]:setFillColor(0, 1, 0)
+=======
+>>>>>>> 88ec870d9154d1c456705f773c09645e1b888e86
 	
 local lines = {
 		-- newRect(left, top, width, height)
