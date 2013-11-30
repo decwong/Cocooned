@@ -23,6 +23,12 @@ physics.setDrawMode("hybrid")
 -- forward declarations and other locals
 local screenW, screenH, halfW = display.contentWidth, display.contentHeight, display.contentWidth*0.5
 
+-- Boolean to see if switch is pressed
+local secondBall = false 
+
+-- Check to see if second ball has been created
+local secondBallActive = false 
+
 -----------------------------------------------------------------------------------------
 -- BEGINNING OF YOUR IMPLEMENTATION
 -- 
@@ -31,11 +37,9 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 -- 
 -----------------------------------------------------------------------------------------
 
--- make a crate (off-screen), position it, and rotate slightly
 local ballTable = { 
-		[1] = display.newImage("ball.png")
-	}
-		--[2] = display.newImage("ball.png") }
+	[1] = display.newImage("ball.png") 
+}
 
 -- Make a switch that activates when the light
 -- ball is inside the switch in pane D 
@@ -75,7 +79,7 @@ local menu = display.newImage("floor.png")
 	menu.x = 245
 	menu.y = 10
 	ballTable[1].alpha = 0
-menu.alpha = 0
+	menu.alpha = 0
 -- Draw lines
 local lines = {
 	-- newRect(left, top, width, height)
@@ -84,6 +88,13 @@ local lines = {
 	[2] = display.newRect(90, 40, 25, 50) ,
 	[3] = display.newRect(250, 150, 50, 50)
 }
+
+-- Get the distance from the switch to another object 
+local switchDistance
+
+local function switchDistance(x1, x2, y1, y2, detectString)
+	return math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
+end
 		
 -- distance function
 local function distance(x1, x2, y1, y2)
@@ -94,7 +105,9 @@ end
 
 local function saveBallLocation()
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
-	--ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
+	if (secondBallActive == true) then 
+		ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
+	end
 end
 
 -- MENU FUNCTION
@@ -250,12 +263,27 @@ local function frame(event)
 
 	-- send both ball position values to distance function
 	--distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
-	
-	-- When less than distance of 35 pixels, do something
-	-- 			Used print as testing. Works successfully!
-	--if dist <= 35 then
-	--	print("Distance =", dist)
-	--end
+
+	-- Check to see if the ball has collided with the switch
+	switchDist = switchDistance(ballTable[1].x, switch.x, ballTable[1].y, switch.y)
+
+	-- If they collide, set this flag to true
+	if switchDist <= 55 then
+		print("switch pressed")
+		secondBall = true 
+		-- Check to make sure we aren't creating multiple balls
+		if (secondBallActive == false) then 
+			-- Display new ball
+			local ballTable = {
+				[2] = display.newImage("ball.png")
+			}
+			ballTable[2].x = 100
+			ballTable[2].y = 100
+			-- Add ball physics and set flag to prevent additional balls from spawning
+			physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+			secondBallActive = true
+		end
+	end
 end
 
 -- Called when the scene's view does not exist:
@@ -274,7 +302,14 @@ function scene:createScene( event )
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
-	--group:insert( ballTable[2] )
+
+	-- If the switch is pressed, add 
+	-- a second ball to the pane
+	if (secondBall == true) then
+		group:insert(ballTable[2])
+	end
+
+	group:insert(switch)
 	
 	for count = 1, #lines do
 		group:insert(lines[count])
@@ -283,7 +318,6 @@ function scene:createScene( event )
 		group:insert(walls[count])
 	end
 	group:insert( menu )
-
 
 end
 
@@ -295,13 +329,6 @@ function scene:enterScene( event )
 
 	physics.start()
 	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
-	--physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
-
-	Runtime:addEventListener("touch", moveBall)
-	Runtime:addEventListener("touch", menuCheck)
-	Runtime:addEventListener("enterFrame", frame)
-	
-	physics.setGravity(0, 0)
 
 	-- apply physics to walls
 	for count = 1, #walls do
@@ -312,6 +339,11 @@ function scene:enterScene( event )
 		physics.addBody(lines[count], "static", { bounce = 0.01 } )
 	end
 
+	Runtime:addEventListener("touch", moveBall)
+	Runtime:addEventListener("touch", menuCheck)
+	Runtime:addEventListener("enterFrame", frame)
+
+	physics.setGravity(0, 0)
 	
 end
 
@@ -319,8 +351,6 @@ function scene:willEnterScene( event )
 
 	ballTable[1].x = ballVariables.getBall1x()
 	ballTable[1].y = ballVariables.getBall1y()
-	--ballTable[2].x = ballVariables.getBall2x()
-	--ballTable[2].y = ballVariables.getBall2y()
 
 	print("Entering A")
 end
@@ -350,10 +380,6 @@ local function hasCollided( ballTable, switch )
    --return (left or right) and (up or down)
 end
 
-if hasCollided(ballTable[1], switch) == true then
-	print("collision")
-end
-
 -- Called when scene is about to move offscreen:
 function scene:exitScene( event )
 	local group = self.view
@@ -363,9 +389,11 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("enterFrame", frame)
 
 	physics.removeBody(ballTable[1])
-	--physics.removeBody(ballTable[2])
-
-	--print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
+	-- If the switch is pressed, add 
+	-- the second ball's physics to the pane
+	if (secondBall == true) then
+		physics.removeBody(ballTable[2])
+	end
 
 	for count = 1, #lines do
 		physics.removeBody(lines[count])

@@ -16,8 +16,7 @@ display.setStatusBar(display.HiddenStatusBar )
 local physics = require "physics"
 physics.start(); physics.pause()
 -- Set view mode to show bounding boxes 
---
-
+physics.setDrawMode("hybrid")
 --------------------------------------------
 
 -- forward declarations and other locals
@@ -90,11 +89,27 @@ star1.x = 125; star1.y = 260
 local star2 = display.newImage("star.png")
 star2.x = 350; star2.y = 50
 		
--- distance function
+-- distance functions
+local star1aDist
+local star2aDist
+local star1bDist
+local star2bDist
+
+local star1Check = false
+local star2Check = false
+
 local function distance(x1, x2, y1, y2)
 	local dist
 	dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
 	return dist
+end
+
+local function star1Dist(x1, x2, y1, y2) 
+	return math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
+end
+
+local function star2Dist(x1, x2, y1, y2) 
+	return math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
 end
 
 local function saveBallLocation()
@@ -305,30 +320,31 @@ end
 
 -- Collision Detection for every frame during game time
 local function frame(event)
-	-- send both ball position values to distance function
-	--distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
 	
-	-- When less than distance of 35 pixels, do something
-	-- 			Used print as testing. Works successfully!
-	--if dist <= 35 then
-	--	print("Distance =", dist)
-	--end
+	-- If the second ball exists, get the distance from the balls to the stars
+	if (saveBallActive == true) then 
+		star1aDist = star1Dist(ballTable[1].x, star1.x, ballTable[1].y, star1.y)
+		star2aDist = star2Dist(ballTable[1].x, star2.x, ballTable[1].y, star2.y)
+		star1bDist = star1Dist(ballTable[2].x, star1.x, ballTable[2].y, star1.y)
+		star2bDist = star2Dist(ballTable[2].x, star2.x, ballTable[2].y, star2.y)
 
+		-- Check to see if both of the balls are colliding with the stars,
+		-- so that one ball is touching the first star, and the other ball 
+		-- is touching the second star
+		if (star1aDist <= 35) or (star1bDist <= 35) then
+			star1Check = true
+		end
 
-	--commented out because ballTable[2] giving error
-	--[[
-	if distanceFrom(ballTable[1], star1) < 30 or distanceFrom(ballTable[2], star1) < 30 then
-		star1Check = true
-	end
-	if distanceFrom(ballTable[1], star2) < 30 or distanceFrom(ballTable[2], star2) < 30 then
-		star2Check = true
+		if (star2aDist <= 35) or (star1bDist <= 35) then
+			star2Check = true
+		end
+		
+		-- If the condition is satisfied, end the level and 
+		-- go back to the level select screen
+		if (star1Check == true) and (star2Check == true) then
+			storyboard.gotoScene("select", "fade", 500)
+		end
 	end 
-	]]
-
-	
-	if star1Check and star2Check then
-		storyboard.gotoScene("select", "fade", 500)
-	end
 end
 
 -- Called when the scene's view does not exist:
@@ -433,9 +449,7 @@ function scene:exitScene( event )
 	end
 
 	menuBool = false
-	
-	--physics.pause()
-	
+		
 	print("Exit MAIN")
 end
 

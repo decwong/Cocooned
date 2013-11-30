@@ -80,7 +80,6 @@ local function saveBallLocation()
 	--ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
 end
 	
-	
 -- distance function
 local switchDistance
 
@@ -256,9 +255,6 @@ local function frame(event)
 
 	switchDist = switchDistance(ballTable[1].x, ballSwitch.x, ballTable[1].y, ballSwitch.y)
 
-	if switchDist <= 55 then
-		
-	end
 end
 
 
@@ -331,8 +327,8 @@ function scene:enterScene( event )
 	physics.setGravity(0, 0)
 
 	if ballSwitch then
-			switchOpen = true
-		end
+		switchOpen = true
+	end
 
 	Runtime:addEventListener("touch", moveBall)
 	Runtime:addEventListener("touch", menuCheck)
@@ -373,7 +369,7 @@ function scene:exitScene( event )
 	for count = 1, #lines do
 		physics.removeBody(lines[count])
 	end
-	
+
 	menuBool = false
 	
 	print("Exit D")

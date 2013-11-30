@@ -301,7 +301,9 @@ function scene:enterScene( event )
 	physics.start()
 	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
 	--physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
-	physics.addBody(door, "static", {bounce = 0.01})
+	if doorOpen == false then
+		physics.addBody(door, "static", {bounce = 0.01})
+	end
 
 	ballTable[1]:setLinearVelocity(0,0)
 	ballTable[1].angularVelocity = 0
@@ -318,11 +320,11 @@ function scene:enterScene( event )
 		physics.addBody(lines[count], "static", { bounce = 0.01 } )
 	end
 
-		if door then
-			if doorOpen == true then 
-				door:removeSelf( )
-			end
+	if door then
+		if doorOpen == true then 
+			door:removeSelf( )
 		end
+	end
 
 	physics.setGravity(0, 0)
 
@@ -352,7 +354,7 @@ function scene:exitScene( event )
 
 	physics.removeBody(ballTable[1])
 	--physics.removeBody(ballTable[2])
-	physics.removeBody(door)
+	--physics.removeBody(door)
 	
 	-- remove physics from walls and lines
 	for count = 1, #walls do
@@ -362,6 +364,8 @@ function scene:exitScene( event )
 	for count = 1, #lines do
 		physics.removeBody(lines[count])
 	end
+
+	physics.removeBody( door )
 
 	menuBool = false
 	--physics.pause()

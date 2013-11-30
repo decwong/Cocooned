@@ -295,6 +295,7 @@ function scene:createScene( event )
 	group:insert( ballTable[1] )
 	--group:insert( ballTable[2] )
 	group:insert( crate)
+	group:insert(switch)
 
 	for count = 1, #lines do
 		group:insert(lines[count])
@@ -304,6 +305,7 @@ function scene:createScene( event )
 		print("showing switch")
 		group:insert( switch)
 	end
+	
 	for count = 1, #walls do
 		group:insert(walls[count])
 	end
