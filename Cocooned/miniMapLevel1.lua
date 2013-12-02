@@ -48,27 +48,27 @@ function scene:createScene( event )
 	local mapM = display.newImage("Level1M.png")
 	mapM.x = 240
 	mapM.y = 160
-	mapM:scale(0.15,0.15)
+	mapM:scale(0.19,0.19)
 
 	local mapB = display.newImage("Level1B.png")
 	mapB.x = 60 
 	mapB.y = 160
-	mapB:scale(0.15,0.15)
+	mapB:scale(0.19,0.19)
 
 	local mapD = display.newImage("Level1D.png")
 	mapD.x = 420 
 	mapD.y = 160
-	mapD:scale(0.15,0.15)
+	mapD:scale(0.19,0.19)
 
 	local mapA = display.newImage("Level1A.png")
 	mapA.x = 240 
 	mapA.y = 55
-	mapA:scale(0.15,0.15)
+	mapA:scale(0.19,0.19)
 
 	local mapC = display.newImage("Level1C.png")
 	mapC.x = 240 
 	mapC.y = 265
-	mapC:scale(0.15,0.15)
+	mapC:scale(0.19,0.19)
 
 	group:insert(background)
 	group:insert(mapM)

@@ -326,6 +326,7 @@ local function frame(event)
 			print("GAMEOVER")
 			print("GAMEOVER")
 			storyboard.gotoScene( "select", "fade", 500)
+			ballVariables.setBall1(25, 25)
 		end	
 	end	
 end

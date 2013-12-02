@@ -342,6 +342,7 @@ local function frame(event)
 			print("GAMEOVER")
 			print("GAMEOVER")
 			storyboard.gotoScene( "select", "fade", 500)
+			ballVariables.setBall1(25, 25)
 		end	
 	end	
 	
@@ -365,6 +366,7 @@ local function frame(event)
 		ballTable[1].y = 20
 		storyboard.gotoScene( "select", "fade", 500)
 	end
+	
 end
 	
 -- Called when the scene's view does not exist:
