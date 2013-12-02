@@ -15,7 +15,8 @@ display.setStatusBar(display.HiddenStatusBar )
 local physics = require "physics"
 physics.start(); physics.pause()
 -- Set view mode to show bounding boxes 
---physics.setDrawMode("hybrid")
+physics.setDrawMode("hybrid")
+physics.setGravity(0, 0)
 
 --------------------------------------------
 
@@ -32,6 +33,7 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 
 local inventory
 local winCounter
+local bhtimer
 
 -- make a crate (off-screen), position it, and rotate slightly
 local ballTable = { 
@@ -88,7 +90,7 @@ local blackholes = {
 }
 		
 	blackholes[1].x = 15
-	blackholes[1].y = 275
+	blackholes[1].y = 250
 		
 	blackholes[2].x = 465
 	blackholes[2].y = 50
@@ -149,6 +151,7 @@ local function menuCheck(event)
 end
 
 local tapTime = 0
+local counter = 0
 local miniMap = false
 
 -- ball movement control
@@ -158,6 +161,7 @@ local function moveBall(event)
 	local y
 	local tap = 0
 	local distBP
+	local distBH
 
 	local eventTime = event.time
 		
@@ -208,6 +212,7 @@ local function moveBall(event)
 			if dist <= 100 then
 					x = event.x - ballTable[count].x;
 					y = event.y - ballTable[count].y;
+										
 					--print (x, y)
 					if x < 0 then
 						if x > -30 then
@@ -252,6 +257,61 @@ local function moveBall(event)
 					end
 				end
 			end
+			
+			--END BALL TAP 
+			--BEGIN BLACKHOLE TAP
+			for count = 1, #blackholes do
+				blackholes[count]:rotate(-24)
+				distBH = distance(ballTable[1].x, blackholes[count].x, ballTable[1].y, blackholes[count].y)			
+				
+				if distBH <= 50 then
+					print("Release PULL")		
+					x = event.x - ballTable[count].x;
+					y = event.y - ballTable[count].y;
+					--print (x, y)
+					if x < 0 then
+						if x > -30 then
+							if y > 0 then
+								ballTable[count]:applyLinearImpulse(0,-0.5, ballTable[count].x, ballTable[count].y)
+							elseif y < 0 then
+								ballTable[count]:applyLinearImpulse(0,0.5, ballTable[count].x, ballTable[count].y)
+							end
+						elseif y >0 then
+							if y < 30 then
+								ballTable[count]:applyLinearImpulse(0.5, 0, ballTable[count].x, ballTable[count].y)
+							else
+								ballTable[count]:applyLinearImpulse(0.5, -0.5,ballTable[count].x, ballTable[count].y)
+							end
+						elseif y < 0 then
+							if y > -30 then
+								ballTable[count]:applyLinearImpulse(0.5, 0, ballTable[count].x, ballTable[count].y)
+							else
+								ballTable[count]:applyLinearImpulse(0.5, 0.5, ballTable[count].x, ballTable[count].y)
+							end
+						end
+					elseif x > 0 then
+						if x < 30 then
+							if y > 0 then
+								ballTable[count]:applyLinearImpulse(0,-0.5, ballTable[count].x, ballTable[count].y)
+							elseif y < 0 then
+								ballTable[count]:applyLinearImpulse(0,0.5, ballTable[count].x, ballTable[count].y)
+							end
+						elseif y < 0 then
+							if y > -30 then
+								ballTable[count]:applyLinearImpulse(-0.5, 0, ballTable[count].x, ballTable[count].y)
+							else
+								ballTable[count]:applyLinearImpulse( -0.5, 0.5, ballTable[count].x, ballTable[count].y)
+							end
+						elseif y > 0 then
+							if y < 30 then
+								ballTable[count]:applyLinearImpulse(-0.5, 0, ballTable[count].x, ballTable[count].y)
+							else
+								ballTable[count]:applyLinearImpulse( -0.5, -0.5, ballTable[count].x, ballTable[count].y)
+							end
+						end
+					end
+				end
+			end	
 		end
 	elseif tap == 0 then
 		local swipeLength = math.abs(event.x - event.xStart)
@@ -325,6 +385,14 @@ end
 		Runtime:addEventListener( "accelerometer", onAccelerate )
 	end
 
+local function gameOver(event)
+	print("GAMEOVER")
+	print("GAMEOVER")
+	counter = nil
+	storyboard.gotoScene( "select", "fade", 500)
+	ballVariables.setBall1(25, 25)
+end
+	
 -- Collision Detection for every frame during game time
 local function frame(event)
 	local distBH 
@@ -335,16 +403,26 @@ local function frame(event)
 	for count = 1, #blackholes do
 		blackholes[count]:rotate(-24)
 		distBH = distance(ballTable[1].x, blackholes[count].x, ballTable[1].y, blackholes[count].y)
-		if distBH <= 35 then
-			print("GAMEOVER")
-			print("GAMEOVER")
-			print("GAMEOVER")
-			print("GAMEOVER")
-			print("GAMEOVER")
-			storyboard.gotoScene( "select", "fade", 500)
-			ballVariables.setBall1(25, 25)
-		end	
+		
+		if distBH <= 50 then
+			--print("DETECTING PULL")
+			ballTable[1].hasJoint = true
+			ballTable[1]:applyTorque(0.5)
+			ballTable[1].rotation = ballTable[1].rotation + 5
+			ballTable[1].touchJoint = physics.newJoint("touch", ballTable[1], blackholes[count].x, blackholes[count].y)
+			ballTable[1].touchJoint.frequency = 0.3
+			ballTable[1].touchJoint.dampingRatio = 0.0
+			ballTable[1].touchJoint:setTarget( blackholes[count].x, blackholes[count].y)
+		end
+		
+		if distBH <= 50 and counter == 0 then
+			-- Player has 4 seconds to get out of blackhole
+			bhtimer = timer.performWithDelay( 4000, gameOver, 0 )
+			counter = counter + 1
+		end
+		
 	end	
+						
 	
 	if inventory == 4 then
 		winCounter = winCounter + 1
@@ -357,11 +435,6 @@ local function frame(event)
 	end
 
 	if winCounter == 2 then
-		print("GAMEOVER")
-		print("GAMEOVER")
-		print("GAMEOVER")
-		print("GAMEOVER")
-		print("GAMEOVER")
 		ballTable[1].x = 20
 		ballTable[1].y = 20
 		storyboard.gotoScene( "select", "fade", 500)
@@ -412,6 +485,8 @@ function scene:enterScene( event )
 	local group = self.view
 
 	print("Enter MAIN")
+	
+	counter = 0
 
 	physics.start()
 	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
@@ -432,6 +507,10 @@ function scene:enterScene( event )
 		physics.addBody(crates[count], "static", { bounce = 0.01 } )
 	end
 	
+	for count = 1, #blackholes do
+		physics.addBody(blackholes[count], "static", { radius = 1} )
+	end
+		
 	Runtime:addEventListener("touch", moveBall)
 	Runtime:addEventListener("touch", menuCheck)
 	Runtime:addEventListener("enterFrame", frame)
@@ -483,6 +562,14 @@ function scene:exitScene( event )
 	for count = 1, #crates do
 		physics.removeBody(crates[count])
 	end
+	
+	for count = 1, #blackholes do
+		physics.removeBody(blackholes[count])
+	end
+	
+	if bhtimer then
+		timer.cancel(bhtimer)
+	end
 
 	--physics.pause()
 	
@@ -492,7 +579,7 @@ end
 -- If scene's view is removed, scene:destroyScene() will be called just prior to:
 function scene:destroyScene( event )
 	local group = self.view
-	
+		
 	print("destroyed MAIN")
 end
 

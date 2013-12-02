@@ -31,10 +31,10 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 -- 
 -----------------------------------------------------------------------------------------
 
+local bhtimer
+
 local ballTable = { 
 	[1] = display.newImage("ball.png") }
-
-
 
 -- add new walls
 -- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
@@ -186,6 +186,7 @@ local function menuCheck(event)
 	end
 end
 
+local counter = 0
 local tapTime = 0
 local miniMap = false
 
@@ -310,6 +311,16 @@ local function moveBall(event)
 	end
 end
 
+local function gameOver(event)
+	print("GAMEOVER")
+	print("GAMEOVER")
+	print("GAMEOVER")
+	print("GAMEOVER")
+	print("GAMEOVER")
+	storyboard.gotoScene( "select", "fade", 500)
+	ballVariables.setBall1(25, 25)
+end
+
 -- Collision Detection for every frame during game time
 local function frame(event)
 	local distBH
@@ -319,15 +330,23 @@ local function frame(event)
 	for count = 1, #blackholes do
 		blackholes[count]:rotate(-24)
 		distBH = distance(ballTable[1].x, blackholes[count].x, ballTable[1].y, blackholes[count].y)
-		if distBH <= 35 then
-			print("GAMEOVER")
-			print("GAMEOVER")
-			print("GAMEOVER")
-			print("GAMEOVER")
-			print("GAMEOVER")
-			storyboard.gotoScene( "select", "fade", 500)
-			ballVariables.setBall1(25, 25)
-		end	
+		
+		if distBH <= 50 then
+			--print("DETECTING PULL")
+			ballTable[1].hasJoint = true
+			ballTable[1]:applyTorque(0.5)
+			ballTable[1].rotation = ballTable[1].rotation + 5
+			ballTable[1].touchJoint = physics.newJoint("touch", ballTable[1], blackholes[count].x, blackholes[count].y)
+			ballTable[1].touchJoint.frequency = 0.5
+			ballTable[1].touchJoint.dampingRatio = 0.0
+			ballTable[1].touchJoint:setTarget( blackholes[count].x, blackholes[count].y)
+		end
+		
+		if distBH <= 50 and counter == 0 then
+			-- Player has 4 seconds to get out of blackhole
+			bhtimer = timer.performWithDelay( 4000, gameOver, 0 )
+			counter = counter + 1
+		end
 	end	
 end
 
@@ -368,6 +387,8 @@ end
 function scene:enterScene( event )
 	local group = self.view
 
+	counter = 0
+	
 	print("Enter D")
 	
 	physics.start()
@@ -425,6 +446,10 @@ function scene:exitScene( event )
 		physics.removeBody(walls[count])
 	end
 
+	if bhtimer then
+		timer.cancel(bhtimer)
+	end
+	
 	--physics.pause()
 
 	print("Exit D")

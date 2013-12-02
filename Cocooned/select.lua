@@ -76,7 +76,7 @@ function scene:createScene( event )
 	background.anchorX = 0.0
 	background.anchorY = 0.0
 	background.x, background.y = 0, 0
-		
+			
 	-- create a widget button (which will loads level1.lua on release)
 	playLvl[1] = widget.newButton{
 		label="lvl1",

@@ -31,6 +31,7 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 -----------------------------------------------------------------------------------------
 
 local wCounter = winCounter
+local bhtimer
 
 -- make a crate (off-screen), position it, and rotate slightly
 local ballTable = { 
@@ -159,6 +160,8 @@ local function menuCheck(event)
 		end
 	end
 end
+
+local counter = 0
 local tapTime = 0
 local miniMap = false
 
@@ -287,6 +290,16 @@ local function moveBall(event)
 	end
 end
 
+local function gameOver(event)
+	print("GAMEOVER")
+	print("GAMEOVER")
+	print("GAMEOVER")
+	print("GAMEOVER")
+	print("GAMEOVER")
+	storyboard.gotoScene( "select", "fade", 500)
+	ballVariables.setBall1(25, 25)
+end
+
 -- Collision Detection for every frame during game time
 local function frame(event)
 	local dist
@@ -298,17 +311,20 @@ local function frame(event)
 		blackholes[count]:rotate(-24)
 		dist = distance(ballTable[1].x, blackholes[count].x, ballTable[1].y, blackholes[count].y)
 		
-		-- When less than distance of 35 pixels, do something
-		-- 			Used print as testing. Works successfully!
-		if dist <= 35 then
-			print("GAMEOVER")
-			print("GAMEOVER")
-			print("GAMEOVER")
-			print("GAMEOVER")
-			print("GAMEOVER")
-			storyboard.gotoScene( "select", "fade", 500)
-			ballVariables.setBall1(25, 25)
-		end
+		--print("DETECTING PULL")
+		ballTable[1].hasJoint = true
+		ballTable[1]:applyTorque(0.5)
+		ballTable[1].rotation = ballTable[1].rotation + 5
+		ballTable[1].touchJoint = physics.newJoint("touch", ballTable[1], blackholes[count].x, blackholes[count].y)
+		ballTable[1].touchJoint.frequency = 0.3
+		ballTable[1].touchJoint.dampingRatio = 0.0
+		ballTable[1].touchJoint:setTarget( blackholes[count].x, blackholes[count].y)
+	end
+	
+	if distBH <= 50 and counter == 0 then
+			-- Player has 4 seconds to get out of blackhole
+			bhtimer = timer.performWithDelay( 4000, gameOver, 0 )
+			counter = counter + 1
 	end
 	
 	for count = 1, #chests do
@@ -391,6 +407,8 @@ end
 function scene:enterScene( event )
 	local group = self.view
 
+	counter = 0
+	
 	print("Enter A")
 
 	physics.start()
@@ -469,10 +487,14 @@ function scene:exitScene( event )
 	for count = 1, #walls do
 		physics.removeBody(walls[count])
 	end
-	
+		
 	menuBool = false
 	
 	physics.pause()
+	
+	if bhtimer then
+		timer.cancel(bhtimer)
+	end
 	
 	print("Exit A")
 end
