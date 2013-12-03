@@ -35,9 +35,9 @@ switchOpen = false
 
 -- make a crate (off-screen), position it, and rotate slightly
 local ballTable = { 
-		[1] = display.newImage("ball.png")
-	}
-		--[2] = display.newImage("ball.png") }
+		[1] = display.newImage("ball.png"),
+		[2] = display.newImage("ball.png") }
+		ballTable[2].alpha = 0
 
 		
 -- add new walls
@@ -390,7 +390,12 @@ function scene:enterScene( event )
 
 	physics.start()
 	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
-	--physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+	if(ballVariables.isBall2Visible() == true) then
+		physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+		ballTable[2].alpha = 1
+	else
+		ballTable[2].alpha = 0
+	end
 
 	-- apply physics to walls
 	for count = 1, #walls do
@@ -413,8 +418,8 @@ function scene:willEnterScene( event )
 
 	ballTable[1].x = ballVariables.getBall1x()
 	ballTable[1].y = ballVariables.getBall1y()
-	--ballTable[2].x = ballVariables.getBall2x()
-	--ballTable[2].y = ballVariables.getBall2y()
+	ballTable[2].x = ballVariables.getBall2x()
+	ballTable[2].y = ballVariables.getBall2y()
 
 	print("Entering MAIN")
 end
@@ -436,7 +441,9 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("enterFrame", frame)
 
 	physics.removeBody(ballTable[1])
-	--physics.removeBody(ballTable[2])
+	if(ballVariables.isBall2Visible() == true) then
+		physics.removeBody(ballTable[2])
+	end
 
 	--print(ballVariables.getBall1x(), ballVariables.getBall1y(), ballVariables.getBall2x(), ballVariables.getBall2y())
 
