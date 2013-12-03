@@ -6,6 +6,8 @@ local ball2x = 475
 local ball2y = 300
 local ballColor = "white"
 
+local ball2Visible = "false"
+
 
 function setBall1( x, y )
 	ball1x = x
@@ -31,6 +33,14 @@ end
 
 function getBall2y()
 	return ball2y
+end
+
+function isBall2Visible()
+	return ball2Visible
+end
+
+function setBall2Visible(bool)
+	ball2Visible = bool
 end
 
 --for magnetism only

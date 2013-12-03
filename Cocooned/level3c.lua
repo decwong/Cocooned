@@ -16,7 +16,7 @@ local physics = require "physics"
 physics.start(); physics.pause()
 
 -- Set view mode to show bounding boxes 
-physics.setDrawMode("hybrid")
+--physics.setDrawMode("hybrid")
 
 --------------------------------------------
 -- forward declarations and other locals
@@ -34,9 +34,11 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 switchOpenA = false
 
 local ballTable = { 
-	[1] = display.newImage("ball.png")
+	[1] = display.newImage("ball.png"),
+	[2] = display.newImage("ball.png") 
 }
-	--[2] = display.newImage("ball.png") }
+
+ballTable[2].alpha = 0
 
 local ballSwitchC = display.newImage("ball_switch.png")
 ballSwitchC.x = 350; ballSwitchC.y = 75
@@ -174,7 +176,11 @@ local function moveBall(event)
 		
 	if tap == 1 then
 		if event.phase == "ended" then
-			for count = 1, #ballTable, 1 do
+		local ballCount = 1
+		if secondBallActive == true then
+			ballCount = 2
+		end
+			for count = 1, ballCount, 1 do
 	
 			-- send mouse/ball position values to distance function
 			dist = distance(event.x, ballTable[count].x, event.y, ballTable[count].y, "Mouse to Ball Distance: ")
@@ -257,8 +263,7 @@ local function moveBall(event)
 local function frame(event)
 	switchDist = switchDistance(ballTable[1].x, ballSwitchC.x, ballTable[1].y, ballSwitchC.y)
 	if (switchDist <= 35)then
-		print("switch open in A")
-		switchOpenA = true
+		print("switch C hit")
 	end 
 end
 
@@ -301,6 +306,13 @@ function scene:enterScene( event )
 	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
 	--physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
 
+	if(ballVariables.isBall2Visible() == true) then
+		physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+		ballTable[2].alpha = 1
+	else
+		ballTable[2].alpha = 0
+	end
+
 	ballTable[1]:setLinearVelocity(0,0)
 	ballTable[1].angularVelocity = 0
 	--ballTable[2]:setLinearVelocity(0,0)
@@ -332,8 +344,8 @@ function scene:willEnterScene( event )
 
 	ballTable[1].x = ballVariables.getBall1x()
 	ballTable[1].y = ballVariables.getBall1y()
-	--ballTable[2].x = ballVariables.getBall2x()
-	--ballTable[2].y = ballVariables.getBall2y()
+	ballTable[2].x = ballVariables.getBall2x()
+	ballTable[2].y = ballVariables.getBall2y()
 
 	print("Entering C")
 end
@@ -347,8 +359,9 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("enterFrame", frame)
 
 	physics.removeBody(ballTable[1])
-	--physics.removeBody(ballTable[2])
-	--physics.removeBody(door)
+	if(ballVariables.isBall2Visible() == true) then
+		physics.removeBody(ballTable[2])
+	end
 	
 	-- remove physics from walls and lines
 	for count = 1, #walls do

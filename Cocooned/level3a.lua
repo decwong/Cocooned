@@ -16,7 +16,7 @@ display.setStatusBar(display.HiddenStatusBar )
 local physics = require "physics"
 physics.start(); physics.pause()
 -- Set view mode to show bounding boxes 
-physics.setDrawMode("hybrid")
+--physics.setDrawMode("hybrid")
 
 --------------------------------------------
 
@@ -41,13 +41,17 @@ local switchAlive = false
 -----------------------------------------------------------------------------------------
 
 local ballTable = { 
-	[1] = display.newImage("ball.png")
+	[1] = display.newImage("ball.png"),
+	[2] = display.newImage("ball.png")
 }
+
+ballTable[2].alpha = 0
 
 local switch = display.newImage("switch.png")
 	print("initialize switch")
 	switch.x = 130; switch.y = 40
 	print("showing switch")
+	switch.alpha = 0
 
 -- add new walls
 -- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
@@ -80,8 +84,7 @@ local walls = {
 local menu = display.newImage("floor.png")
 	menu.x = 245
 	menu.y = 10
-	ballTable[1].alpha = 0
-	menu.alpha = 0
+
 -- Draw lines
 local lines = {
 	-- newRect(left, top, width, height)
@@ -134,9 +137,9 @@ local miniMap = false
 
 local function saveBallLocation()
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
-	if (secondBallActive == true) then 
-		ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
-	end
+
+	ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
+	ballVariables.setBall2Visible(secondBallActive)
 end
 
 -- ball movement control
@@ -183,7 +186,11 @@ local function moveBall(event)
 		
 	if tap == 1 then
 		if event.phase == "ended" then
-			for count = 1, #ballTable, 1 do
+		local ballCount = 1
+		if secondBallActive == true then
+			ballCount = 2
+		end
+			for count = 1, ballCount, 1 do
 		
 			-- send mouse/ball position values to distance function
 			dist = distance(event.x, ballTable[count].x, event.y, ballTable[count].y, "Mouse to Ball Distance: ")
@@ -282,6 +289,7 @@ local function frame(event)
 			-- Check to make sure we aren't creating multiple balls
 			if (secondBallActive == false) then 
 				-- Display new ball
+				--[[
 				local ballTable = {
 					[2] = display.newImage("ball.png")
 				}
@@ -289,6 +297,13 @@ local function frame(event)
 				ballTable[2].y = 100
 				-- Add ball physics and set flag to prevent additional balls from spawning
 				physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+				secondBallActive = true
+				self.view.insert(ballTable[2])
+				]]
+				ballTable[2].x = 100
+				ballTable[2].y = 100
+				ballTable[2].alpha = 1.0
+				physics.addBody(ballTable[2], {radius = 15, bounce = .25 })
 				secondBallActive = true
 			end
 		end
@@ -310,8 +325,9 @@ function scene:createScene( event )
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
+	group:insert( ballTable[2] )
 
-	group:insert(switch)
+	--group:insert(switch)
 
 	-- If the switch is pressed, add 
 	-- a second ball to the pane
@@ -330,6 +346,7 @@ function scene:createScene( event )
 	if switchOpenA == true then 
 		print("showing switch")
 		group:insert( switch)
+		switch.alpha = 1
 	end
 
 end
@@ -342,6 +359,13 @@ function scene:enterScene( event )
 
 	physics.start()
 	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
+
+	if(ballVariables.isBall2Visible() == true) then
+		physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+		ballTable[2].alpha = 1
+	else
+		ballTable[2].alpha = 0
+	end
 
 	-- apply physics to walls
 	for count = 1, #walls do
@@ -364,15 +388,18 @@ function scene:willEnterScene( event )
 
 	ballTable[1].x = ballVariables.getBall1x()
 	ballTable[1].y = ballVariables.getBall1y()
+	ballTable[2].x = ballVariables.getBall2x()
+	ballTable[2].y = ballVariables.getBall2y()
 
 	print("before creating switch")
 	print(switchOpenA)
 
-	if switchOpenA then 
+	--[[if switchOpenA then 
 		switch.alpha = 1
 	elseif switchOpenA == false then
 		switch.alpha = 0
 	end 
+	]]
 end
 
 --rectangle-based collision detection
@@ -409,6 +436,9 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("enterFrame", frame)
 
 	physics.removeBody(ballTable[1])
+	if(ballVariables.isBall2Visible() == true) then
+		physics.removeBody(ballTable[2])
+	end
 	-- If the switch is pressed, add 
 	-- the second ball's physics to the pane
 	if (secondBall == true) then

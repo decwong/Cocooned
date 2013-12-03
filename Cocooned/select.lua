@@ -58,6 +58,17 @@ local function onPlayLvl4Release()
 	return true	-- indicates successful touch
 end
 
+local function onPlayLvl5Release()
+	ballVariables.setBall1(450, 15)
+	ballVariables.setBall2(475, 15)
+	ballVariables.setMagnetized1(true)
+	ballVariables.setMagnetized2(true)
+	-- go to level2.lua scene
+	storyboard.gotoScene( "level2", "fade", 250 )
+	
+	return true	-- indicates successful touch
+end
+
 -----------------------------------------------------------------------------------------
 -- BEGINNING OF YOUR IMPLEMENTATION
 -- 
@@ -117,6 +128,15 @@ function scene:createScene( event )
 		onRelease = onPlayLvl4Release	-- event listener function
 	}
 
+	playLvl[5] = widget.newButton{
+		label="lvl5",
+		labelColor = { default={255}, over={128} },
+		defaultFile="4.png",
+		overFile="4.png",
+		width=100, height=50,
+		onRelease = onPlayLvl5Release	-- event listener function
+	}
+
 	playLvl[1].x = 100
 	playLvl[1].y = 100
 	playLvl[2].x = 250
@@ -125,6 +145,8 @@ function scene:createScene( event )
 	playLvl[3].y = 100
 	playLvl[4].x = 100
 	playLvl[4].y = 200
+	playLvl[5].x = 250
+	playLvl[5].y = 200
 	
 	-- all display objects must be inserted into group
 	group:insert( background )

@@ -324,6 +324,12 @@ local function frame(event)
 
 	if distanceFrom(ballTable[1], star) < 30 and distanceFrom(ballTable[2], star) < 30 and ballVariables.getMagnetized1() == false and ballVariables.getMagnetized2() == false then
 		storyboard.gotoScene("select", "fade", 500)
+		storyboard.removeScence("level2")
+		storyboard.removeScence("level2a")
+		storyboard.removeScence("level2b")
+		storyboard.removeScence("level2c")
+		storyboard.removeScence("level2d")
+
 	end
 
 	-- When less than distance of 35 pixels, do something
