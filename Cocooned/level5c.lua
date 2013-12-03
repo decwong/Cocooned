@@ -39,6 +39,57 @@ local ballTable = {
 		ballTable[2]:setFillColor(1,0,0)
 	end
 
+local magnetTable = {
+	[1] = display.newImage("magnet3.png"),
+	[2] = display.newImage("magnet3.png"),
+	[3] = display.newImage("magnet3.png"),
+	[4] = display.newImage("magnet3.png"),
+	[5] = display.newImage("magnet3.png"),
+	[6] = display.newImage("magnet3.png"),
+	[7] = display.newImage("magnet3.png"),
+	[8] = display.newImage("magnet3.png"),
+	[9] = display.newImage("magnet3.png"),
+	[10] = display.newImage("magnet3.png"),
+	[11] = display.newImage("magnet3.png"),
+	[12] = display.newImage("magnet3.png"),
+	[13] = display.newImage("magnet3.png"),
+	[14] = display.newImage("magnet3.png"),
+	[15] = display.newImage("magnet3.png"),
+	[16] = display.newImage("magnet3.png"),
+	[17] = display.newImage("magnet3.png"),
+}
+
+
+magnetTable[1].x = display.contentWidth/2
+magnetTable[2].x = display.contentWidth/2 + 30
+magnetTable[3].x = display.contentWidth/2 + 60
+magnetTable[4].x = display.contentWidth/2 + 90
+magnetTable[5].x = display.contentWidth/2 + 120
+magnetTable[6].x = display.contentWidth/2 + 150
+magnetTable[7].x = display.contentWidth/2 + 180
+magnetTable[8].x = display.contentWidth/2 + 210
+magnetTable[9].x = display.contentWidth/2 - 30
+magnetTable[10].x = display.contentWidth/2 - 60
+magnetTable[11].x = display.contentWidth/2 - 90
+magnetTable[12].x = display.contentWidth/2 - 120
+magnetTable[13].x = display.contentWidth/2 - 150
+magnetTable[14].x = display.contentWidth/2 - 180
+magnetTable[15].x = display.contentWidth/2 - 210
+magnetTable[16].x = display.contentWidth/2 - 240
+magnetTable[17].x = display.contentWidth/2 + 240
+
+
+for count = 1, #magnetTable do
+	magnetTable[count]:scale(0.5,0.5)
+	magnetTable[count].y = display.contentHeight/2 + 132
+end
+
+local invisibleWall = display.newRect(display.contentWidth/2,display.contentHeight/2 + 132,display.contentWidth+50, 22 )
+invisibleWall.alpha = 0
+
+local box = display.newRect(18, display.contentHeight/2 + 55, 40,40)
+box.alpha = 0.3
+
 -- add new walls
 -- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
 local walls = {
@@ -72,23 +123,26 @@ local menu = display.newImage("floor.png")
 	menu.y = 10
 
 	
+-- Draw lines
 local lines = {
-	-- newRect(left, top, width, height)
-	--center line
-	[1] = display.newRect(display.contentWidth/2+10, display.contentHeight/4, 20, display.contentHeight/2+90) ,
-	--wall containing win zone
-	[2] = display.newRect(display.contentWidth/4*3 + 30, 250, 20, display.contentHeight/3),
-	--wall above win zone
-	[3] = display.newRect(display.contentWidth/4*3 + 65, 75, display.contentWidth/4 + 50, 20),
-	--left vertical line
-	[4] = display.newRect(display.contentWidth/4-10, display.contentHeight/2, 20, display.contentHeight) ,
-	--bottom horizontal line
-	[5] = display.newRect(display.contentWidth/4-10, display.contentHeight/2 + 30, display.contentWidth/2+50, 20) ,
-	--top horizontal line
-	[6] = display.newRect(display.contentWidth/4-10, 75, display.contentWidth/2+50, 20),	
-	[7] = display.newRect(display.contentWidth/4*3 + 80, 200, display.contentWidth/4 + 10, 20)
+
+	--bottom horizontal
+	[1] = display.newRect(display.contentWidth/2, display.contentHeight/2 + 25, display.contentWidth+50, 10) ,
+	--top horizontal
+	[2] = display.newRect(display.contentWidth/2, display.contentHeight/2 - 25, display.contentWidth+50, 10),
+
+		--top left corner
+	[3] = display.newRect(display.contentWidth/4-100, display.contentHeight/2 - 70, display.contentWidth/4 - 30, 10),
+	[4] = display.newRect(display.contentWidth/4-60, display.contentHeight/4-25, 10, display.contentWidth/4-45),
+	--bottom right corner
+	[5] = display.newRect((3*display.contentWidth)/4+100, display.contentHeight/2 + 70, display.contentWidth/4 - 30, 10),
+	[6] = display.newRect((3*display.contentWidth)/4+60, (3*display.contentHeight)/4+25, 10, display.contentWidth/4-45)
 }
-	
+
+for count = 1, #lines do
+		lines[count]:setFillColor(0,0,0)
+		lines[count].alpha = 0.75
+end
 
 local function saveBallLocation()
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
@@ -239,20 +293,12 @@ local function moveBall(event)
 			elseif "moved" == phase then
 			elseif "ended" == phase or "cancelled" == phase then
 				local current = storyboard.getCurrentSceneName()
-<<<<<<< HEAD
-				if current == "level2c" then
-=======
 				if current == "level5c" then
->>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
 					if event.yStart < event.y and swipeLengthy > 50 then
 						print( "Swiped Up" )
 						saveBallLocation()
 						Runtime:removeEventListener("enterFrame", frame)
-<<<<<<< HEAD
-						storyboard.gotoScene( "level2", "fade", 500 )
-=======
 						storyboard.gotoScene( "level5", "fade", 500 )
->>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
 					end	
 				end
 			end	
@@ -275,7 +321,27 @@ local function frame(event)
 		ballVariables.setRepelled(true);
 		timer.performWithDelay( 2000, ballVariables.setRepelled(false) )
 	end
-	
+	if ballVariables.getBallColor2() == "red" then
+		ballColor = ballVariables.getBallColor()
+		if ballColor == "blue" then
+			ballTable[2].y = display.contentHeight/2 + 105
+		elseif ballColor == "white" then
+			ballTable[2].y = display.contentHeight/2 + 105
+		elseif	ballColor == "red" then
+			ballTable[2].y = display.contentHeight/2 + 50
+			ballTable[2].x = ballTable[1].x
+			ballTable[1].y = display.contentHeight/2 - 50
+		end
+	end
+
+	distW = distance(ballTable[2].x, box.x, ballTable[2].y, box.y)
+
+	if distW <= 15 then
+		print("DistanceW =", dist)
+		ballTable[2]:setFillColor(255,255,255)
+		ballVariables.setBallColor2("white")
+		ballVariables.setMagnetized2(false)
+	end
 	-- When less than distance of 35 pixels, do something
 	-- 			Used print as testing. Works successfully!
 	if dist <= 35 then
@@ -297,15 +363,13 @@ function scene:createScene( event )
 	background.anchorY = 0.0
 	background.x, background.y = -50, 0
 
-	-- apply physics to wall
-	for count = 1, #walls do
-		physics.addBody(walls[count], "static", { bounce = 0.01 } )
-	end
+	
 
 	-- all display objects must be inserted into group
 	group:insert( background )
 	group:insert( ballTable[1] )
 	group:insert( ballTable[2] )
+
 
 	for count = 1, #lines do
 		group:insert(lines[count])
@@ -313,6 +377,13 @@ function scene:createScene( event )
 	for count = 1, #walls do
 		group:insert(walls[count])
 	end
+	for count = 1, #magnetTable do
+		group:insert(magnetTable[count])
+	end
+
+	group:insert(box)
+	group:insert(invisibleWall)
+
 	group:insert( menu )
 
 end
@@ -326,7 +397,17 @@ function scene:enterScene( event )
 	physics.start()
 	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
 	physics.addBody(ballTable[2], {radius = 15, bounce = .25 })
+	physics.addBody(invisibleWall, "static")
 
+	for count = 1, #lines do
+		physics.addBody(lines[count], "static", {bounce = 0.1})
+	end
+
+	-- apply physics to wall
+	for count = 1, #walls do
+		physics.addBody(walls[count], "static", { bounce = 0.01 } )
+	end
+	
 	ballTable[1]:setLinearVelocity(0,0)
 	ballTable[1].angularVelocity = 0
 	ballTable[2]:setLinearVelocity(0,0)
@@ -345,25 +426,33 @@ function scene:willEnterScene( event )
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
 
-	if ballVariables.getMagnetized1() then
-		ballTable[1]:setFillColor(1,0,0)
-	else 
-		ballTable[1]:setFillColor(1,1,1)
-	end
-	if ballVariables.getMagnetized2() then
-		ballTable[2]:setFillColor(1,0,0)
-	else
-		ballTable[2]:setFillColor(1,1,1)
+	local ballColor = ballVariables.getBallColor()
+	if ballColor == "white" then
+		ballTable[1]:setFillColor(255,255,255)
+		ballVariables.setMagnetized1(false)
+	elseif ballColor == "blue" then
+		ballTable[1]:setFillColor(0,0,140)
+		ballVariables.setMagnetized1(true)
+	elseif ballColor == "red" then
+		ballTable[1]:setFillColor(140,0,0)
+		ballVariables.setMagnetized1(true)
 	end
 
-	-- apply physics to walls
-	for count = 1, #walls do
-		physics.addBody(walls[count], "static", { bounce = 0.01 } )
+	local ballColor2 = ballVariables.getBallColor2()
+	if ballColor2 == "white" then
+		ballTable[2]:setFillColor(255,255,255)
+		ballVariables.setMagnetized2(false)
+	elseif ballColor2 == "blue" then
+		ballTable[2]:setFillColor(0,0,140)
+		ballVariables.setMagnetized2(true)
+	elseif ballColor2 == "red" then
+		ballTable[2]:setFillColor(140,0,0)
+		ballVariables.setMagnetized2(true)
 	end
 	
-	-- apply physics to lines
-	for count = 1, #lines do
-		physics.addBody(lines[count], "static", { bounce = 0.01 } )
+	if ballColor == "red" and ballColor2 == "red" then
+		ballVariables.setMagnetized1(false)
+		ballVariables.setMagnetized2(false)
 	end
 	
 	physics.setGravity(0, 0)
@@ -382,6 +471,7 @@ function scene:exitScene( event )
 
 	physics.removeBody(ballTable[1])
 	physics.removeBody(ballTable[2])
+	physics.removeBody(invisibleWall)
 
 	for count = 1, #lines do
 		physics.removeBody(lines[count])

@@ -43,7 +43,17 @@ local menu = display.newImage("floor.png")
 	menu.x = 245
 	menu.y = 10
 
-		
+local boxes = {
+
+	[1] = display.newRect(100, 50, 40, 40),
+	[2] = display.newRect(450,50,40,40),
+	
+}
+
+boxes[1]:setFillColor(1,0,0)
+boxes[1].alpha = 0.3
+boxes[2]:setFillColor(255,255,255)
+boxes[2].alpha = 0.3
 -- add new walls
 -- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
 local walls = {
@@ -71,35 +81,27 @@ local walls = {
 	walls[4].x = 250
 	walls[4].y = 315	
 	
+-- Draw lines
 local lines = {
-	-- newRect(left, top, width, height)
-<<<<<<< HEAD
-	--center line
-	[1] = display.newRect(display.contentWidth/2+10, display.contentHeight/2+30, 20, display.contentHeight/2+90) ,
-	--wall containing win zone
-	[2] = display.newRect(display.contentWidth/4*3 + 30, 250, 20, display.contentHeight/3),
-	--wall above win zone
-	[3] = display.newRect(display.contentWidth/4*3 + 65, 75, display.contentWidth/4 + 50, 20),
-	--left vertical line
-	[4] = display.newRect(display.contentWidth/4-10, display.contentHeight/2, 20, display.contentHeight) ,
-	--bottom horizontal line
-	[5] = display.newRect(display.contentWidth/4-10, display.contentHeight/2 + 30, display.contentWidth/2+50, 20) ,
-	--top horizontal line
-	[6] = display.newRect(display.contentWidth/4-10, 75, display.contentWidth/2+50, 20),	
-	[7] = display.newRect(display.contentWidth/4*3 + 80, 200, display.contentWidth/4 + 10, 20)	
-=======
-	--vertical right
-	[1] = display.newRect(display.contentWidth/2+70, display.contentHeight/2, 20, display.contentHeight) ,
-	--center horizontal
-	[2] = display.newRect(display.contentWidth/2, display.contentHeight/2, display.contentWidth, 20),
-	--left vertical 
-	[3] = display.newRect(display.contentWidth/2-70, display.contentHeight/2, 20, display.contentHeight) ,
+
 	--bottom horizontal
-	[4] = display.newRect(display.contentWidth/2, display.contentHeight/2 + 50, display.contentWidth/2-80, 20) ,
+	[1] = display.newRect(display.contentWidth/2, display.contentHeight/2 + 25, display.contentWidth+50, 10) ,
 	--top horizontal
-	[5] = display.newRect(display.contentWidth/2, display.contentHeight/2 - 50, display.contentWidth/2-80, 20)
->>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
+	[2] = display.newRect(display.contentWidth/2, display.contentHeight/2 - 25, display.contentWidth+50, 10),
+
+		--top left corner
+	[3] = display.newRect(display.contentWidth/4-100, display.contentHeight/2 - 70, display.contentWidth/4 - 30, 10),
+	[4] = display.newRect(display.contentWidth/4-60, display.contentHeight/4-25, 10, display.contentWidth/4-45),
+	--bottom right corner
+	[5] = display.newRect((3*display.contentWidth)/4+100, display.contentHeight/2 + 70, display.contentWidth/4 - 30, 10),
+	[6] = display.newRect((3*display.contentWidth)/4+60, (3*display.contentHeight)/4+25, 10, display.contentWidth/4-45)
 }
+
+for count = 1, #lines do
+		lines[count]:setFillColor(0,0,0)
+		lines[count].alpha = 0.75
+end
+
 -- distance function
 local function distance(x1, x2, y1, y2)
 	local dist
@@ -248,20 +250,12 @@ local function moveBall(event)
 		elseif "moved" == phase then
 		elseif "ended" == phase or "cancelled" == phase then
 			local current = storyboard.getCurrentSceneName()
-<<<<<<< HEAD
-			if current == "level2a" then
-=======
 			if current == "level5a" then
->>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
 				if event.yStart > event.y and swipeLengthy > 50 then
 					print( "Swiped Up" )
 					saveBallLocation()
 					Runtime:removeEventListener("enterFrame", frame)
-<<<<<<< HEAD
-					storyboard.gotoScene( "level2", "fade", 100 )
-=======
-					storyboard.gotoScene( "level5", "fade", 100 )
->>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
+					storyboard.gotoScene( "level5", "fade", 500 )
 				end	
 			end
 		end	
@@ -284,6 +278,29 @@ local function frame(event)
 		end
 		ballVariables.setRepelled(true);
 		timer.performWithDelay( 2000, ballVariables.setRepelled(false) )
+	end
+
+	if distanceFrom(ballTable[1], ballTable[2]) < 170 and ballVariables.getBallColor() == "red" and ballVariables.getBallColor2() == "red" then
+		ballTable[2].y = display.contentHeight/2 + 50
+		ballTable[1].y = display.contentHeight/2 - 50
+		ballTable[2].x = ballTable[1].x
+	end
+
+	distR = distance(ballTable[1].x, boxes[1].x, ballTable[1].y, boxes[1].y)
+	distW = distance(ballTable[1].x, boxes[2].x, ballTable[1].y, boxes[2].y)
+
+	if distR <= 15 then
+		print("DistanceB =", dist)
+		ballTable[1]:setFillColor(1,0,0)
+		ballVariables.setBallColor("red")
+		ballVariables.setMagnetized1(false)
+		ballVariables.setMagnetized2(false)
+	end
+	if distW <= 15 then
+		print("DistanceW =", dist)
+		ballTable[1]:setFillColor(255,255,255)
+		ballVariables.setBallColor("white")
+		ballVariables.setMagnetized1(false)
 	end
 	
 	-- When less than distance of 35 pixels, do something
@@ -316,6 +333,10 @@ function scene:createScene( event )
 	end
 	for count = 1, #walls do
 		group:insert(walls[count])
+	end
+
+	for count = 1, #boxes do
+		group:insert(boxes[count])
 	end
 	group:insert( menu )
 
@@ -355,18 +376,34 @@ function scene:willEnterScene( event )
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
 
-	if ballVariables.getMagnetized1() then
-		ballTable[1]:setFillColor(1,0,0)
-	else 
-		ballTable[1]:setFillColor(1,1,1)
-	end
-	if ballVariables.getMagnetized2() then
-		ballTable[2]:setFillColor(1,0,0)
-	else
-		ballTable[2]:setFillColor(1,1,1)
+	local ballColor = ballVariables.getBallColor()
+	if ballColor == "white" then
+		ballTable[1]:setFillColor(255,255,255)
+		ballVariables.setMagnetized1(false)
+	elseif ballColor == "blue" then
+		ballTable[1]:setFillColor(0,0,140)
+		ballVariables.setMagnetized1(true)
+	elseif ballColor == "red" then
+		ballTable[1]:setFillColor(140,0,0)
+		ballVariables.setMagnetized1(true)
 	end
 
+	local ballColor2 = ballVariables.getBallColor2()
+	if ballColor2 == "white" then
+		ballTable[2]:setFillColor(255,255,255)
+		ballVariables.setMagnetized2(false)
+	elseif ballColor2 == "blue" then
+		ballTable[2]:setFillColor(0,0,140)
+		ballVariables.setMagnetized2(true)
+	elseif ballColor2 == "red" then
+		ballTable[2]:setFillColor(140,0,0)
+		ballVariables.setMagnetized2(true)
+	end
 	
+	if ballColor == "red" and ballColor2 == "red" then
+		ballVariables.setMagnetized1(false)
+		ballVariables.setMagnetized2(false)
+	end
 
 	print("Entering A")
 end

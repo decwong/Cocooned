@@ -36,6 +36,9 @@ local switch1 = display.newImage("switch.png")
 local switch2 = display.newImage("switch.png")
 	switch2.x = 3*display.contentWidth/4 + 100; switch2.y = display.contentHeight/2 + 100
 
+	switch1.alphs = 0.75
+	switch2.alpha = 0.75
+
 local ballTable = { 
 	[1] = display.newImage("ball.png"), 
 	[2] = display.newImage("ball.png") }
@@ -82,21 +85,28 @@ local menu = display.newImage("floor.png")
 
 local lines = {
 	-- newRect(left, top, width, height)
-
-	--vertical right
-	[1] = display.newRect(display.contentWidth/2+35, display.contentHeight/2, 10, display.contentHeight) ,
-	[2] = display.newRect(display.contentWidth/2-35, display.contentHeight/2, 10, display.contentHeight) ,
 	--bottom horizontal
-	[3] = display.newRect(display.contentWidth/2, display.contentHeight/2 + 40, display.contentWidth+50, 10) ,
+	[1] = display.newRect(display.contentWidth/2, display.contentHeight/2 + 25, display.contentWidth+50, 10) ,
 	--top horizontal
-	[4] = display.newRect(display.contentWidth/2, display.contentHeight/2 - 40, display.contentWidth+50, 10),
+	[2] = display.newRect(display.contentWidth/2, display.contentHeight/2 - 25, display.contentWidth+50, 10),
 	--top left corner
-	[5] = display.newRect(display.contentWidth/4-90, display.contentHeight/2 - 50, display.contentWidth/4 - 10, 10),
-	[6] = display.newRect(display.contentWidth/4-40, display.contentHeight/4-20, 10, display.contentWidth/4-30),
+	[3] = display.newRect(display.contentWidth/4-100, display.contentHeight/2 - 70, display.contentWidth/4 - 30, 10),
+	[4] = display.newRect(display.contentWidth/4-60, display.contentHeight/4-25, 10, display.contentWidth/4-45),
 	--bottom right corner
-	[7] = display.newRect((3*display.contentWidth)/4+90, display.contentHeight/2 + 50, display.contentWidth/4 - 10, 10),
-	[8] = display.newRect((3*display.contentWidth)/4+40, (3*display.contentHeight)/4+20, 10, display.contentWidth/4-30)
+	[5] = display.newRect((3*display.contentWidth)/4+100, display.contentHeight/2 + 70, display.contentWidth/4 - 30, 10),
+	[6] = display.newRect((3*display.contentWidth)/4+60, (3*display.contentHeight)/4+25, 10, display.contentWidth/4-45)
+
 }
+
+for count = 1, #lines do
+		lines[count]:setFillColor(0,0,0)
+		lines[count].alpha = 0.75
+end
+
+lines[3]:setFillColor(1,1,1)
+lines[4]:setFillColor(1,1,1)
+lines[5]:setFillColor(1,1,1)
+lines[6]:setFillColor(1,1,1)
 
 local function saveBallLocation()
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
@@ -264,11 +274,15 @@ end
 local function frame(event)
 	local dist
 	
-	if distanceFrom(ballTable[1], switch1) < 40 or  distanceFrom(ballTable[2], switch1) < 40 then
-		--change level5 main
+	dist = distance(ballTable[1].x, switch1.x, ballTable[1].y, switch1.y)
+		
+	if dist < 20 then
+		ballVariables.setWall1(false)
+		switch1.alpha = 0
 	end
-	if distanceFrom(ballTable[1], switch2) < 40 or  distanceFrom(ballTable[2], switch2) < 40 then
-		--change level5 main
+	dist = distance(ballTable[2].x, switch2.x, ballTable[2].y, switch2.y) 
+	if dist < 20 then
+		ballVariables.setWall2(false)
 	end
 
 
@@ -296,7 +310,7 @@ end
 
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
-	print("Create C")
+	print("Create D")
 	local group = self.view
 
 	-- create a grey rectangle as the backdrop
@@ -362,8 +376,15 @@ function scene:enterScene( event )
 		physics.addBody(lines[count], "static", { bounce = 0.01 } )
 	end
 
-	physics.addBody(switch1, "static", { bounce = 0.01 } )
-	physics.addBody(switch2, "static", { bounce = 0.01 } )
+	if ballVariables.getBallColor() == "white" then
+		physics.removeBody(lines[3])
+		physics.removeBody(lines[4])
+	end
+	if ballVariables.getBallColor2() == "white" then
+		physics.removeBody(lines[5])
+		physics.removeBody(lines[6])
+	end
+
 	physics.setGravity(0, 0)
 
 	Runtime:addEventListener("touch", moveBall)
@@ -380,15 +401,33 @@ function scene:willEnterScene( event )
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
 
-	if ballVariables.getMagnetized1() then
-		ballTable[1]:setFillColor(1,0,0)
-	else 
-		ballTable[1]:setFillColor(1,1,1)
+	local ballColor = ballVariables.getBallColor()
+	if ballColor == "white" then
+		ballTable[1]:setFillColor(255,255,255)
+		ballVariables.setMagnetized1(false)
+	elseif ballColor == "blue" then
+		ballTable[1]:setFillColor(0,0,140)
+		ballVariables.setMagnetized1(true)
+	elseif ballColor == "red" then
+		ballTable[1]:setFillColor(140,0,0)
+		ballVariables.setMagnetized1(true)
 	end
-	if ballVariables.getMagnetized2() then
-		ballTable[2]:setFillColor(1,0,0)
-	else
-		ballTable[2]:setFillColor(1,1,1)
+
+	local ballColor2 = ballVariables.getBallColor2()
+	if ballColor2 == "white" then
+		ballTable[2]:setFillColor(255,255,255)
+		ballVariables.setMagnetized2(false)
+	elseif ballColor2 == "blue" then
+		ballTable[2]:setFillColor(0,0,140)
+		ballVariables.setMagnetized2(true)
+	elseif ballColor2 == "red" then
+		ballTable[2]:setFillColor(140,0,0)
+		ballVariables.setMagnetized2(true)
+	end
+	
+	if ballColor == "red" and ballColor2 == "red" then
+		ballVariables.setMagnetized1(false)
+		ballVariables.setMagnetized2(false)
 	end
 
 	print( "load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)

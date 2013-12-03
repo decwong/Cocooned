@@ -5,8 +5,12 @@ local ball1y = 25
 local ball2x = 475
 local ball2y = 300
 local ballColor = "white"
+local ballColor2 = "white"
 
-local ball2Visible = "false"
+local ball2Visible = false
+
+local wall1Up = true
+local wall2Up = true
 
 
 function setBall1( x, y )
@@ -72,6 +76,31 @@ end
 
 function setBallColor( string ) 
 	ballColor = string
+end
+
+--color
+function getBallColor2() 
+	return ballColor2
+end
+
+function setBallColor2( string ) 
+	ballColor2 = string
+end
+
+function setWall1(bool)
+	wall1Up = bool
+end
+
+function getWall1()
+	return wall1Up
+end
+
+function setWall2(bool)
+	wall2Up = bool
+end
+
+function getWall2()
+	return wall2Up
 end
 
 function resetBall()

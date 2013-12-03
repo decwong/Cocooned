@@ -38,13 +38,9 @@ local ballTable = {
 
 
 local star = display.newImage("star.png")
-<<<<<<< HEAD
-	star.x = 450
-	star.y = 260
-=======
 	star.x = display.contentWidth/2
 	star.y = display.contentHeight/2
->>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
+
 		
 
 		
@@ -89,17 +85,37 @@ local lines = {
 	--vertical left
 	[2] = display.newRect(display.contentWidth/2-35, display.contentHeight/2, 10, display.contentHeight) ,
 	--bottom horizontal
-	[3] = display.newRect(display.contentWidth/2, display.contentHeight/2 + 40, display.contentWidth+50, 10) ,
+	[3] = display.newRect(display.contentWidth/2-150, display.contentHeight/2 + 25, display.contentWidth/2-10, 10) ,
 	--top horizontal
-	[4] = display.newRect(display.contentWidth/2, display.contentHeight/2 - 40, display.contentWidth+50, 10),
+	[4] = display.newRect(display.contentWidth/2-150, display.contentHeight/2 - 25, display.contentWidth/2-10, 10),
 	--top left corner
-	[5] = display.newRect(display.contentWidth/4-90, display.contentHeight/2 - 50, display.contentWidth/4 - 10, 10),
-	[6] = display.newRect(display.contentWidth/4-40, display.contentHeight/4-20, 10, display.contentWidth/4-30),
+	[5] = display.newRect(display.contentWidth/4-100, display.contentHeight/2 - 70, display.contentWidth/4 - 30, 10),
+	[6] = display.newRect(display.contentWidth/4-60, display.contentHeight/4-25, 10, display.contentWidth/4-45),
 	--bottom right corner
-	[7] = display.newRect((3*display.contentWidth)/4+90, display.contentHeight/2 + 50, display.contentWidth/4 - 10, 10),
-	[8] = display.newRect((3*display.contentWidth)/4+40, (3*display.contentHeight)/4+20, 10, display.contentWidth/4-30)
+	[7] = display.newRect((3*display.contentWidth)/4+100, display.contentHeight/2 + 70, display.contentWidth/4 - 30, 10),
+	[8] = display.newRect((3*display.contentWidth)/4+60, (3*display.contentHeight)/4+25, 10, display.contentWidth/4-45),
+
+	--bottom horizontal
+	[9] = display.newRect(display.contentWidth/2+150, display.contentHeight/2 + 25, display.contentWidth/2-10, 10) ,
+	--top horizontal
+	[10] = display.newRect(display.contentWidth/2+150, display.contentHeight/2 - 25, display.contentWidth/2-10, 10),
+
+	[11] = display.newRect(display.contentWidth/2, display.contentHeight/2 - 25, 60, 10),
+	[12] = display.newRect(display.contentWidth/2, display.contentHeight/2 + 25, 60, 10),
+
+
 }
-		
+
+for count = 1, #lines do
+		lines[count]:setFillColor(0,0,0)
+		lines[count].alpha = 0.75
+end
+
+lines[11]:setFillColor(.9,.4,.2)
+lines[12]:setFillColor(.9,.4,.2)
+lines[11].alpha = 1
+lines[12].alpha = 1
+
 -- distance function
 local function distance(x1, x2, y1, y2)
 	local dist
@@ -165,6 +181,7 @@ local function moveBall(event)
 
 	if event.phase == "ended" then
 		if(eventTime - tapTime) < 300 then
+			print(eventTime, tapTime)
 			if menuBool == false then
 				if miniMap == false then 
 					physics.pause()
@@ -177,6 +194,7 @@ local function moveBall(event)
 				end
 				print("double tap")
 			end
+
 		end
 			tapTime = eventTime
 	end
@@ -329,8 +347,21 @@ local function frame(event)
 		timer.performWithDelay( 2000, ballVariables.setRepelled(false) )
 	end
 
+	if distanceFrom(ballTable[1], ballTable[2]) < 170 and ballVariables.getBallColor() == "red" and ballVariables.getBallColor2() == "red" then
+		ballTable[2].y = display.contentHeight/2 + 50
+		ballTable[1].y = display.contentHeight/2 - 50
+		ballTable[2].x = ballTable[1].x
+	end
+
 	if distanceFrom(ballTable[1], star) < 30 and distanceFrom(ballTable[2], star) < 30 and ballVariables.getMagnetized1() == false and ballVariables.getMagnetized2() == false then
 		storyboard.gotoScene("select", "fade", 500)
+		ballVariables.setWall1(true)
+		ballVariables.setWall2(true)
+		storyboard.removeScene("level5")
+		storyboard.removeScene("level5a")
+		storyboard.removeScene("level5b")
+		storyboard.removeScene("level5c")
+		storyboard.removeScene("level5d")
 	end
 
 	-- When less than distance of 35 pixels, do something
@@ -345,7 +376,8 @@ end
 function scene:createScene( event )
 	print("Create MAIN")
 	local group = self.view
-
+	ballVariables.setBallColor("blue")
+	ballVariables.setBallColor2("red")
 	-- create a grey rectangle as the backdrop
 	-- temp wood background from http://wallpaperstock.net/wood-floor-wallpapers_w6855.html
 	local background = display.newImageRect( "background2.jpg", screenW+100, screenH)
@@ -395,6 +427,15 @@ function scene:enterScene( event )
 	
 	for count = 1, #lines do 
 		physics.addBody(lines[count], "static", { bounce = 0.01 } )
+
+	end
+
+	if ballVariables.getWall1() == false then
+		physics.removeBody(lines[11])
+	end
+
+	if ballVariables.getWall2() == false then
+		physics.removeBody(lines[12])
 	end
 
 	Runtime:addEventListener("touch", moveBall)
@@ -412,16 +453,41 @@ function scene:willEnterScene( event )
 	ballTable[2].x = ballVariables.getBall2x()
 	ballTable[2].y = ballVariables.getBall2y()
 
-	if ballVariables.getMagnetized1() then
-		ballTable[1]:setFillColor(1,0,0)
-	else 
-		ballTable[1]:setFillColor(1,1,1)
+	local ballColor = ballVariables.getBallColor()
+	if ballColor == "white" then
+		ballTable[1]:setFillColor(255,255,255)
+	elseif ballColor == "blue" then
+		ballTable[1]:setFillColor(0,0,140)
+	elseif ballColor == "red" then
+		ballTable[1]:setFillColor(140,0,0)
 	end
-	if ballVariables.getMagnetized2() then
-		ballTable[2]:setFillColor(1,0,0)
-	else
-		ballTable[2]:setFillColor(1,1,1)
+
+	local ballColor2 = ballVariables.getBallColor2()
+	if ballColor2 == "white" then
+		ballTable[2]:setFillColor(255,255,255)
+	elseif ballColor2 == "blue" then
+		ballTable[2]:setFillColor(0,0,140)
+	elseif ballColor2 == "red" then
+		ballTable[2]:setFillColor(140,0,0)
 	end
+
+	if ballColor == "red" and ballColor2 == "red" then
+		ballVariables.setMagnetized1(false)
+		ballVariables.setMagnetized2(false)
+	end
+
+	if ballVariables.getWall1() == false then
+		lines[11].alpha  = 0
+	elseif ballVariables.getWall1() == true then
+		lines[11].alpha  = 1
+	end
+
+	if ballVariables.getWall2() == false then
+		lines[12].alpha  = 0
+	elseif ballVariables.getWall2() == true then
+		lines[12].alpha  = 1
+	end
+
 
 
 	print("Entering MAIN")
