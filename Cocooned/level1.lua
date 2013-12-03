@@ -150,11 +150,12 @@ local function menuCheck(event)
 	end
 end
 
+local joint = nil
 local tapTime = 0
 local counter = 0
 local miniMap = false
-local allowMini = false
-local allowPanes = false
+--local allowMini = true
+--local allowPanes = true
 
 -- ball movement control
 local function moveBall(event)
@@ -184,7 +185,7 @@ local function moveBall(event)
 		end
 	end
 
-	if allowMini == true then
+	--if allowMini == true then
 		if event.phase == "ended" then
 			if(eventTime - tapTime) < 300 then
 				if menuBool == false then
@@ -202,7 +203,7 @@ local function moveBall(event)
 			end
 				tapTime = eventTime
 		end
-	end
+	--end
 		
 	if tap == 1 then
 		if event.phase == "ended" then
@@ -268,53 +269,57 @@ local function moveBall(event)
 				blackholes[count]:rotate(-24)
 				distBH = distance(ballTable[1].x, blackholes[count].x, ballTable[1].y, blackholes[count].y)			
 				
-				if distBH <= 50 then
-					print("Release PULL")		
-					x = event.x - ballTable[count].x;
-					y = event.y - ballTable[count].y;
-					--print (x, y)
-					if x < 0 then
-						if x > -30 then
-							if y > 0 then
-								ballTable[count]:applyLinearImpulse(0,-0.5, ballTable[count].x, ballTable[count].y)
+				--if allowMini == false and allowPanes == false then
+					if distBH <= 35 then
+						print("Release PULL")		
+						x = event.x - ballTable[count].x;
+						y = event.y - ballTable[count].y;
+						--print (x, y)
+						if x < 0 then
+							if x > -30 then
+								if y > 0 then
+									ballTable[count]:applyLinearImpulse(0,-1, ballTable[count].x, ballTable[count].y)
+								elseif y < 0 then
+									ballTable[count]:applyLinearImpulse(0,1, ballTable[count].x, ballTable[count].y)
+								end
+							elseif y >0 then
+								if y < 30 then
+									ballTable[count]:applyLinearImpulse(1, 0, ballTable[count].x, ballTable[count].y)
+								else
+									ballTable[count]:applyLinearImpulse(1, -1,ballTable[count].x, ballTable[count].y)
+								end
 							elseif y < 0 then
-								ballTable[count]:applyLinearImpulse(0,0.5, ballTable[count].x, ballTable[count].y)
+								if y > -30 then
+									ballTable[count]:applyLinearImpulse(1, 0, ballTable[count].x, ballTable[count].y)
+								else
+									ballTable[count]:applyLinearImpulse(1, 1, ballTable[count].x, ballTable[count].y)
+								end
 							end
-						elseif y >0 then
-							if y < 30 then
-								ballTable[count]:applyLinearImpulse(0.5, 0, ballTable[count].x, ballTable[count].y)
-							else
-								ballTable[count]:applyLinearImpulse(0.5, -0.5,ballTable[count].x, ballTable[count].y)
-							end
-						elseif y < 0 then
-							if y > -30 then
-								ballTable[count]:applyLinearImpulse(0.5, 0, ballTable[count].x, ballTable[count].y)
-							else
-								ballTable[count]:applyLinearImpulse(0.5, 0.5, ballTable[count].x, ballTable[count].y)
+						elseif x > 0 then
+							if x < 30 then
+								if y > 0 then
+									ballTable[count]:applyLinearImpulse(0,-1, ballTable[count].x, ballTable[count].y)
+								elseif y < 0 then
+									ballTable[count]:applyLinearImpulse(0,1, ballTable[count].x, ballTable[count].y)
+								end
+							elseif y < 0 then
+								if y > -30 then
+									ballTable[count]:applyLinearImpulse(-1, 0, ballTable[count].x, ballTable[count].y)
+								else
+									ballTable[count]:applyLinearImpulse( -1, 1, ballTable[count].x, ballTable[count].y)
+								end
+							elseif y > 0 then
+								if y < 30 then
+									ballTable[count]:applyLinearImpulse(-1, 0, ballTable[count].x, ballTable[count].y)
+								else
+									ballTable[count]:applyLinearImpulse( -1, -1, ballTable[count].x, ballTable[count].y)
+								end
 							end
 						end
-					elseif x > 0 then
-						if x < 30 then
-							if y > 0 then
-								ballTable[count]:applyLinearImpulse(0,-0.5, ballTable[count].x, ballTable[count].y)
-							elseif y < 0 then
-								ballTable[count]:applyLinearImpulse(0,0.5, ballTable[count].x, ballTable[count].y)
-							end
-						elseif y < 0 then
-							if y > -30 then
-								ballTable[count]:applyLinearImpulse(-0.5, 0, ballTable[count].x, ballTable[count].y)
-							else
-								ballTable[count]:applyLinearImpulse( -0.5, 0.5, ballTable[count].x, ballTable[count].y)
-							end
-						elseif y > 0 then
-							if y < 30 then
-								ballTable[count]:applyLinearImpulse(-0.5, 0, ballTable[count].x, ballTable[count].y)
-							else
-								ballTable[count]:applyLinearImpulse( -0.5, -0.5, ballTable[count].x, ballTable[count].y)
-							end
-						end
+					elseif distBH > 50 then
+						print("JOINT REMOVED")
 					end
-				end
+				--end
 			end	
 		end
 	elseif tap == 0 then
@@ -415,6 +420,10 @@ local function frame(event)
 		
 		if distBH <= 50 then
 			--print("DETECTING PULL")
+			
+			--allowMini = false
+			--allowPanes = false
+			
 			ballTable[1].hasJoint = true
 			ballTable[1]:applyTorque(0.5)
 			ballTable[1].rotation = ballTable[1].rotation + 5
