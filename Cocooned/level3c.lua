@@ -31,10 +31,15 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 -----------------------------------------------------------------------------------------
 --doorOpen = true
 
+switchOpenA = false
+
 local ballTable = { 
 	[1] = display.newImage("ball.png")
 }
 	--[2] = display.newImage("ball.png") }
+
+local ballSwitchC = display.newImage("ball_switch.png")
+ballSwitchC.x = 350; ballSwitchC.y = 75
 	
 -- add new walls
 -- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
@@ -63,7 +68,6 @@ local walls = {
 	walls[4].x = 250
 	walls[4].y = 315
 
-	local door = display.newRect(235, 230, 150, 25)
 
 -- Draw Menu Button
 local menu = display.newImage("floor.png")
@@ -84,6 +88,12 @@ local menu = display.newImage("floor.png")
 local function saveBallLocation()
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
 	--ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
+end
+
+local switchDistance
+
+local function switchDistance(x1, x2, y1, y2, detectString)
+	return math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
 end
 
 -- distance function
@@ -243,6 +253,15 @@ local function moveBall(event)
 	end
 
 
+-- Collision Detection for every frame during game time
+local function frame(event)
+	switchDist = switchDistance(ballTable[1].x, ballSwitchC.x, ballTable[1].y, ballSwitchC.y)
+	if (switchDist <= 35)then
+		print("switch open in A")
+		switchOpenA = true
+	end 
+end
+
 -- Called when the scene's view does not exist:
 function scene:createScene( event )
 	print("Create C")
@@ -260,7 +279,7 @@ function scene:createScene( event )
 	group:insert( background )
 	group:insert( ballTable[1] )
 	--group:insert( ballTable[2] )
-	group:insert( door) 
+	group:insert( ballSwitchC)
 
 	for count = 1, #lines do
 		group:insert(lines[count])
@@ -272,26 +291,6 @@ function scene:createScene( event )
 
 end
 
--- Collision Detection for every frame during game time
-	local function frame(event)
-
-		-- send both ball position values to distance function
-		--distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
-		
-		-- When less than distance of 35 pixels, do something
-		-- 			Used print as testing. Works successfully!
-		--if dist <= 35 then
-		--	print("Distance =", dist)
-		--end
-		--[[
-		if door then
-			if doorOpen == true then 
-				door:removeSelf( )
-			end
-		end
-		--]]
-	end
-
 -- Called immediately after scene has moved onscreen:
 function scene:enterScene( event )
 	local group = self.view
@@ -301,9 +300,6 @@ function scene:enterScene( event )
 	physics.start()
 	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
 	--physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
-	if doorOpen == false then
-		physics.addBody(door, "static", {bounce = 0.01})
-	end
 
 	ballTable[1]:setLinearVelocity(0,0)
 	ballTable[1].angularVelocity = 0
@@ -320,10 +316,8 @@ function scene:enterScene( event )
 		physics.addBody(lines[count], "static", { bounce = 0.01 } )
 	end
 
-	if door then
-		if doorOpen == true then 
-			door:removeSelf( )
-		end
+	if ballSwitchC then
+		switchOpenA = true
 	end
 
 	physics.setGravity(0, 0)
@@ -365,7 +359,6 @@ function scene:exitScene( event )
 		physics.removeBody(lines[count])
 	end
 
-	physics.removeBody( door )
 
 	menuBool = false
 	--physics.pause()

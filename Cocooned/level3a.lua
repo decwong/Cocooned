@@ -29,6 +29,9 @@ local secondBall = false
 -- Check to see if second ball has been created
 local secondBallActive = false 
 
+-- Check to see if the switch has appeared
+local switchAlive = false
+
 -----------------------------------------------------------------------------------------
 -- BEGINNING OF YOUR IMPLEMENTATION
 -- 
@@ -38,15 +41,14 @@ local secondBallActive = false
 -----------------------------------------------------------------------------------------
 
 local ballTable = { 
-	[1] = display.newImage("ball.png") 
+	[1] = display.newImage("ball.png")
 }
 
--- Make a switch that activates when the light
--- ball is inside the switch in pane D 
 local switch = display.newImage("switch.png")
-switch.x = 130; switch.y = 40
-switch.gravityScale = 0.25
-		
+	print("initialize switch")
+	switch.x = 130; switch.y = 40
+	print("showing switch")
+
 -- add new walls
 -- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
 local walls = {
@@ -90,7 +92,7 @@ local lines = {
 }
 
 -- Get the distance from the switch to another object 
-local switchDistance
+local switchDist
 
 local function switchDistance(x1, x2, y1, y2, detectString)
 	return math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
@@ -101,13 +103,6 @@ local function distance(x1, x2, y1, y2)
 	local dist
 	dist = math.sqrt( ((x2-x1)^2) + ((y2-y1)^2) )
 	return dist
-end
-
-local function saveBallLocation()
-	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
-	if (secondBallActive == true) then 
-		ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
-	end
 end
 
 -- MENU FUNCTION
@@ -136,6 +131,13 @@ end
 
 local tapTime = 0
 local miniMap = false
+
+local function saveBallLocation()
+	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
+	if (secondBallActive == true) then 
+		ballVariables.setBall2(ballTable[2].x, ballTable[2].y)
+	end
+end
 
 -- ball movement control
 local function moveBall(event)
@@ -258,6 +260,13 @@ local function moveBall(event)
 	end
 end
 
+local function getSwitch()
+	local switch = display.newImage("switch.png")
+	print("initialize switch")
+	switch.x = 130; switch.y = 40
+	print("showing switch")
+end
+
 -- Collision Detection for every frame during game time
 local function frame(event)
 
@@ -265,25 +274,24 @@ local function frame(event)
 	--distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
 
 	-- Check to see if the ball has collided with the switch
-	switchDist = switchDistance(ballTable[1].x, switch.x, ballTable[1].y, switch.y)
-
-	-- If they collide, set this flag to true
-	if switchDist <= 55 then
-		print("switch pressed")
-		secondBall = true 
-		-- Check to make sure we aren't creating multiple balls
-		if (secondBallActive == false) then 
-			-- Display new ball
-			local ballTable = {
-				[2] = display.newImage("ball.png")
-			}
-			ballTable[2].x = 100
-			ballTable[2].y = 100
-			-- Add ball physics and set flag to prevent additional balls from spawning
-			physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
-			secondBallActive = true
+		switchDist = switchDistance(ballTable[1].x, switch.x, ballTable[1].y, switch.y)
+		-- If they collide, set this flag to true
+		if (switchDist <= 35) then
+			print("switch pressed")
+			secondBall = true 
+			-- Check to make sure we aren't creating multiple balls
+			if (secondBallActive == false) then 
+				-- Display new ball
+				local ballTable = {
+					[2] = display.newImage("ball.png")
+				}
+				ballTable[2].x = 100
+				ballTable[2].y = 100
+				-- Add ball physics and set flag to prevent additional balls from spawning
+				physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+				secondBallActive = true
+			end
 		end
-	end
 end
 
 -- Called when the scene's view does not exist:
@@ -303,13 +311,13 @@ function scene:createScene( event )
 	group:insert( background )
 	group:insert( ballTable[1] )
 
+	group:insert(switch)
+
 	-- If the switch is pressed, add 
 	-- a second ball to the pane
 	if (secondBall == true) then
 		group:insert(ballTable[2])
 	end
-
-	group:insert(switch)
 	
 	for count = 1, #lines do
 		group:insert(lines[count])
@@ -318,6 +326,11 @@ function scene:createScene( event )
 		group:insert(walls[count])
 	end
 	group:insert( menu )
+
+	if switchOpenA == true then 
+		print("showing switch")
+		group:insert( switch)
+	end
 
 end
 
@@ -352,7 +365,14 @@ function scene:willEnterScene( event )
 	ballTable[1].x = ballVariables.getBall1x()
 	ballTable[1].y = ballVariables.getBall1y()
 
-	print("Entering A")
+	print("before creating switch")
+	print(switchOpenA)
+
+	if switchOpenA then 
+		switch.alpha = 1
+	elseif switchOpenA == false then
+		switch.alpha = 0
+	end 
 end
 
 --rectangle-based collision detection

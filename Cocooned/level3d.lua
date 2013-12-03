@@ -30,14 +30,15 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 --		 unless storyboard.removeScene() is called.
 -- 
 -----------------------------------------------------------------------------------------
+switchOpen = false
 
 local ballTable = { 
 	[1] = display.newImage("ball.png")
 	--[2] = display.newImage("ball.png") 
 }
 
-local ballSwitch = display.newImage("ball_switch.png")
-ballSwitch.x = 350; ballSwitch.y = 75
+local ballSwitchD = display.newImage("ball_switch.png")
+ballSwitchD.x = 350; ballSwitchD.y = 75
 
 -- add new walls
 -- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
@@ -72,7 +73,9 @@ local menu = display.newImage("floor.png")
 	menu.y = 10
 
 local lines = {
-	[1] = display.newRect(250, 150, 50, 50)
+	[1] = display.newRect(250, 150, 50, 50), 
+	[2] = display.newRect(70, 180, 20, 575) ,
+	[3] = display.newRect(410, 180, 20, 575) ,
 }
 
 local function saveBallLocation()
@@ -253,7 +256,10 @@ local function frame(event)
 	--	print("Distance =", dist)
 	--end
 
-	switchDist = switchDistance(ballTable[1].x, ballSwitch.x, ballTable[1].y, ballSwitch.y)
+	switchDist = switchDistance(ballTable[1].x, ballSwitchD.x, ballTable[1].y, ballSwitchD.y)
+	if (switchDist <= 35) then 
+		swithOpenA = true
+	end
 
 end
 
@@ -287,7 +293,7 @@ function scene:createScene( event )
 	group:insert( background )
 	group:insert( ballTable[1] )
 	--group:insert( ballTable[2] )
-	group:insert( ballSwitch)
+	group:insert( ballSwitchD)
 	
 	for count = 1, #lines do
 		group:insert(lines[count])
@@ -326,7 +332,7 @@ function scene:enterScene( event )
 
 	physics.setGravity(0, 0)
 
-	if ballSwitch then
+	if ballSwitchD then
 		switchOpen = true
 	end
 

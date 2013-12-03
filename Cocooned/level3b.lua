@@ -78,7 +78,8 @@ local menu = display.newImage("floor.png")
 	menu.x = 245
 	menu.y = 10
 local lines = {
-	[1] = display.newRect(250, 150, 50, 50)
+	[1] = display.newRect(250, 150, 50, 50), 
+	[2] = display.newRect(70, 150, 25, 350)
 }
 local function saveBallLocation()
 	ballVariables.setBall1(ballTable[1].x, ballTable[1].y)
