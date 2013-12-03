@@ -283,6 +283,7 @@ local function frame(event)
 	dist = distance(ballTable[2].x, switch2.x, ballTable[2].y, switch2.y) 
 	if dist < 20 then
 		ballVariables.setWall2(false)
+		switch2.alpha = 0
 	end
 
 
@@ -429,6 +430,9 @@ function scene:willEnterScene( event )
 		ballVariables.setMagnetized1(false)
 		ballVariables.setMagnetized2(false)
 	end
+
+	switch1.alpha = 1
+	switch2.alpha = 1
 
 	print( "load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 	print("Entering D")

@@ -154,13 +154,10 @@ local joint = nil
 local tapTime = 0
 local counter = 0
 local miniMap = false
-<<<<<<< HEAD
 local allowMini = false
 local allowPanes = false
-=======
 --local allowMini = true
 --local allowPanes = true
->>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
 
 -- ball movement control
 local function moveBall(event)
@@ -190,11 +187,7 @@ local function moveBall(event)
 		end
 	end
 
-<<<<<<< HEAD
 	if allowMini == true then
-=======
-	--if allowMini == true then
->>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
 		if event.phase == "ended" then
 			if(eventTime - tapTime) < 300 then
 				if menuBool == false then
@@ -212,11 +205,7 @@ local function moveBall(event)
 			end
 				tapTime = eventTime
 		end
-<<<<<<< HEAD
 	end
-=======
-	--end
->>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
 		
 	if tap == 1 then
 		if event.phase == "ended" then
