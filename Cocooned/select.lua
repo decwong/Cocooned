@@ -65,6 +65,13 @@ local function onPlayLvl5Release()
 	ballVariables.setMagnetized2(true)
 	-- go to level2.lua scene
 	storyboard.gotoScene( "level2", "fade", 250 )
+
+	ballVariables.setBall1(250, 30)
+	ballVariables.setBall2(255, 270)
+	ballVariables.setMagnetized1(true)
+	ballVariables.setMagnetized2(true)
+	-- go to level2.lua scene
+	storyboard.gotoScene( "level5", "fade", 250 )
 	
 	return true	-- indicates successful touch
 end

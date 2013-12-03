@@ -38,8 +38,13 @@ local ballTable = {
 
 
 local star = display.newImage("star.png")
+<<<<<<< HEAD
 	star.x = 450
 	star.y = 260
+=======
+	star.x = display.contentWidth/2
+	star.y = display.contentHeight/2
+>>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
 		
 
 		
@@ -78,6 +83,7 @@ local menu = display.newImage("floor.png")
 	
 -- Draw lines
 local lines = {
+<<<<<<< HEAD
 	-- newRect(left, top, width, height)
 	--center line
 	[1] = display.newRect(display.contentWidth/2+10, display.contentHeight/2, 20, display.contentHeight) ,
@@ -91,6 +97,16 @@ local lines = {
 	[5] = display.newRect(display.contentWidth/4-10, display.contentHeight/2 + 30, display.contentWidth/2+50, 20) ,
 	--top horizontal line
 	[6] = display.newRect(display.contentWidth/4-10, 75, display.contentWidth/2+50, 20)
+=======
+	--vertical right
+	[1] = display.newRect(display.contentWidth/2+35, display.contentHeight/2, 10, display.contentHeight) ,
+	--vertical left
+	[2] = display.newRect(display.contentWidth/2-35, display.contentHeight/2, 10, display.contentHeight) ,
+	--bottom horizontal
+	[3] = display.newRect(display.contentWidth/2, display.contentHeight/2 + 40, display.contentWidth+50, 10) ,
+	--top horizontal
+	[4] = display.newRect(display.contentWidth/2, display.contentHeight/2 - 40, display.contentWidth+50, 10),
+>>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
 }
 		
 -- distance function
@@ -241,22 +257,38 @@ local function moveBall(event)
 		elseif "moved" == phase then
 		elseif "ended" == phase or "cancelled" == phase then
 			local current = storyboard.getCurrentSceneName()
+<<<<<<< HEAD
 			if current == "level2" then
+=======
+			if current == "level5" then
+>>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
 				if event.xStart > event.x and swipeLength > 50 then 
 					print("Swiped Left")
 					saveBallLocation()
 					Runtime:removeEventListener("enterFrame", frame)
+<<<<<<< HEAD
 					storyboard.gotoScene( "level2d", "fade", 500 )
+=======
+					storyboard.gotoScene( "level5d", "fade", 500 )
+>>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
 				elseif event.xStart < event.x and swipeLength > 50 then 
 					print( "Swiped Right" )
 					saveBallLocation()
 					Runtime:removeEventListener("enterFrame", frame)
+<<<<<<< HEAD
 					storyboard.gotoScene( "level2b", "fade", 500 )
+=======
+					storyboard.gotoScene( "level5b", "fade", 500 )
+>>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
 				elseif event.yStart > event.y and swipeLengthy > 50 then
 					print( "Swiped Down" )
 					saveBallLocation()
 					Runtime:removeEventListener("enterFrame", frame)
+<<<<<<< HEAD
 					storyboard.gotoScene( "level2c", "fade", 500 )
+=======
+					storyboard.gotoScene( "level5c", "fade", 500 )
+>>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
 				elseif event.yStart < event.y and swipeLengthy > 50 then
 					print( "Swiped Up" )
 					--ballTable[1]:setLinearVelocity(0,0)
@@ -265,7 +297,11 @@ local function moveBall(event)
 					--ballTable[2].angularVelocity = 0
 					saveBallLocation()
 					Runtime:removeEventListener("enterFrame", frame)
+<<<<<<< HEAD
 					storyboard.gotoScene( "level2a", "fade", 500 )
+=======
+					storyboard.gotoScene( "level5a", "fade", 500 )
+>>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
 				end	
 			end
 		end	

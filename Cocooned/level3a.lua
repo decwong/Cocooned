@@ -44,6 +44,7 @@ local ballTable = {
 	[1] = display.newImage("ball.png"),
 	[2] = display.newImage("ball.png")
 }
+ballTable[2].alpha = 0
 
 ballTable[2].alpha = 0
 
