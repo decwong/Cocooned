@@ -90,6 +90,12 @@ local lines = {
 	[3] = display.newRect(display.contentWidth/2, display.contentHeight/2 + 40, display.contentWidth+50, 10) ,
 	--top horizontal
 	[4] = display.newRect(display.contentWidth/2, display.contentHeight/2 - 40, display.contentWidth+50, 10),
+	--top left corner
+	[5] = display.newRect(display.contentWidth/4-90, display.contentHeight/2 - 50, display.contentWidth/4 - 10, 10),
+	[6] = display.newRect(display.contentWidth/4-40, display.contentHeight/4-20, 10, display.contentWidth/4-30),
+	--bottom right corner
+	[7] = display.newRect((3*display.contentWidth)/4+90, display.contentHeight/2 + 50, display.contentWidth/4 - 10, 10),
+	[8] = display.newRect((3*display.contentWidth)/4+40, (3*display.contentHeight)/4+20, 10, display.contentWidth/4-30)
 }
 
 local function saveBallLocation()
@@ -258,6 +264,16 @@ end
 local function frame(event)
 	local dist
 	-- send both ball position values to distance function
+
+	--switch1 code
+	if distanceFrom(ballTable[1], switch1) < 40 or  distanceFrom(ballTable[2], switch1) < 40 then
+		lines[2].y = display.contentHeight/2
+	end
+	if distanceFrom(ballTable[1], switch2) < 40 or  distanceFrom(ballTable[2], switch2) < 40 then
+		lines[1].y = display.contentHeight/2
+	end
+
+
 	dist = distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
 	--magnetized repel
 	if distanceFrom(ballTable[1], ballTable[2]) < 100 and ballVariables.getRepelled() == false then

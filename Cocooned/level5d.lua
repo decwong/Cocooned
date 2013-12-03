@@ -31,6 +31,11 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 -- 
 -----------------------------------------------------------------------------------------
 
+local switch1 = display.newImage("switch.png")
+	switch1.x = display.contentWidth/4 - 100; switch1.y = display.contentHeight/2 - 100
+local switch2 = display.newImage("switch.png")
+	switch2.x = 3*display.contentWidth/4 + 100; switch2.y = display.contentHeight/2 + 100
+
 local ballTable = { 
 	[1] = display.newImage("ball.png"), 
 	[2] = display.newImage("ball.png") }
@@ -258,6 +263,14 @@ end
 local function frame(event)
 	local dist
 	
+	if distanceFrom(ballTable[1], switch1) < 40 or  distanceFrom(ballTable[2], switch1) < 40 then
+		--change level5 main
+	end
+	if distanceFrom(ballTable[1], switch2) < 40 or  distanceFrom(ballTable[2], switch2) < 40 then
+		--change level5 main
+	end
+
+
 	-- send both ball position values to distance function
 	dist = distance(ballTable[1].x, ballTable[2].x, ballTable[1].y, ballTable[2].y)
 
@@ -311,6 +324,8 @@ function scene:createScene( event )
 	group:insert( background )
 	group:insert( ballTable[1] )
 	group:insert( ballTable[2] )
+	group:insert( switch1 )
+	group:insert( switch2 )
 	
 	for count = 1, #lines do
 		group:insert(lines[count])
@@ -348,6 +363,8 @@ function scene:enterScene( event )
 		physics.addBody(lines[count], "static", { bounce = 0.01 } )
 	end
 
+	physics.addBody(switch1, "static", { bounce = 0.01 } )
+	physics.addBody(switch2, "static", { bounce = 0.01 } )
 	physics.setGravity(0, 0)
 
 	Runtime:addEventListener("touch", moveBall)
@@ -398,6 +415,9 @@ function scene:exitScene( event )
 	for count = 1, #walls do
 		physics.removeBody(walls[count])
 	end
+
+	physics.removeBody(switch1)
+	physics.removeBody(switch2)
 	
 	menuBool = false
 	physics.pause()
