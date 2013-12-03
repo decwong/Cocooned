@@ -170,7 +170,7 @@ local function moveBall(event)
 			if menuBool == false then
 				if miniMap == false then 
 					physics.pause()
-					storyboard.showOverlay("miniMapLevel2", "fade", 300)
+					storyboard.showOverlay("miniMapLevel5", "fade", 300)
 					miniMap = true
 				elseif miniMap == true then
 					storyboard.hideOverlay("fade", 300)
@@ -339,6 +339,7 @@ function scene:createScene( event )
 		group:insert(boxes[count])
 	end
 	group:insert( menu )
+
 
 end
 

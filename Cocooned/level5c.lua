@@ -212,7 +212,7 @@ local function moveBall(event)
 			if menuBool == false then
 				if miniMap == false then 
 					physics.pause()
-					storyboard.showOverlay("miniMapLevel2", "fade", 300)
+					storyboard.showOverlay("miniMapLevel5", "fade", 300)
 					miniMap = true
 				elseif miniMap == true then
 					storyboard.hideOverlay("fade", 300)
@@ -386,6 +386,9 @@ function scene:createScene( event )
 
 	group:insert( menu )
 
+
+
+
 end
 
 -- Called immediately after scene has moved onscreen:
@@ -407,7 +410,7 @@ function scene:enterScene( event )
 	for count = 1, #walls do
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
 	end
-	
+
 	ballTable[1]:setLinearVelocity(0,0)
 	ballTable[1].angularVelocity = 0
 	ballTable[2]:setLinearVelocity(0,0)
