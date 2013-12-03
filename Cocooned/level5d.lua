@@ -56,11 +56,6 @@ local menu = display.newImage("floor.png")
 	menu.y = 10
 
 
-local magnet = display.newImage("magnet3.png")
-
-	magnet.x = 30
-	magnet.y = 260
-
 	-- Left wall
 	walls[1].x = -40
 	walls[1].y = 180
@@ -82,19 +77,19 @@ local magnet = display.newImage("magnet3.png")
 
 local lines = {
 	-- newRect(left, top, width, height)
-	--center line
-	[1] = display.newRect(display.contentWidth/2+10, display.contentHeight/2, 20, display.contentHeight) ,
-	--wall containing win zone
-	[2] = display.newRect(display.contentWidth/4*3 + 30, 250, 20, display.contentHeight/3),
-	--wall above win zone
-	[3] = display.newRect(display.contentWidth/4*3 + 65, 75, display.contentWidth/4 + 50, 20),
-	--left vertical line
-	[4] = display.newRect(display.contentWidth/4-10, display.contentHeight/2+30, 20, display.contentHeight/2+90) ,
-	--bottom horizontal line
-	[5] = display.newRect(display.contentWidth/4+50, display.contentHeight/2 + 30, display.contentWidth/4+50, 20) ,
-	--top horizontal line
-	[6] = display.newRect(display.contentWidth/4+50, 75, display.contentWidth/4+50, 20),	
-	[7] = display.newRect(display.contentWidth/4*3 + 80, 200, display.contentWidth/4 + 10, 20)	
+	--vertical right
+	[1] = display.newRect(display.contentWidth/2+35, display.contentHeight/2, 10, display.contentHeight) ,
+	[2] = display.newRect(display.contentWidth/2-35, display.contentHeight/2, 10, display.contentHeight) ,
+	--bottom horizontal
+	[3] = display.newRect(display.contentWidth/2, display.contentHeight/2 + 40, display.contentWidth+50, 10) ,
+	--top horizontal
+	[4] = display.newRect(display.contentWidth/2, display.contentHeight/2 - 40, display.contentWidth+50, 10),
+	--top left corner
+	[5] = display.newRect(display.contentWidth/4-90, display.contentHeight/2 - 50, display.contentWidth/4 - 10, 10),
+	[6] = display.newRect(display.contentWidth/4-40, display.contentHeight/4-20, 10, display.contentWidth/4-30),
+	--bottom right corner
+	[7] = display.newRect((3*display.contentWidth)/4+90, display.contentHeight/2 + 50, display.contentWidth/4 - 10, 10),
+	[8] = display.newRect((3*display.contentWidth)/4+40, (3*display.contentHeight)/4+20, 10, display.contentWidth/4-30)
 }
 
 local function saveBallLocation()
@@ -247,12 +242,12 @@ local function moveBall(event)
 		elseif "moved" == phase then
 		elseif "ended" == phase or "cancelled" == phase then
 			local current = storyboard.getCurrentSceneName()
-			if current == "level2d" then
+			if current == "level5d" then
 				if event.xStart < event.x and swipeLength > 50 then 
 					print( "Swiped Right" )
 					saveBallLocation()
 					Runtime:removeEventListener("enterFrame", frame)
-					storyboard.gotoScene( "level2", "fade", 500 )
+					storyboard.gotoScene( "level5", "fade", 500 )
 				end
 			end
 		end	
@@ -277,19 +272,7 @@ local function frame(event)
 		timer.performWithDelay( 2000, ballVariables.setRepelled(false) )
 	end
 
-	if magnet then
-		if distanceFrom(magnet, ballTable[1]) < 50 and ballVariables.getMagnetized1() then
-			ballVariables.setMagnetized1(false)
-			magnet:removeSelf()
-			ballTable[2]:setFillColor(1,1,1)
-			magnet = nil
-		elseif distanceFrom(magnet, ballTable[2]) < 50 and ballVariables.getMagnetized2() then
-			ballVariables.setMagnetized2(false)
-			magnet:removeSelf()
-			ballTable[2]:setFillColor(1,1,1)
-			magnet = nil
-		end
-	end
+	
 	
 	-- When less than distance of 35 pixels, do something
 	-- 			Used print as testing. Works successfully!
@@ -328,7 +311,6 @@ function scene:createScene( event )
 	group:insert( background )
 	group:insert( ballTable[1] )
 	group:insert( ballTable[2] )
-	group:insert(magnet)
 	
 	for count = 1, #lines do
 		group:insert(lines[count])
@@ -355,9 +337,6 @@ function scene:enterScene( event )
 	ballTable[2]:setLinearVelocity(0,0)
 	ballTable[2].angularVelocity = 0
 
-	if magnet then
-		physics.addBody(magnet, "static", { bounce = 0.01 } )
-	end
 	
 	-- apply physics to walls
 	for count = 1, #walls do
@@ -414,9 +393,6 @@ function scene:exitScene( event )
 
 	for count = 1, #lines do
 		physics.removeBody(lines[count])
-	end
-	if magnet then
-		physics.removeBody(magnet)
 	end
 	
 	for count = 1, #walls do

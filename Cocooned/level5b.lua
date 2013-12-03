@@ -32,6 +32,12 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 	
 	-- make a crate (off-screen), position it, and rotate slightly
 
+local switch1 = display.newImage("switch.png")
+	switch1.x = display.contentWidth/2; switch1.y = display.contentHeight/2 - 80
+local switch2 = display.newImage("switch.png")
+	switch2.x = display.contentWidth/2; switch2.y = display.contentHeight/2 + 80
+
+
 local ballTable = { 
 	[1] = display.newImage("ball.png"), 
 	[2] = display.newImage("ball.png") }
@@ -56,12 +62,6 @@ local menu = display.newImage("floor.png")
 	menu.x = 245
 	menu.y = 10
 
-
-local magnet =display.newImage("magnet3.png")
-	
-	magnet.x = 180
-	magnet.y = 130
-
 	-- Left wall
 	walls[1].x = -40
 	walls[1].y = 180
@@ -82,19 +82,14 @@ local magnet =display.newImage("magnet3.png")
 
 local lines = {
 	-- newRect(left, top, width, height)
-	--center line
-	[1] = display.newRect(display.contentWidth/2+10, display.contentHeight/2, 20, display.contentHeight) ,
-	--wall containing win zone
-	[2] = display.newRect(display.contentWidth/4*3 + 30, 250, 20, display.contentHeight/3),
-	--wall above win zone
-	[3] = display.newRect(display.contentWidth/4*3 + 65, 75, display.contentWidth/4 + 50, 20),
-	--left vertical line
-	[4] = display.newRect(display.contentWidth/4-10, display.contentHeight/2, 20, display.contentHeight) ,
-	--bottom horizontal line
-	[5] = display.newRect(display.contentWidth/4-70, display.contentHeight/2 + 30, display.contentWidth/4+50, 20) ,
-	--top horizontal line
-	[6] = display.newRect(display.contentWidth/4-10, 75, display.contentWidth/2+50, 20),	
-	[7] = display.newRect(display.contentWidth/4*3 + 80, 200, display.contentWidth/4 + 10, 20)	
+	--vertical right
+	[1] = display.newRect(display.contentWidth/2+35, display.contentHeight/4-35, 10, display.contentHeight) ,
+	--vertical left
+	[2] = display.newRect(display.contentWidth/2-35, 3*display.contentHeight/4 +35, 10, display.contentHeight) ,
+	--bottom horizontal
+	[3] = display.newRect(display.contentWidth/2, display.contentHeight/2 + 40, display.contentWidth+50, 10) ,
+	--top horizontal
+	[4] = display.newRect(display.contentWidth/2, display.contentHeight/2 - 40, display.contentWidth+50, 10),
 }
 
 local function saveBallLocation()
@@ -247,12 +242,12 @@ local function moveBall(event)
 			elseif "moved" == phase then
 			elseif "ended" == phase or "cancelled" == phase then
 				local current = storyboard.getCurrentSceneName()
-				if current == "level2b" then
+				if current == "level5b" then
 					if event.xStart > event.x and swipeLength > 50 then 
 						print("Swiped Left")
 						saveBallLocation()
 						Runtime:removeEventListener("enterFrame", frame)
-						storyboard.gotoScene( "level2", "fade", 500 )
+						storyboard.gotoScene( "level5", "fade", 500 )
 					end
 				end
 			end	
@@ -314,8 +309,9 @@ function scene:createScene( event )
 	group:insert( background )
 	group:insert( ballTable[1] )
 	group:insert( ballTable[2] )
-	group:insert(magnet)
-			
+	group:insert( switch1 )
+	group:insert( switch2 )
+		
 	for count = 1, #lines do
 		group:insert(lines[count])
 	end
@@ -342,9 +338,6 @@ function scene:enterScene( event )
 	ballTable[2]:setLinearVelocity(0,0)
 	ballTable[2].angularVelocity = 0
 
-	if magnet then
-		physics.addBody(magnet, "static", { bounce = 0.01 } )
-	end
 	-- apply physics to wall
 	for count = 1, #walls do
 		physics.addBody(walls[count], "static", { bounce = 0.01 } )
@@ -354,7 +347,8 @@ function scene:enterScene( event )
 	for count = 1, #lines do 
 		physics.addBody(lines[count], "static", { bounce = 0.01 } )
 	end
-
+	physics.addBody(switch1, "static", { bounce = 0.01 } )
+	physics.addBody(switch2, "static", { bounce = 0.01 } )
 	physics.setGravity(0, 0)
 
 	Runtime:addEventListener("touch", moveBall)
@@ -393,9 +387,10 @@ function scene:exitScene( event )
 
 	physics.removeBody(ballTable[1])
 	physics.removeBody(ballTable[2])
-	if magnet then
-		physics.removeBody(magnet)
-	end
+
+	physics.removeBody(switch1)
+	physics.removeBody(switch2)
+
 
 	-- remove physics to lines
 	for count = 1, #lines do 
