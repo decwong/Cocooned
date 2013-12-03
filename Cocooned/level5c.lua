@@ -239,12 +239,20 @@ local function moveBall(event)
 			elseif "moved" == phase then
 			elseif "ended" == phase or "cancelled" == phase then
 				local current = storyboard.getCurrentSceneName()
+<<<<<<< HEAD
+				if current == "level2c" then
+=======
 				if current == "level5c" then
+>>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
 					if event.yStart < event.y and swipeLengthy > 50 then
 						print( "Swiped Up" )
 						saveBallLocation()
 						Runtime:removeEventListener("enterFrame", frame)
+<<<<<<< HEAD
+						storyboard.gotoScene( "level2", "fade", 500 )
+=======
 						storyboard.gotoScene( "level5", "fade", 500 )
+>>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
 					end	
 				end
 			end	

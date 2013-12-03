@@ -37,7 +37,6 @@ local switch1 = display.newImage("switch.png")
 local switch2 = display.newImage("switch.png")
 	switch2.x = display.contentWidth/2; switch2.y = display.contentHeight/2 + 80
 
-
 local ballTable = { 
 	[1] = display.newImage("ball.png"), 
 	[2] = display.newImage("ball.png") }
@@ -406,7 +405,6 @@ function scene:exitScene( event )
 
 	physics.removeBody(switch1)
 	physics.removeBody(switch2)
-
 
 	-- remove physics to lines
 	for count = 1, #lines do 

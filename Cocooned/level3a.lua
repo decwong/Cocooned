@@ -46,10 +46,13 @@ local ballTable = {
 }
 ballTable[2].alpha = 0
 
+ballTable[2].alpha = 0
+
 local switch = display.newImage("switch.png")
 	print("initialize switch")
 	switch.x = 130; switch.y = 40
 	print("showing switch")
+	switch.alpha = 0
 
 -- add new walls
 -- temp wall image from: http://protextura.com/wood-plank-cartoon-11130
@@ -325,7 +328,7 @@ function scene:createScene( event )
 	group:insert( ballTable[1] )
 	group:insert( ballTable[2] )
 
-	group:insert(switch)
+	--group:insert(switch)
 
 	-- If the switch is pressed, add 
 	-- a second ball to the pane
@@ -344,6 +347,7 @@ function scene:createScene( event )
 	if switchOpenA == true then 
 		print("showing switch")
 		group:insert( switch)
+		switch.alpha = 1
 	end
 
 end
@@ -356,6 +360,13 @@ function scene:enterScene( event )
 
 	physics.start()
 	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
+
+	if(ballVariables.isBall2Visible() == true) then
+		physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+		ballTable[2].alpha = 1
+	else
+		ballTable[2].alpha = 0
+	end
 
 	-- apply physics to walls
 	for count = 1, #walls do
@@ -378,15 +389,18 @@ function scene:willEnterScene( event )
 
 	ballTable[1].x = ballVariables.getBall1x()
 	ballTable[1].y = ballVariables.getBall1y()
+	ballTable[2].x = ballVariables.getBall2x()
+	ballTable[2].y = ballVariables.getBall2y()
 
 	print("before creating switch")
 	print(switchOpenA)
 
-	if switchOpenA then 
+	--[[if switchOpenA then 
 		switch.alpha = 1
 	elseif switchOpenA == false then
 		switch.alpha = 0
 	end 
+	]]
 end
 
 --rectangle-based collision detection
@@ -423,6 +437,9 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("enterFrame", frame)
 
 	physics.removeBody(ballTable[1])
+	if(ballVariables.isBall2Visible() == true) then
+		physics.removeBody(ballTable[2])
+	end
 	-- If the switch is pressed, add 
 	-- the second ball's physics to the pane
 	if (secondBall == true) then

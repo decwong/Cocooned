@@ -59,6 +59,13 @@ local function onPlayLvl4Release()
 end
 
 local function onPlayLvl5Release()
+	ballVariables.setBall1(450, 15)
+	ballVariables.setBall2(475, 15)
+	ballVariables.setMagnetized1(true)
+	ballVariables.setMagnetized2(true)
+	-- go to level2.lua scene
+	storyboard.gotoScene( "level2", "fade", 250 )
+
 	ballVariables.setBall1(250, 30)
 	ballVariables.setBall2(255, 270)
 	ballVariables.setMagnetized1(true)

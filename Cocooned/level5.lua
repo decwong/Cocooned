@@ -38,8 +38,13 @@ local ballTable = {
 
 
 local star = display.newImage("star.png")
+<<<<<<< HEAD
+	star.x = 450
+	star.y = 260
+=======
 	star.x = display.contentWidth/2
 	star.y = display.contentHeight/2
+>>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
 		
 
 		
@@ -78,6 +83,7 @@ local menu = display.newImage("floor.png")
 	
 -- Draw lines
 local lines = {
+
 	--vertical right
 	[1] = display.newRect(display.contentWidth/2+35, display.contentHeight/2, 10, display.contentHeight) ,
 	--vertical left

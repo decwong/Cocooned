@@ -82,6 +82,7 @@ local menu = display.newImage("floor.png")
 
 local lines = {
 	-- newRect(left, top, width, height)
+
 	--vertical right
 	[1] = display.newRect(display.contentWidth/2+35, display.contentHeight/2, 10, display.contentHeight) ,
 	[2] = display.newRect(display.contentWidth/2-35, display.contentHeight/2, 10, display.contentHeight) ,
@@ -284,8 +285,6 @@ local function frame(event)
 		ballVariables.setRepelled(true);
 		timer.performWithDelay( 2000, ballVariables.setRepelled(false) )
 	end
-
-	
 	
 	-- When less than distance of 35 pixels, do something
 	-- 			Used print as testing. Works successfully!

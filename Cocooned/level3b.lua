@@ -30,11 +30,14 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 -- 
 -----------------------------------------------------------------------------------------
 
+local switchOpenA = false
 	
 local ballTable = { 
-	[1] = display.newImage("ball.png")
-	--[2] = display.newImage("ball.png") 
+	[1] = display.newImage("ball.png"),
+	[2] = display.newImage("ball.png") 
 }
+
+ballTable[2].alpha = 0
 
 -- Add a crate
 local crate = display.newImage("crate.png")
@@ -180,7 +183,11 @@ local function moveBall(event)
 		
 		if tap == 1 then
 			if event.phase == "ended" then
-				for count = 1, #ballTable, 1 do
+				local ballCount = 1
+			if secondBallActive == true then
+				ballCount = 2
+			end
+			for count = 1, ballCount, 1 do
 			
 				-- send mouse/ball position values to distance function
 				dist = distance(event.x, ballTable[count].x, event.y, ballTable[count].y, "Mouse to Ball Distance: ")
@@ -273,7 +280,7 @@ local function frame(event)
 	--	print("Ball Distance =", ballDist)
 	--end 
 	if switchDist <= 55 then
-		doorOpen = true 
+		switchOpenA = true 
 	end
 end
 
@@ -326,12 +333,14 @@ function scene:enterScene( event )
 	physics.addBody(ballTable[1], {radius = 15, bounce = .25 })
 	--physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
 	physics.addBody( crate, { density=0.01, friction=5000, bounce=.1 } )
-	--physics.addBody( switch) 
 
-	ballTable[1]:setLinearVelocity(0,0)
-	ballTable[1].angularVelocity = 0
-	--ballTable[2]:setLinearVelocity(0,0)
-	--ballTable[2].angularVelocity = 0
+	if(ballVariables.isBall2Visible() == true) then
+		physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+		ballTable[2].alpha = 1
+	else
+		ballTable[2].alpha = 0
+	end
+
 	crate.angularVelocity = 0
 
 	-- apply physics to wall
@@ -356,8 +365,8 @@ function scene:willEnterScene( event )
 
 	ballTable[1].x = ballVariables.getBall1x()
 	ballTable[1].y = ballVariables.getBall1y()
-	--ballTable[2].x = ballVariables.getBall2x()
-	--ballTable[2].y = ballVariables.getBall2y()
+	ballTable[2].x = ballVariables.getBall2x()
+	ballTable[2].y = ballVariables.getBall2y()
 
 	if switchOpen then 
 		switch.alpha = 1
@@ -406,7 +415,9 @@ function scene:exitScene( event )
 	Runtime:removeEventListener("enterFrame", frame)
 
 	physics.removeBody(ballTable[1])
-	--physics.removeBody(ballTable[2])
+	if(ballVariables.isBall2Visible() == true) then
+		physics.removeBody(ballTable[2])
+	end
 
 	-- Remove crate physics
 	physics.removeBody( crate )

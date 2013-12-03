@@ -36,8 +36,23 @@ switchOpen = false
 -- make a crate (off-screen), position it, and rotate slightly
 local ballTable = { 
 		[1] = display.newImage("ball.png"),
-		[2] = display.newImage("ball.png") }
-		ballTable[2].alpha = 0
+		[2] = display.newImage("ball.png") 
+}
+
+ballTable[2].alpha = 0
+
+-- Initiate Reverse boost platform
+local reversePlat = {
+	[1] = display.newImage("reverse_platform.png"),
+	[2] = display.newImage("reverse_platform.png")
+}
+	reversePlat[1]:scale(0.8, 0.8)
+	reversePlat[1].x = 360
+	reversePlat[1].y = 230 
+
+	reversePlat[2]:scale(0.8, 0.8)
+	reversePlat[2].x = 120
+	reversePlat[2].y = 80 
 
 		
 -- add new walls
@@ -188,7 +203,11 @@ local function moveBall(event)
 		
 	if tap == 1 then
 		if event.phase == "ended" then
-			for count = 1, #ballTable, 1 do
+		local ballCount = 1
+		if secondBallActive == true then
+			ballCount = 2
+		end
+			for count = 1, ballCount, 1 do
 		
 			-- send mouse/ball position values to distance function
 			dist = distance(event.x, ballTable[count].x, event.y, ballTable[count].y)
@@ -314,8 +333,8 @@ local function onAccelerate( event )
 	physics.setGravity(12*xGrav, 16*yGrav)
 end
 
-function distanceFrom(x1, x2, y1, y2)
-	return math.sqrt((x2-x1)^2+(y2-y1)^2)
+function distanceFrom(o1,o2)
+	return math.sqrt((o1.x-o2.x)^2+(o1.y-o2.y)^2)
 end
 
 -- Collision Detection for every frame during game time
@@ -323,28 +342,35 @@ local function frame(event)
 	
 	-- If the second ball exists, get the distance from the balls to the stars
 	if (saveBallActive == true) then 
-		star1aDist = star1Dist(ballTable[1].x, star1.x, ballTable[1].y, star1.y)
-		star2aDist = star2Dist(ballTable[1].x, star2.x, ballTable[1].y, star2.y)
-		star1bDist = star1Dist(ballTable[2].x, star1.x, ballTable[2].y, star1.y)
-		star2bDist = star2Dist(ballTable[2].x, star2.x, ballTable[2].y, star2.y)
+		star1aDist = star1Dist(ballTable[1], star1)
+		star2aDist = star2Dist(ballTable[1], star2)
+		star1bDist = star1Dist(ballTable[2], star1)
+		star2bDist = star2Dist(ballTable[2], star2)
+	end 
 
-		-- Check to see if both of the balls are colliding with the stars,
-		-- so that one ball is touching the first star, and the other ball 
-		-- is touching the second star
-		if (star1aDist <= 35) or (star1bDist <= 35) then
-			star1Check = true
-		end
-
-		if (star2aDist <= 35) or (star1bDist <= 35) then
-			star2Check = true
-		end
-		
-		-- If the condition is satisfied, end the level and 
-		-- go back to the level select screen
-		if (star1Check == true) and (star2Check == true) then
+	if distanceFrom(ballTable[1], star1) < 30 or distanceFrom(ballTable[2], star1) < 30 then
+		print("star1 check")
+		if distanceFrom(ballTable[1], star2) < 30 or distanceFrom(ballTable[2], star2) < 30 then
+			print("star2 check")
 			storyboard.gotoScene("select", "fade", 500)
 		end
-	end 
+	end
+
+		-- Ball vs Boost Platform
+	for count = 1, #reversePlat do
+		distBP = distance(ballTable[count].x, reversePlat[count].x, ballTable[count].y, reversePlat[count].y)
+	end
+	
+	-- When less than distance of 35 pixels, do something
+	-- 			Used print as testing. Works successfully!
+	for count = 1, #ballTable do
+		if distBP <= 55 then
+			ballTable[count]:applyLinearImpulse(0, -0.05, ballTable[count].x, ballTable[count].y)
+		elseif (secondBallActive == true) then
+			ballTable[count]:applyLinearImpulse(0, -0.05, ballTable[count].x, ballTable[count].y)
+		end
+	end
+
 end
 
 -- Called when the scene's view does not exist:
@@ -375,6 +401,11 @@ function scene:createScene( event )
 	for count = 1, #lines do
 		group:insert(lines[count])
 	end
+
+	for count = 1, #reversePlat do
+		group:insert(reversePlat[count])
+	end
+
 	for count = 1, #walls do
 		group:insert(walls[count])
 	end

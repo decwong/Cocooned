@@ -73,6 +73,21 @@ local walls = {
 	
 local lines = {
 	-- newRect(left, top, width, height)
+<<<<<<< HEAD
+	--center line
+	[1] = display.newRect(display.contentWidth/2+10, display.contentHeight/2+30, 20, display.contentHeight/2+90) ,
+	--wall containing win zone
+	[2] = display.newRect(display.contentWidth/4*3 + 30, 250, 20, display.contentHeight/3),
+	--wall above win zone
+	[3] = display.newRect(display.contentWidth/4*3 + 65, 75, display.contentWidth/4 + 50, 20),
+	--left vertical line
+	[4] = display.newRect(display.contentWidth/4-10, display.contentHeight/2, 20, display.contentHeight) ,
+	--bottom horizontal line
+	[5] = display.newRect(display.contentWidth/4-10, display.contentHeight/2 + 30, display.contentWidth/2+50, 20) ,
+	--top horizontal line
+	[6] = display.newRect(display.contentWidth/4-10, 75, display.contentWidth/2+50, 20),	
+	[7] = display.newRect(display.contentWidth/4*3 + 80, 200, display.contentWidth/4 + 10, 20)	
+=======
 	--vertical right
 	[1] = display.newRect(display.contentWidth/2+70, display.contentHeight/2, 20, display.contentHeight) ,
 	--center horizontal
@@ -83,6 +98,7 @@ local lines = {
 	[4] = display.newRect(display.contentWidth/2, display.contentHeight/2 + 50, display.contentWidth/2-80, 20) ,
 	--top horizontal
 	[5] = display.newRect(display.contentWidth/2, display.contentHeight/2 - 50, display.contentWidth/2-80, 20)
+>>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
 }
 -- distance function
 local function distance(x1, x2, y1, y2)
@@ -232,12 +248,20 @@ local function moveBall(event)
 		elseif "moved" == phase then
 		elseif "ended" == phase or "cancelled" == phase then
 			local current = storyboard.getCurrentSceneName()
+<<<<<<< HEAD
+			if current == "level2a" then
+=======
 			if current == "level5a" then
+>>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
 				if event.yStart > event.y and swipeLengthy > 50 then
 					print( "Swiped Up" )
 					saveBallLocation()
 					Runtime:removeEventListener("enterFrame", frame)
+<<<<<<< HEAD
+					storyboard.gotoScene( "level2", "fade", 100 )
+=======
 					storyboard.gotoScene( "level5", "fade", 100 )
+>>>>>>> bca11a2dbd352bab26ce67bc7164c9713d09d344
 				end	
 			end
 		end	

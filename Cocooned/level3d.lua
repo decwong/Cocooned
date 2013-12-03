@@ -33,9 +33,11 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 switchOpen = false
 
 local ballTable = { 
-	[1] = display.newImage("ball.png")
-	--[2] = display.newImage("ball.png") 
+	[1] = display.newImage("ball.png"),
+	[2] = display.newImage("ball.png") 
 }
+
+ballTable[2].alpha = 0
 
 local ballSwitchD = display.newImage("ball_switch.png")
 ballSwitchD.x = 350; ballSwitchD.y = 75
@@ -168,7 +170,11 @@ local function moveBall(event)
 		
 	if tap == 1 then
 		if event.phase == "ended" then
-			for count = 1, #ballTable, 1 do
+		local ballCount = 1
+		if secondBallActive == true then
+			ballCount = 2
+		end
+			for count = 1, ballCount, 1 do
 		
 			-- send mouse/ball position values to distance function
 			dist = distance(event.x, ballTable[count].x, event.y, ballTable[count].y, "Mouse to Ball Distance: ")
@@ -258,7 +264,7 @@ local function frame(event)
 
 	switchDist = switchDistance(ballTable[1].x, ballSwitchD.x, ballTable[1].y, ballSwitchD.y)
 	if (switchDist <= 35) then 
-		swithOpenA = true
+		switchOpen = true
 	end
 
 end
@@ -314,6 +320,13 @@ function scene:enterScene( event )
 	physics.addBody(ballTable[1], {radius = 15, bounce = .8 })
 	--physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
 
+	if(ballVariables.isBall2Visible() == true) then
+		physics.addBody(ballTable[2], {radius = 15, bounce = .8 })
+		ballTable[2].alpha = 1
+	else
+		ballTable[2].alpha = 0
+	end
+
 	ballTable[1]:setLinearVelocity(0,0)
 	ballTable[1].angularVelocity = 0
 	--ballTable[2]:setLinearVelocity(0,0)
@@ -332,7 +345,7 @@ function scene:enterScene( event )
 
 	physics.setGravity(0, 0)
 
-	if ballSwitchD then
+	if ballSwitchD == true then
 		switchOpen = true
 	end
 
@@ -347,8 +360,8 @@ function scene:willEnterScene( event )
 
 	ballTable[1].x = ballVariables.getBall1x()
 	ballTable[1].y = ballVariables.getBall1y()
-	--ballTable[2].x = ballVariables.getBall2x()
-	--ballTable[2].y = ballVariables.getBall2y()
+	ballTable[2].x = ballVariables.getBall2x()
+	ballTable[2].y = ballVariables.getBall2y()
 
 	--print( "load", ballTable[1].x , ballTable[1].y, ballTable[2].x, ballTable[2].y)
 	print("Entering D")
@@ -364,7 +377,9 @@ function scene:exitScene( event )
 
 	-- add physics to the balls
 	physics.removeBody(ballTable[1])
-	--physics.removeBody(ballTable[2])
+	if(ballVariables.isBall2Visible() == true) then
+		physics.removeBody(ballTable[2])
+	end
 
 
 	-- remove physics from walls
