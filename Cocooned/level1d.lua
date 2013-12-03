@@ -7,6 +7,7 @@
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 local widget = require("widget");
+local myData = require("lvl1Data")
 require("ballVariables")
 
 display.setStatusBar(display.HiddenStatusBar )

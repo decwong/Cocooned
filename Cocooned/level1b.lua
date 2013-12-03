@@ -7,6 +7,7 @@
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 local widget = require("widget");
+local myData = require("lvl1Data")
 require("ballVariables")
 
 display.setStatusBar(display.HiddenStatusBar )
@@ -260,12 +261,12 @@ local function frame(event)
 	-- Ball vs Key
 	for count = 1, #keys do
 		distKey = distance(ballTable[1].x, keys[count].x, ballTable[1].y, keys[count].y)
-		if distKey < 50 then
+		if distKey < 50 and myData.inventory ~= 1 then
 			print("DESTROY KEY")
 			keys[1]:removeSelf()
 			keys[1] = nil
-			inventory = 3
-			print(inventory)
+			myData.inventory = 3
+			print(myData.inventory)
 		end
 	end
 end

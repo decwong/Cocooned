@@ -7,6 +7,7 @@
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 local widget = require("widget");
+local myData = require("lvl1Data")
 require("ballVariables")
 
 display.setStatusBar(display.HiddenStatusBar )
@@ -32,7 +33,6 @@ local screenW, screenH, halfW = display.contentWidth, display.contentHeight, dis
 -----------------------------------------------------------------------------------------
 
 local inventory
-local winCounter
 local bhtimer
 
 -- make a crate (off-screen), position it, and rotate slightly
@@ -422,24 +422,7 @@ local function frame(event)
 		end
 		
 	end	
-						
-	
-	if inventory == 4 then
-		winCounter = winCounter + 1
-		print("winCounter = ", winCounter)
-	end
-
-	if inventory == 2 then
-		winCounter = winCounter + 1
-		print("winCounter = ", winCounter)
-	end
-
-	if winCounter == 2 then
-		ballTable[1].x = 20
-		ballTable[1].y = 20
-		storyboard.gotoScene( "select", "fade", 500)
-	end
-	
+							
 end
 	
 -- Called when the scene's view does not exist:

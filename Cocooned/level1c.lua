@@ -7,6 +7,7 @@
 local storyboard = require( "storyboard" )
 local scene = storyboard.newScene()
 local widget = require("widget");
+local myData = require("lvl1Data")
 require("ballVariables")
 
 display.setStatusBar(display.HiddenStatusBar )
@@ -354,7 +355,7 @@ local function frame(event)
 		blackholes[count]:rotate(-24)
 		dist = distance(ballTable[1].x, blackholes[count].x, ballTable[1].y, blackholes[count].y)
 		
-		if distBH <= 50 then
+		if dist <= 50 then
 			--print("DETECTING PULL")
 			ballTable[1].hasJoint = true
 			ballTable[1]:applyTorque(0.5)
@@ -365,7 +366,7 @@ local function frame(event)
 			ballTable[1].touchJoint:setTarget( blackholes[count].x, blackholes[count].y)
 		end
 		
-		if distBH <= 50 and counter == 0 then
+		if dist <= 50 and counter == 0 then
 			-- Player has 4 seconds to get out of blackhole
 			bhtimer = timer.performWithDelay( 4000, gameOver, 0 )
 			counter = counter + 1
@@ -375,8 +376,8 @@ local function frame(event)
 	for count = 1, #chests do
 		distChest = distance(ballTable[1].x, chests[count].x, ballTable[1].y, chests[count].y)
 		
-		if distChest <= 50 and inventory ~= 1 and inventory == 3 then
-			print("inventory =", inventory)
+		if distChest <= 50 and myData.inventory ~= 1 and myData.inventory == 3 then
+			print("inventory =", myData.inventory)
 			chests[1]:removeSelf()
 			chests[1] = nil
 			gems[1].alpha = 1
@@ -402,27 +403,36 @@ local function frame(event)
 	-- Ball vs Key
 	for count = 1, #keys do
 		distKey = distance(ballTable[1].x, keys[count].x, ballTable[1].y, keys[count].y)
-		if distKey < 50 and inventory ~= 3 then
+		if distKey < 50 and myData.inventory ~= 3 then
 			print("DESTROY KEY")
 			keys[1]:removeSelf()
 			keys[1] = nil
-			inventory = 1
-			print(inventory)
+			myData.inventory = 1
+			print(myData.inventory)
 		end
 	end
 	
+	-- Ball vs Gem
 	for count = 1, #gems do
 		distGem = distance(ballTable[1].x, gems[count].x, ballTable[1].y, gems[count].y)
 		
 		if distGem <= 35 then
 			gems[1]:removeSelf()
 			gems[1] = nil
-			inventory = 4
+			myData.inventoryGem1 = 1
+			myData.inventory = 0
 		end
 	end
 	
 	if gems[1] then
 		gems[1]:rotate(5)
+	end
+	
+	if myData.inventoryGem1 and myData.inventoryGem2 then
+		print("GAMEOVER")
+		print("GAMEOVER")
+		storyboard.gotoScene( "select", "fade", 500)
+		ballVariables.setBall1(25, 25)
 	end
 end
 
