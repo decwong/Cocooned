@@ -16,7 +16,7 @@ display.setStatusBar(display.HiddenStatusBar )
 local physics = require "physics"
 physics.start(); physics.pause()
 -- Set view mode to show bounding boxes 
-physics.setDrawMode("hybrid")
+--physics.setDrawMode("hybrid")
 physics.setGravity(0, 0)
 
 --------------------------------------------
@@ -153,6 +153,8 @@ end
 local tapTime = 0
 local counter = 0
 local miniMap = false
+local allowMini = false
+local allowPanes = false
 
 -- ball movement control
 local function moveBall(event)
@@ -182,22 +184,24 @@ local function moveBall(event)
 		end
 	end
 
-	if event.phase == "ended" then
-		if(eventTime - tapTime) < 300 then
-			if menuBool == false then
-				if miniMap == false then 
-					physics.pause()
-					storyboard.showOverlay("miniMapLevel1", "fade", 300)
-					miniMap = true
-				elseif miniMap == true then
-					storyboard.hideOverlay("fade", 300)
-					physics.start()
-					miniMap = false
+	if allowMini == true then
+		if event.phase == "ended" then
+			if(eventTime - tapTime) < 300 then
+				if menuBool == false then
+					if miniMap == false then 
+						physics.pause()
+						storyboard.showOverlay("miniMapLevel1", "fade", 300)
+						miniMap = true
+					elseif miniMap == true then
+						storyboard.hideOverlay("fade", 300)
+						physics.start()
+						miniMap = false
+					end
+					print("double tap")
 				end
-				print("double tap")
 			end
+				tapTime = eventTime
 		end
-			tapTime = eventTime
 	end
 		
 	if tap == 1 then
@@ -390,6 +394,11 @@ local function gameOver(event)
 	print("GAMEOVER")
 	counter = nil
 	storyboard.gotoScene( "select", "fade", 500)
+	storyboard.removeScene("level1")
+	storyboard.removeScene("level1a")
+	storyboard.removeScene("level1b")
+	storyboard.removeScene("level1c")
+	storyboard.removeScene("level1d")
 	ballVariables.setBall1(25, 25)
 end
 	
@@ -562,7 +571,7 @@ end
 -- If scene's view is removed, scene:destroyScene() will be called just prior to:
 function scene:destroyScene( event )
 	local group = self.view
-		
+				
 	print("destroyed MAIN")
 end
 

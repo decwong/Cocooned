@@ -294,6 +294,11 @@ local function gameOver(event)
 	print("GAMEOVER")
 	print("GAMEOVER")
 	storyboard.gotoScene( "select", "fade", 500)
+	storyboard.removeScene("level1")
+	storyboard.removeScene("level1a")
+	storyboard.removeScene("level1b")
+	storyboard.removeScene("level1c")
+	storyboard.removeScene("level1d")
 	ballVariables.setBall1(25, 25)
 end
 
